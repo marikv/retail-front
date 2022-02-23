@@ -1,0 +1,11 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 324" width="360" height="324">
+	<title>template</title>
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 150px;fill: #575555;font-weight: 400;font-family: "VictorMono-Regular", "Victor Mono" } 
+	</style>
+	<text id="Logo" style="transform: matrix(1,0,0,1,-179,93)" >
+		<tspan x="201.4" y="109.1" class="t0">L</tspan><tspan  y="109.1" class="t0">o</tspan><tspan  y="109.1" class="t0">g</tspan><tspan  y="109.1" class="t0">o
+</tspan>
+	</text>
+</svg>

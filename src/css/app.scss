@@ -1,0 +1,44 @@
+// app global css in SCSS form
+.sticky-header-table{
+
+  /* height or max-height is important */
+  height: calc(100vh - 52px);
+
+  .q-table__top, .q-table__bottom, thead tr:first-child th {
+    background-color: #f0f5ff;
+  }
+
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead tr:first-child th {
+    top: 0;
+  }
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th {
+    /* height of all previous header rows */
+    top: 48px;
+  }
+}
+
+
+
+
+::-webkit-scrollbar-track {
+  border: 5px solid #c7defa;
+  // border color does not support transparent on scrollbar
+  // border-color: transparent;
+  background-color: #ffffff;
+}
+::-webkit-scrollbar {
+  width: 9px;
+  width: 9px;
+  background-color: #dfe6e9;
+}
+::-webkit-scrollbar-thumb {
+  background-color: $primary;
+  border-radius: 5px;
+}

@@ -1,0 +1,513 @@
+<template>
+  <q-dialog ref="dialogRef"
+            v-model="isOpenedLocal"
+            full-height persistent>
+    <q-card class="q-dialog-plugin" style="width: 100%; max-width: 1100px;">
+      <q-toolbar :class="'q-pr-xs'">
+        <q-toolbar-title>
+          <span class="text-subtitle1">
+            <span class="text-blue-grey" >Cerere</span>
+            <strong  :class="'q-ml-md'">{{ id }}</strong>
+          </span>
+        </q-toolbar-title>
+        <header-tabs-for-forms v-model="tab" :tabs="tabs"></header-tabs-for-forms>
+        <q-space/>
+        <q-btn icon="close" flat round dense @click="onCancelClick"/>
+      </q-toolbar>
+      <q-separator/>
+      <q-card-section
+        style="min-height: calc(100vh - 165px);max-height: calc(100vh - 165px);"
+        class="scroll">
+        <q-tab-panels v-model="tab" animated :keep-alive="false">
+          <q-tab-panel name="general" class="q-pa-none">
+            <div class="row">
+
+              <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs"></div>
+              <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs text-center">
+                <q-btn v-if="bidData && statusId === BID_STATUS_NEW && (isExecutor || isAdmin)"
+                       size="lg"
+                       color="positive"
+                       @click="setBidStatus(BID_STATUS_IN_WORK)"
+                       label="Ia cererea în lucru"></q-btn>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs"></div>
+
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
+            <span class="text-primary" style="font-size: 20px;">
+              {{bidData && bidData.type_credit ? bidData.type_credit.name : ''}}
+            </span>
+                <span class="text-black" style="font-size: 16px;">
+              /
+              <span style="font-size: 23px;">
+              <span style="font-weight: bold;">
+                {{bidData && bidData.imprumut ? bidData.imprumut : '0'}}
+              </span>
+              </span> Lei
+            </span>
+                <span class="text-black" style="font-size: 20px;">
+              /
+              <span style="font-weight: bold;">
+                {{bidData && bidData.months ? bidData.months : '0'}}
+              </span>
+              <span style="font-size: 16px;"> Luni</span>
+            </span>
+              </div>
+              <div class="col-12 q-pl-sm">
+                <div class="bg-green-1 q-pa-sm text-grey-7
+            full-height
+             q-card--bordered rounded-borders text-caption">
+                  {{bidData && bidData.type_credit ? bidData.type_credit.description_mini : ''}}
+                </div>
+              </div>
+              <template v-if="bidData && bidData.bid_months">
+                <div class="col-12" v-if="!showAllBidMonths" style="text-align: center;">
+                  <q-badge color="positive"
+                           style="margin: auto;"
+                           class="cursor-pointer"
+                           v-if="!showAllBidMonths"
+                           @click="showAllBidMonths = true">
+                    <span>Graficul de rambursare</span>
+                    <q-icon name="expand_more"></q-icon>
+                  </q-badge>
+                </div>
+                <div class="col-12" v-else>
+                  <div style="max-width: 700px; width: 100%; margin: auto;" class="row">
+
+                    <div class="col-2 text-subtitle2">Data</div>
+                    <div class="col-2 text-subtitle2 text-right">Suma</div>
+                    <div class="col-2 text-subtitle2 text-right">Dob.</div>
+                    <div class="col-2 text-subtitle2 text-right">Com.</div>
+                    <div class="col-2 text-subtitle2 text-right">Com.admin</div>
+                    <div class="col-2 text-subtitle2 text-right">Total</div>
+                    <template v-for="(row, rowIndex) in bidData.bid_months"
+                              :key="`res-${rowIndex}`">
+                      <div class="col-2 ">{{dateToDot(row.date)}}</div>
+                      <div class="col-2 text-right">{{row.imprumut_per_luna}}</div>
+                      <div class="col-2 text-right">{{row.dobinda_per_luna}}</div>
+                      <div class="col-2 text-right">{{row.comision_per_luna}}</div>
+                      <div class="col-2 text-right">{{row.comision_admin_per_luna}}</div>
+                      <div class="col-2 text-right">{{row.total_per_luna}}</div>
+                    </template>
+                    <div class="col-2 text-subtitle2">Total</div>
+                    <div class="col-2 text-subtitle2 text-right">
+                      {{bidData.imprumut}}</div>
+                    <div class="col-2 text-subtitle2 text-right">
+                      {{bidData.total_dobinda}}</div>
+                    <div class="col-2 text-subtitle2 text-right">
+                      {{bidData.total_comision}}</div>
+                    <div class="col-2 text-subtitle2 text-right">
+                      {{bidData.total_comision_admin}}</div>
+                    <div class="col-2 text-subtitle2 text-right">
+                      {{bidData.total}}</div>
+                  </div>
+                </div>
+                <div class="col-12" v-if="showAllBidMonths" style="text-align: center;">
+                  <q-badge color="positive"
+                           style="margin: auto;"
+                           class="cursor-pointer"
+                           @click="showAllBidMonths = false">
+                    <span>Închide Graficul de rambursare</span>
+                    <q-icon name="expand_less"></q-icon>
+                  </q-badge>
+                </div>
+              </template>
+              <div class="col-12">
+                <span class="text-primary" style="font-size: 18px;">Date Client</span>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientFirstNameHasError"
+                  @blur="clientFirstNameHasError = false"
+                  @focus="clientFirstNameHasError = false"
+                  type="text"
+                  label="Nume"
+                  v-model="clientFirstName">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientLastNameHasError"
+                  @blur="clientLastNameHasError = false"
+                  @focus="clientLastNameHasError = false"
+                  type="text"
+                  label="Prenume"
+                  v-model="clientLastName">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientPhoneHasError"
+                  @blur="clientPhoneHasError = false"
+                  @focus="clientPhoneHasError = false"
+                  type="text"
+                  label="Telefon"
+                  v-model="clientPhone">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientBirthDateHasError"
+                  @blur="clientBirthDateHasError = false"
+                  @focus="clientBirthDateHasError = false"
+                  type="text"
+                  mask="##.##.####"
+                  label="Data de naștere"
+                  v-model="clientBirthDate">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientBuletinSNHasError"
+                  @blur="clientBuletinSNHasError = false"
+                  @focus="clientBuletinSNHasError = false"
+                  type="text"
+                  :rules="[(val) => val.length === 9 || '9 caractere']"
+                  label="Buletin S/N"
+                  v-model="clientBuletinSN">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientBuletinIDNPHasError"
+                  @blur="clientBuletinIDNPHasError = false"
+                  @focus="clientBuletinIDNPHasError = false"
+                  type="text"
+                  :rules="[(val) => val.length === 13 || '13 cifre']"
+                  label="Buletin IDNP"
+                  v-model="clientBuletinIDNP">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  :error="clientLocalitateHasError"
+                  @blur="clientLocalitateHasError = false"
+                  @focus="clientLocalitateHasError = false"
+                  type="text"
+                  label="Localitate"
+                  v-model="clientLocalitate">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Strada"
+                  v-model="clientStreet">
+                </q-input>
+              </div>
+              <div v-if="bidData.status_id === BID_STATUS_REFUSED"
+                   class="col-12 text-red">
+                Cerere refuzată
+              </div>
+              <div v-if="bidData.status_id === BID_STATUS_APPROVED"
+                   class="col-6 text-green text-subtitle1">
+                Cerere aprobată
+              </div>
+              <div class="col-6"
+                   v-if="sumMaximPermis && bidData.status_id !== BID_STATUS_IN_WORK">
+                <span class="text-red text-subtitle1">
+                  Suma maximă permisă: <strong>{{sumMaximPermis}}</strong>
+                </span>
+              </div>
+              <div
+                v-if="!isDealer && bidData.status_id === BID_STATUS_IN_WORK"
+                class="col-12 rounded-borders bg-green-2 row  q-pa-md">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-sm">
+                  <q-input
+                    outlined
+                    type="number"
+                    class="text-subtitle1 text-primary bg-white"
+                    input-class=""
+                    v-model="sumMaximPermis"
+                    label="Suma maximă permisă">
+                  </q-input>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-sm">
+                  <q-btn label="Aprob"
+                         size="lg"
+                         @click="setBidStatus(BID_STATUS_APPROVED)"
+                         color="positive"
+                  ></q-btn>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-sm">
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-sm text-right">
+                  <q-btn label="Refuz"
+                         size="lg"
+                         @click="setBidStatus(BID_STATUS_REFUSED)"
+                         color="negative"
+                  ></q-btn>
+                </div>
+              </div>
+              <div
+                v-if="!isDealer && bidData.status_id !== BID_STATUS_REFUSED"
+                class="col-12 row">
+                <div class="col-12 q-pa-sm">
+                  <q-btn color="primary"
+                         label="Schimbă suma cererii"></q-btn>
+                </div>
+              </div>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="chat" class="q-pa-none">
+            <chat :bid_id="id"></chat>
+          </q-tab-panel>
+          <q-tab-panel name="files" class="q-pa-none">
+            <files-form
+              ref="FilesForm"
+              :bid_id="id"></files-form>
+          </q-tab-panel>
+          <q-tab-panel name="user_tab_logs" class="q-pa-none">
+            <logs-table-for-forms :entity_id="id"
+                                  :entity_name="`bids`"></logs-table-for-forms>
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card-section>
+      <q-separator />
+      <q-card-actions align="right">
+        <q-btn  label="Închide" @click="onCancelClick" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script>
+import {
+  ref,
+  watchEffect,
+  computed,
+} from 'vue';
+import { useStore } from 'vuex';
+import {
+  BID_STATUS_NEW,
+  BID_STATUS_IN_WORK,
+  BID_STATUS_APPROVED,
+  BID_STATUS_REFUSED,
+  hideLoading,
+  showLoading,
+  showNotify,
+  USER_ROLE_ADMIN,
+  USER_ROLE_EXECUTOR,
+  dateToDot,
+  USER_ROLE_DEALER,
+} from 'src/helpers';
+import { api } from 'boot/axios';
+import { useQuasar } from 'quasar';
+import Chat from 'components/Chat';
+import HeaderTabsForForms from 'components/HeadersTabsForForms';
+import LogsTableForForms from 'components/LogsTableForForms';
+import FilesForm from 'components/FilesForm';
+
+export default {
+  name: 'BidDialog',
+  components: {
+    FilesForm,
+    LogsTableForForms,
+    HeaderTabsForForms,
+    Chat,
+  },
+  setup() {
+    const $store = useStore();
+    const $q = useQuasar();
+    const isOpenedLocal = ref(false);
+    const id = ref(0);
+    const statusId = ref(null);
+    const bidData = ref({});
+    const isExecutor = ref(false);
+    const isAdmin = ref(false);
+    const isDealer = ref(false);
+    const showAllBidMonths = ref(false);
+    const sumMaximPermis = ref(0);
+    const clientFirstName = ref('');
+    const clientFirstNameHasError = ref(false);
+    const clientLastName = ref('');
+    const clientLastNameHasError = ref(false);
+    const clientPhone = ref('');
+    const clientPhoneHasError = ref(false);
+    const clientBuletinSN = ref('');
+    const clientBuletinSNHasError = ref(false);
+    const clientBuletinIDNP = ref('');
+    const clientBuletinIDNPHasError = ref(false);
+    const clientBirthDate = ref('');
+    const clientBirthDateHasError = ref(false);
+    const clientLocalitate = ref('');
+    const clientLocalitateHasError = ref(false);
+    const clientStreet = ref('');
+    const disableClientInputs = ref(true);
+    const disableSumMaximPermis = ref(true);
+    const user = computed(() => $store.getters['auth/getUser']);
+
+    const tabs = ref([{
+      name: 'general',
+      icon: 'store',
+      label: 'Date generale',
+    }, {
+      name: 'chat',
+      icon: 'chat',
+      label: 'Chat',
+    }, {
+      name: 'files',
+      icon: 'folder_open',
+      label: 'Fișiere',
+    }, {
+      name: 'logs',
+      icon: 'history',
+      label: 'Log',
+    }]);
+    const tab = ref('general');
+
+    watchEffect(() => {
+      isExecutor.value = user.value.role_id === USER_ROLE_EXECUTOR;
+      isAdmin.value = user.value.role_id === USER_ROLE_ADMIN;
+      isDealer.value = user.value.role_id === USER_ROLE_DEALER;
+    });
+    watchEffect(() => {
+      isOpenedLocal.value = $store.getters['bids/getOpenedBidForm'];
+    });
+    watchEffect(() => {
+      bidData.value = $store.getters['bids/getOpenedBidData'];
+    });
+    watchEffect(() => {
+      if (bidData.value) {
+        id.value = bidData.value.id ? bidData.value.id : 0;
+        statusId.value = bidData.value.status_id ? parseInt(bidData.value.status_id, 10) : 0;
+        sumMaximPermis.value = bidData.value.sum_max_permis;
+        clientFirstName.value = bidData.value.first_name;
+        clientLastName.value = bidData.value.last_name;
+        clientPhone.value = bidData.value.phone1;
+        clientBuletinSN.value = bidData.value.buletin_sn;
+        clientBuletinIDNP.value = bidData.value.buletin_idnp;
+        clientBirthDate.value = dateToDot(bidData.value.birth_date);
+        clientLocalitate.value = bidData.value.localitate;
+        clientStreet.value = bidData.value.street;
+      }
+    });
+    const onCancelClick = () => {
+      $store.commit('bids/updateOpenedBidData', {});
+      $store.commit('bids/updateOpenedBidForm', false);
+    };
+    const getDataById = (idLocal) => {
+      id.value = idLocal;
+      const oldData = { ...$store.getters['bids/getOpenedBidData'] };
+      oldData.id = idLocal;
+      $store.commit('bids/updateOpenedBidData', oldData);
+      showLoading();
+      api.get(`/bids/get-data-by-id/${idLocal}`).then((response) => {
+        hideLoading();
+        if (response.data.success) {
+          $store.commit('bids/updateOpenedBidData', response.data.data);
+        } else {
+          showNotify({ message: response.data.data.message });
+        }
+      }).catch((error) => {
+        hideLoading();
+        showNotify({}, error);
+      });
+    };
+    const setBidStatus = (statusIdLocal) => {
+      if (bidData.value && bidData.value.id) {
+        const doThis = () => {
+          showLoading();
+          api.post(`/bids/set-bid-status/${id.value}`, {
+            status_id: statusIdLocal,
+            sum_max_permis: sumMaximPermis.value,
+          }).then((response) => {
+            hideLoading();
+            if (response.data.success) {
+              $store.commit('bids/updateOpenedBidData', response.data.data);
+              $store.commit('users/updateRefreshGridBidsCalculator', true);
+            } else {
+              showNotify({ message: response.data.data.message });
+            }
+          }).catch((error) => {
+            hideLoading();
+            showNotify({}, error);
+          });
+        };
+        if (statusIdLocal === BID_STATUS_APPROVED || statusIdLocal === BID_STATUS_REFUSED) {
+          let message = 'Sunteți sigur că doriți să aprobați cererea?';
+          if (statusIdLocal === BID_STATUS_REFUSED) {
+            message = 'Sunteți sigur că doriți să refuzați cererea?';
+          }
+          $q.dialog({
+            title: 'Atenție',
+            message,
+            cancel: true,
+            persistent: true,
+          }).onOk(() => {
+            doThis();
+          });
+        } else {
+          doThis();
+        }
+      }
+    };
+
+    return {
+      id,
+      bidData,
+      isOpenedLocal,
+      onCancelClick,
+      getDataById,
+      statusId,
+      BID_STATUS_NEW,
+      BID_STATUS_IN_WORK,
+      BID_STATUS_APPROVED,
+      BID_STATUS_REFUSED,
+      isExecutor,
+      isAdmin,
+      isDealer,
+      setBidStatus,
+      dateToDot,
+      showAllBidMonths,
+      sumMaximPermis,
+      disableSumMaximPermis,
+      clientFirstName,
+      clientFirstNameHasError,
+      clientLastName,
+      clientLastNameHasError,
+      clientPhone,
+      clientPhoneHasError,
+      clientBuletinSN,
+      clientBuletinSNHasError,
+      clientBuletinIDNP,
+      clientBuletinIDNPHasError,
+      clientBirthDate,
+      clientBirthDateHasError,
+      clientLocalitate,
+      clientLocalitateHasError,
+      clientStreet,
+      disableClientInputs,
+      tabs,
+      tab,
+    };
+  },
+};
+</script>
+
+<style scoped>
+
+</style>

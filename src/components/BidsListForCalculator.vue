@@ -1,0 +1,307 @@
+<template>
+  <div>
+    <q-table
+      class="full-width"
+      :flat="true"
+      title="Cereri trimise"
+      :rows="rows"
+      :columns="columns"
+      row-key="id"
+      :filter="filter"
+      v-model:pagination="pagination"
+      :loading="loading"
+      binary-state-sort
+      no-data-label="Nu sunt înregistrări"
+      rows-per-page-label="Înregistrări pe pagină"
+      :rows-per-page-options="[30, 50, 100, 200, 500, 1000, 0]"
+      @request="onRequest"
+      card-class="text-primary"
+      table-class="text-grey-8"
+      table-header-class="bg-indigo-1 text-primary"
+      bordered
+    >
+      <template v-slot:top-right>
+        <q-input outlined
+                 bg-color="white"
+                 dense debounce="300"
+                 v-model="filter"
+                 @keyup.enter="onRequest"
+                 placeholder="Caută">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        <q-btn icon="search"
+               round
+               @click="onRequest"
+               class="q-ml-lg"
+               color="primary">
+          <q-tooltip>Caută</q-tooltip>
+        </q-btn>
+      </template>
+      <template v-slot:body-cell-actions="props">
+        <q-td :props="props" class="actions-td">
+          <q-btn dense round flat
+                 size="sm"
+                 color="positive"
+                 @click="editRow(props.row.id)"
+                 icon="edit">
+            <q-tooltip>Redactează</q-tooltip>
+          </q-btn>
+          <q-btn dense round flat
+                 size="sm"
+                 color="negative"
+                 @click="deleteRow(props)"
+                 icon="delete">
+            <q-tooltip>Șterge</q-tooltip>
+          </q-btn>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-dealer_name="props">
+        <q-td :props="props" class="props-td">
+          <q-avatar
+            size="md"
+            @click="editRow(props.row.id)"
+            class="cursor-pointer bg-white q-mr-sm"
+            style="border: 1px solid white;">
+            <q-img :src="getLogo(props.row.logo)" v-if="getLogo(props.row.logo)" alt="" ></q-img>
+            <div v-else :style="`color: ${getColorForLogo(props.row.dealer_name)}`">
+              {{getInitialsForLogo(props.row.dealer_name)}}
+            </div>
+            <q-tooltip>Deschide</q-tooltip>
+          </q-avatar>
+          <strong>{{props.row.dealer_name}}</strong><br>
+          User: {{props.row.user_name}}<br>
+          {{props.row.type_credits_name}}<br>
+          {{props.row.created_at2}}
+          <div
+            class="text-red"
+            v-if="props.row.sum_max_permis">
+            <strong>
+              Suma Maxima Permisa:
+            </strong>
+            {{props.row.sum_max_permis}}
+          </div>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-phone1="props">
+        <q-td :props="props" class="props-td">
+          <strong>{{props.row.client_last_name}} {{props.row.client_first_name}}</strong><br>
+          Tel: {{props.row.phone1}}<br>
+          IDNP: {{props.row.buletin_idnp}}<br>
+          <q-badge :color="getStatusBadgeColor(props.row.status_id)"
+                   :text-color="getStatusBadgeTextColor(props.row.status_id)">
+            {{getBidStatus(props.row.status_id)}}
+          </q-badge><br>
+          <strong>Suma:</strong> {{props.row.imprumut}}<br>
+        </q-td>
+      </template>
+    </q-table>
+    <bid-dialog ref="BidDialogRef"></bid-dialog>
+  </div>
+</template>
+
+<script>
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  watchEffect,
+} from 'vue';
+import { useStore } from 'vuex';
+import { api } from 'boot/axios';
+import {
+  baseURL, BID_STATUS_APPROVED, BID_STATUS_IN_WORK, BID_STATUS_NEW, BID_STATUS_REFUSED,
+  generateColorFromString, getBidStatusName,
+  getInitials,
+  getMiniPhotoFromServer,
+  showNotify,
+} from 'src/helpers';
+import { useQuasar } from 'quasar';
+import BidDialog from 'components/modals/Bid';
+
+export default defineComponent({
+  name: 'BidsListForCalculator',
+  components: { BidDialog },
+  setup() {
+    const $store = useStore();
+    const $q = useQuasar();
+    const rows = ref([]);
+    const loading = ref(false);
+    const BidDialogRef = ref(null);
+    const filter = ref('');
+    const pagination = ref({
+      sortBy: 'id',
+      descending: true,
+      page: 1,
+      rowsPerPage: 100,
+    });
+
+    const getLogo = (logo) => {
+      if (logo) {
+        const img = getMiniPhotoFromServer(logo);
+        let $return = `${baseURL.replace('/api', '')}/${img}`;
+        $return = $return.replace('//uploads', '/uploads');
+        return $return;
+      }
+      return '';
+    };
+    const getInitialsForLogo = (str) => getInitials(str);
+    const getColorForLogo = (str) => generateColorFromString(str);
+    const getBidStatus = (statusId) => getBidStatusName(statusId);
+    const getRowClasses = (row) => {
+      if (row.status_id === BID_STATUS_NEW) {
+        return 'bg-white';
+      }
+      if (row.status_id === BID_STATUS_APPROVED) {
+        return 'bg-green-2';
+      }
+      if (row.status_id === BID_STATUS_REFUSED) {
+        return 'bg-red-2';
+      }
+      if (row.status_id === BID_STATUS_IN_WORK) {
+        return 'bg-yellow-2';
+      }
+      return 'bg-white';
+    };
+    const getStatusBadgeColor = (statusId) => {
+      if (statusId === BID_STATUS_NEW) {
+        return 'white';
+      }
+      if (statusId === BID_STATUS_APPROVED) {
+        return 'positive';
+      }
+      if (statusId === BID_STATUS_REFUSED) {
+        return 'negative';
+      }
+      if (statusId === BID_STATUS_IN_WORK) {
+        return 'yellow';
+      }
+      return 'white';
+    };
+    const getStatusBadgeTextColor = (statusId) => {
+      if (statusId === BID_STATUS_NEW) {
+        return 'black';
+      }
+      if (statusId === BID_STATUS_APPROVED) {
+        return 'white';
+      }
+      if (statusId === BID_STATUS_REFUSED) {
+        return 'white';
+      }
+      if (statusId === BID_STATUS_IN_WORK) {
+        return 'black';
+      }
+      return 'black';
+    };
+
+    const onRequest = (props) => {
+      $store.commit('users/updateRefreshGridBidsCalculator', false);
+      loading.value = true;
+
+      api.post('/bids/get-list', { ...props })
+        .then((response) => {
+          loading.value = false;
+          if (response.data.success) {
+            rows.value = response.data.data.data;
+            pagination.value.page = response.data.data.current_page;
+            pagination.value.rowsPerPage = response.data.data.per_page;
+            pagination.value.rowsNumber = response.data.data.total;
+          }
+        })
+        .catch((error) => {
+          loading.value = false;
+          showNotify({}, error);
+        });
+    };
+
+    const editRow = (id) => {
+      $store.commit('bids/updateOpenedBidData', { id });
+      $store.commit('bids/updateOpenedBidForm', true);
+      if (id > 0) {
+        if (BidDialogRef.value) {
+          BidDialogRef.value.getDataById(id);
+        }
+      }
+    };
+    const deleteRow = (props) => {
+      $q.dialog({
+        title: 'Atenție',
+        message: 'Sunteți sigur că doriți să ștergeți?',
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        api.delete(`/bids/${props.row.id}`).then(() => {
+          onRequest();
+        });
+      });
+    };
+
+    watchEffect(() => {
+      if ($store.getters['users/getRefreshGridBidsCalculator']) {
+        onRequest();
+      }
+    });
+    onMounted(() => {
+      onRequest();
+    });
+
+    const columns = [
+      {
+        name: 'id',
+        label: 'ID',
+        field: 'id',
+        sortable: true,
+        style: 'width: 20px',
+        classes: (row) => getRowClasses(row),
+      },
+      {
+        name: 'dealer_name',
+        label: 'Dealer',
+        field: 'dealer_name',
+        sortable: true,
+        align: 'left',
+        classes: (row) => getRowClasses(row),
+      },
+      {
+        name: 'phone1',
+        label: 'Client',
+        field: 'phone1',
+        sortable: true,
+        align: 'left',
+        classes: (row) => getRowClasses(row),
+      },
+      {
+        name: 'actions',
+        label: '',
+        align: 'center',
+        style: 'width: 60px',
+        classes: (row) => getRowClasses(row),
+      },
+    ];
+
+    return {
+      loading,
+      pagination,
+      columns,
+      rows,
+      onRequest,
+      filter,
+      getLogo,
+      getInitialsForLogo,
+      getColorForLogo,
+      editRow,
+      deleteRow,
+      getBidStatus,
+      getRowClasses,
+      getStatusBadgeColor,
+      getStatusBadgeTextColor,
+      BidDialogRef,
+    };
+  },
+});
+</script>
+
+<style scoped>
+
+</style>
