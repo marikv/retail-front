@@ -4,6 +4,7 @@
     <q-scroll-area
       visible
       ref="scrollAreaRef"
+      @scroll="scrollHandlerArea"
       style="min-height: calc(100vh - 250px);
       max-height: calc(100vh - 250px);
       height: calc(100vh - 250px);">
@@ -17,36 +18,37 @@
           class="q-mx-auto q-my-auto"
         />
       </div>
-    <div class="q-pa-md column col justify-end"
-         style=""
-         :class="{'invisible': false}">
-      <q-chat-message
-        :key="key"
-        v-for="(message, key) in messages"
-        :text="[message.message]"
-        :sent="message.from_user_id === currentUser.id"
-        :name="getChatMessageUser(message)"
-        name-html
-        :text-html="!!message.file_id"
-        :stamp="message.created_at2"
-        :bg-color="message.from_user_id === currentUser.id ? 'green-2'
-         : `${message.read ? 'indigo-2' : 'indigo-3'}`"
-      >
-        <template v-slot:avatar>
-          <img
-            :src="getAvatar(message.from_user_avatar)"
-            :class="`q-message-avatar
-             q-message-avatar--${message.from_user_id === currentUser.id ? 'sent': 'received'}`"
-            v-if="getAvatar(message.from_user_avatar)" alt=""/>
-          <div v-else
-               :class="`q-message-avatar
-             q-message-avatar--${message.from_user_id === currentUser.id ? 'sent': 'received'}`"
-               :style="`color: ${getColorForLogo(message.from_user_name)}`">
-            {{getInitialsForLogo(message.from_user_name)}}
-          </div>
-        </template>
-      </q-chat-message>
-    </div>
+      <div class="q-pa-md column col justify-end"
+           id="chatArea"
+           style=""
+           :class="{'invisible': false}">
+        <q-chat-message
+          :key="key"
+          v-for="(message, key) in messages"
+          :text="[message.message]"
+          :sent="message.from_user_id === currentUser.id"
+          :name="getChatMessageUser(message)"
+          name-html
+          :text-html="!!message.file_id"
+          :stamp="message.created_at2"
+          :bg-color="message.from_user_id === currentUser.id ? 'green-2'
+           : `${message.read ? 'indigo-2' : 'indigo-3'}`"
+        >
+          <template v-slot:avatar>
+            <img
+              :src="getAvatar(message.from_user_avatar)"
+              :class="`q-message-avatar
+               q-message-avatar--${message.from_user_id === currentUser.id ? 'sent': 'received'}`"
+              v-if="getAvatar(message.from_user_avatar)" alt=""/>
+            <div v-else
+                 :class="`q-message-avatar
+               q-message-avatar--${message.from_user_id === currentUser.id ? 'sent': 'received'}`"
+                 :style="`color: ${getColorForLogo(message.from_user_name)}`">
+              {{getInitialsForLogo(message.from_user_name)}}
+            </div>
+          </template>
+        </q-chat-message>
+      </div>
     </q-scroll-area>
     <q-toolbar
       class=""
@@ -128,6 +130,7 @@ export default {
     const messages = ref([]);
     const userDetails = ref({});
     const otherUserDetails = ref({});
+    const scrollVerticalPercentage = ref(0);
     const scrollAreaRef = ref(null);
     const chatMessagesLoad = ref(false);
     const uploadFieldId = ref(null);
@@ -206,14 +209,18 @@ export default {
           chatMessagesLoad.value = false;
         }
         messages.value = response.data.data.data.reverse();
+        let hasUnreadMessages = false;
         if (messages.value && messages.value.length) {
           messages.value.forEach((message, i) => {
             if (message.file_id && message.file_web_path) {
               messages.value[i].message = getThumbFile(message);
             }
+            if (!message.read) {
+              hasUnreadMessages = true;
+            }
           });
         }
-        if (scrollDownLocal) {
+        if (scrollDownLocal || (scrollVerticalPercentage.value >= 0.5 && hasUnreadMessages)) {
           scrollDown();
         }
       }).catch((error) => {
@@ -258,6 +265,10 @@ export default {
     onUnmounted(() => {
       clearInterval(intervalMess);
     });
+
+    const scrollHandlerArea = (scrollData) => {
+      scrollVerticalPercentage.value = scrollData.verticalPercentage;
+    };
 
     const getChatMessageUser = (message) => {
       let className = message.read ? 'text-blue-grey-3' : 'text-subtitle2';
@@ -355,6 +366,7 @@ export default {
       uploadFieldId,
       uploadFieldName,
       onFileChange,
+      scrollHandlerArea,
     };
   },
 };

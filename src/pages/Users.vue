@@ -146,6 +146,7 @@ export default defineComponent({
     const loading = ref(false);
     const $store = useStore();
     const lastOnRequestProps = ref(null);
+    $store.commit('auth/updateActiveModule', 'Users');
     const pagination = ref({
       sortBy: 'id',
       descending: true,

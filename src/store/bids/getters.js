@@ -7,3 +7,6 @@ export function getOpenedBidForm(state) {
 export function getRefreshGrid(state) {
   return state.refreshGrid;
 }
+export function getLastBidTab(state) {
+  return state.lastBidTab;
+}

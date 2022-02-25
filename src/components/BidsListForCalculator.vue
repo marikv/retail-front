@@ -42,15 +42,29 @@
       <template v-slot:body-cell-actions="props">
         <q-td :props="props" class="actions-td">
           <q-btn dense round flat
-                 size="sm"
+                 size="md"
                  color="positive"
-                 @click="editRow(props.row.id)"
+                 @click="editRow(props.row.id, false)"
                  icon="edit">
             <q-tooltip>Redactează</q-tooltip>
           </q-btn>
           <q-btn dense round flat
-                 size="sm"
+                 size="md"
+                 :color="!unreadChats[props.row.id] ? 'positive' : 'negative'"
+                 @click="editRow(props.row.id, true)"
+                 :icon="!unreadChats[props.row.id] ? 'chat_bubble_outline' : 'chat_bubble'">
+            <q-badge color="orange"
+                     v-if="unreadChats[props.row.id]"
+                     floating
+                     transparent>
+              {{unreadChats[props.row.id]}}
+            </q-badge>
+            <q-tooltip>Chat</q-tooltip>
+          </q-btn>
+          <q-btn dense round flat
+                 size="md"
                  color="negative"
+                 v-if="!isDealer"
                  @click="deleteRow(props)"
                  icon="delete">
             <q-tooltip>Șterge</q-tooltip>
@@ -107,6 +121,7 @@ import {
   onMounted,
   ref,
   watchEffect,
+  computed,
 } from 'vue';
 import { useStore } from 'vuex';
 import { api } from 'boot/axios';
@@ -115,7 +130,7 @@ import {
   generateColorFromString, getBidStatusName,
   getInitials,
   getMiniPhotoFromServer,
-  showNotify,
+  showNotify, USER_ROLE_ADMIN, USER_ROLE_DEALER, USER_ROLE_EXECUTOR,
 } from 'src/helpers';
 import { useQuasar } from 'quasar';
 import BidDialog from 'components/modals/Bid';
@@ -127,9 +142,14 @@ export default defineComponent({
     const $store = useStore();
     const $q = useQuasar();
     const rows = ref([]);
+    const unreadChats = ref([]);
     const loading = ref(false);
     const BidDialogRef = ref(null);
     const filter = ref('');
+    const isExecutor = ref(false);
+    const isAdmin = ref(false);
+    const isDealer = ref(false);
+    const user = computed(() => $store.getters['auth/getUser']);
     const pagination = ref({
       sortBy: 'id',
       descending: true,
@@ -215,9 +235,10 @@ export default defineComponent({
         });
     };
 
-    const editRow = (id) => {
+    const editRow = (id, openChatTab = false) => {
       $store.commit('bids/updateOpenedBidData', { id });
       $store.commit('bids/updateOpenedBidForm', true);
+      $store.commit('bids/updateLastBidTab', openChatTab ? 'chat' : 'general');
       if (id > 0) {
         if (BidDialogRef.value) {
           BidDialogRef.value.getDataById(id);
@@ -236,10 +257,46 @@ export default defineComponent({
         });
       });
     };
-
+    watchEffect(() => {
+      isExecutor.value = user.value.role_id === USER_ROLE_EXECUTOR;
+      isAdmin.value = user.value.role_id === USER_ROLE_ADMIN;
+      isDealer.value = user.value.role_id === USER_ROLE_DEALER;
+    });
     watchEffect(() => {
       if ($store.getters['users/getRefreshGridBidsCalculator']) {
         onRequest();
+      }
+    });
+    watchEffect(() => {
+      const getCheckNewMessages = $store.getters['auth/getCheckNewMessages'];
+      if (getCheckNewMessages && getCheckNewMessages.unreadMessages) {
+        const unreadChatsLocal = [];
+        getCheckNewMessages.unreadMessages.forEach((message) => {
+          if (message.bid_id) {
+            if (unreadChatsLocal[message.bid_id] === undefined) {
+              unreadChatsLocal[message.bid_id] = 0;
+            }
+            unreadChatsLocal[message.bid_id] += 1;
+          }
+        });
+        unreadChats.value = unreadChatsLocal;
+
+        if (getCheckNewMessages.bids) {
+          getCheckNewMessages.bids.forEach((bid) => {
+            let found = false;
+            rows.value.forEach((row, i) => {
+              if (row.id === bid.id) {
+                found = true;
+                if (row.status_id !== bid.status_id || row.imprumut !== bid.imprumut) {
+                  rows.value[i] = bid;
+                }
+              }
+            });
+            if (!found) {
+              rows.value = [bid, ...rows.value];
+            }
+          });
+        }
       }
     });
     onMounted(() => {
@@ -297,6 +354,10 @@ export default defineComponent({
       getStatusBadgeColor,
       getStatusBadgeTextColor,
       BidDialogRef,
+      unreadChats,
+      isExecutor,
+      isDealer,
+      isAdmin,
     };
   },
 });

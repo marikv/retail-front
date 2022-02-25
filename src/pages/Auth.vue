@@ -57,6 +57,7 @@ export default defineComponent({
     const passwordError = ref('');
     const $router = useRouter();
 
+    $store.commit('auth/updateActiveModule', 'Auth');
     watchEffect(() => {
       if (email.value) {
         emailError.value = '';

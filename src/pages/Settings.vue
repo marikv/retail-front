@@ -54,6 +54,7 @@ import {
   ref,
 } from 'vue';
 import PageSettingsTypeCredits from 'pages/SettingsTypeCredits';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'PageSettings',
@@ -61,7 +62,9 @@ export default defineComponent({
   setup() {
     const drawerLeft = ref(true);
     const openedItem = ref('page-settings-type-credits');
+    const $store = useStore();
 
+    $store.commit('auth/updateActiveModule', 'Settings');
     return {
       drawerLeft,
       openedItem,

@@ -104,12 +104,12 @@ const linksList = [
     icon: 'people_alt',
     link: 'users',
   },
-  {
-    title: 'Forum/Chat',
-    // caption: 'Întrebări/răspunsuri',
-    icon: 'forum',
-    link: 'forum-chat',
-  },
+  // {
+  //   title: 'Forum/Chat',
+  //   // caption: 'Întrebări/răspunsuri',
+  //   icon: 'forum',
+  //   link: 'forum-chat',
+  // },
   {
     title: 'Plăți',
     // caption: '@quasarframework',
@@ -196,6 +196,22 @@ export default defineComponent({
       myStorage.set('token', '');
       api.post('/logout');
     };
+
+    const checkNewMessages = () => {
+      if (user.value && user.value) {
+        api.post('/checkNewMessages', {
+          activeModule: $store.getters['auth/getActiveModule'],
+        }).then((response) => {
+          if (response.data.success) {
+            $store.commit('auth/updateCheckNewMessages', response.data.data);
+          }
+        });
+      }
+    };
+    checkNewMessages();
+    setInterval(() => {
+      checkNewMessages();
+    }, 10000);
 
     return {
       authenticated,

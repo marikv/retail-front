@@ -7,3 +7,6 @@ export const updateOpenedBidForm = (state, val) => {
 export const updateRefreshGrid = (state, val) => {
   state.refreshGrid = val;
 };
+export const updateLastBidTab = (state, val) => {
+  state.lastBidTab = val;
+};

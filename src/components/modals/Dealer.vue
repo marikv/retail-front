@@ -120,6 +120,9 @@ export default {
     });
     watchEffect(() => {
       dealerData.value = $store.getters['dealers/getOpenedDealerData'];
+      if (dealerData.value) {
+        tab.value = 'general';
+      }
     });
     watchEffect(() => {
       id.value = dealerData.value.id;

@@ -24,7 +24,8 @@
 
               <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs"></div>
               <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs text-center">
-                <q-btn v-if="bidData && statusId === BID_STATUS_NEW && (isExecutor || isAdmin)"
+                <q-btn v-if="bidData && bidData.user_id
+                 && statusId === BID_STATUS_NEW && (isExecutor || isAdmin)"
                        size="lg"
                        color="positive"
                        @click="setBidStatus(BID_STATUS_IN_WORK)"
@@ -32,25 +33,32 @@
               </div>
               <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs"></div>
 
-              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
-            <span class="text-primary" style="font-size: 20px;">
-              {{bidData && bidData.type_credit ? bidData.type_credit.name : ''}}
-            </span>
+              <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-xs-12 q-pa-xs">
+                <span class="text-primary" style="font-size: 20px;">
+                  {{bidData && bidData.type_credit ? bidData.type_credit.name : ''}}
+                </span>
+                <span class="text-grey q-mx-md">/</span>
                 <span class="text-black" style="font-size: 16px;">
-              /
-              <span style="font-size: 23px;">
-              <span style="font-weight: bold;">
-                {{bidData && bidData.imprumut ? bidData.imprumut : '0'}}
-              </span>
-              </span> Lei
-            </span>
+                  <span style="font-size: 23px;">
+                    <span style="font-weight: bold;">
+                      {{bidData && bidData.imprumut ? bidData.imprumut : '0'}}
+                    </span>
+                  </span> Lei
+                </span>
+                <span class="text-grey q-mx-md">/</span>
                 <span class="text-black" style="font-size: 20px;">
-              /
-              <span style="font-weight: bold;">
-                {{bidData && bidData.months ? bidData.months : '0'}}
-              </span>
-              <span style="font-size: 16px;"> Luni</span>
-            </span>
+                  <span style="font-weight: bold;">
+                    {{bidData && bidData.months ? bidData.months : '0'}}
+                  </span>
+                  <span style="font-size: 16px;"> Luni</span>
+                </span>
+                <span class="text-grey q-ml-lg">{{dateToDot(bidData.created_at)}}</span>
+              </div>
+              <div v-if="!isDealer && bidData.status_id !== BID_STATUS_REFUSED"
+                class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-xs-12 q-pa-xs text-right">
+                  <q-btn color="primary"
+                         @click="openPopupForSumChange"
+                         label="Schimbă suma cererii"></q-btn>
               </div>
               <div class="col-12 q-pl-sm">
                 <div class="bg-green-1 q-pa-sm text-grey-7
@@ -112,7 +120,22 @@
                 </div>
               </template>
               <div class="col-12">
-                <span class="text-primary" style="font-size: 18px;">Date Client</span>
+                <div
+                  v-if="bidData.dealer">
+                  <q-avatar size="md"
+                    class="cursor-pointer bg-white q-mr-sm" style="border: 1px solid white;">
+                    <q-img :src="getLogo(bidData.dealer.logo)"
+                           v-if="getLogo(bidData.dealer.logo)" alt="" ></q-img>
+                    <div v-else :style="`color: ${getColorForLogo(bidData.dealer.name)}`">
+                      {{getInitialsForLogo(bidData.dealer.name)}}
+                    </div>
+                  </q-avatar>
+                  <span class="text-primary" style="font-size: 18px;">{{bidData.dealer.name}}</span>
+                  <span class="text-grey q-ml-lg">User: {{bidData.user.name}}</span>
+                </div>
+              </div>
+              <div class="col-12 q-mt-lg">
+                <span class="text-primary" style="font-size: 18px;">Client</span>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -262,14 +285,6 @@
                   ></q-btn>
                 </div>
               </div>
-              <div
-                v-if="!isDealer && bidData.status_id !== BID_STATUS_REFUSED"
-                class="col-12 row">
-                <div class="col-12 q-pa-sm">
-                  <q-btn color="primary"
-                         label="Schimbă suma cererii"></q-btn>
-                </div>
-              </div>
             </div>
           </q-tab-panel>
           <q-tab-panel name="chat" class="q-pa-none">
@@ -312,7 +327,7 @@ import {
   USER_ROLE_ADMIN,
   USER_ROLE_EXECUTOR,
   dateToDot,
-  USER_ROLE_DEALER,
+  USER_ROLE_DEALER, getMiniPhotoFromServer, baseURL, getInitials, generateColorFromString,
 } from 'src/helpers';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
@@ -341,6 +356,8 @@ export default {
     const isDealer = ref(false);
     const showAllBidMonths = ref(false);
     const sumMaximPermis = ref(0);
+    const sumMax = ref(0);
+    const sumMin = ref(0);
     const clientFirstName = ref('');
     const clientFirstNameHasError = ref(false);
     const clientLastName = ref('');
@@ -359,6 +376,18 @@ export default {
     const disableClientInputs = ref(true);
     const disableSumMaximPermis = ref(true);
     const user = computed(() => $store.getters['auth/getUser']);
+
+    const getLogo = (logo) => {
+      if (logo) {
+        const img = getMiniPhotoFromServer(logo);
+        let $return = `${baseURL.replace('/api', '')}/${img}`;
+        $return = $return.replace('//uploads', '/uploads');
+        return $return;
+      }
+      return '';
+    };
+    const getInitialsForLogo = (str) => getInitials(str);
+    const getColorForLogo = (str) => generateColorFromString(str);
 
     const tabs = ref([{
       name: 'general',
@@ -386,6 +415,13 @@ export default {
     });
     watchEffect(() => {
       isOpenedLocal.value = $store.getters['bids/getOpenedBidForm'];
+      if (isOpenedLocal.value) {
+        if ($store.getters['bids/getLastBidTab'] === 'chat') {
+          tab.value = 'chat';
+        } else {
+          tab.value = 'general';
+        }
+      }
     });
     watchEffect(() => {
       bidData.value = $store.getters['bids/getOpenedBidData'];
@@ -403,6 +439,8 @@ export default {
         clientBirthDate.value = dateToDot(bidData.value.birth_date);
         clientLocalitate.value = bidData.value.localitate;
         clientStreet.value = bidData.value.street;
+        sumMax.value = bidData.value.sum_max;
+        sumMin.value = bidData.value.sum_min;
       }
     });
     const onCancelClick = () => {
@@ -465,6 +503,48 @@ export default {
         }
       }
     };
+    const openPopupForSumChange = () => {
+      let sumMaxLocal = sumMax.value;
+      if (sumMaximPermis.value > sumMin.value) {
+        sumMaxLocal = sumMaximPermis.value;
+      }
+      $q.dialog({
+        title: 'Suma cererii de credit',
+        message: `Introdu suma nouă a cererii. min: ${sumMin.value}, max: ${sumMaxLocal}`,
+        prompt: {
+          model: '',
+          type: 'number',
+          isValid: (val) => parseInt(String(val), 10) <= sumMaxLocal
+            && parseInt(String(val), 10) >= sumMin.value,
+          outlined: true,
+        },
+        cancel: 'Închide',
+        ok: {
+          flat: false,
+        },
+        persistent: true,
+      }).onOk((newSum) => {
+        if (id.value) {
+          showLoading();
+          api.post(`/bid-change-sum/${id.value}`, {
+            bid_id: id.value,
+            new_sum: newSum,
+          }).then((response) => {
+            hideLoading();
+            if (response.data.success) {
+              $store.commit('bids/updateOpenedBidData', response.data.data);
+            } else {
+              showNotify({ message: response.data.data.message });
+            }
+          }).catch((error) => {
+            hideLoading();
+            showNotify({}, error);
+          });
+        } else {
+          showNotify({ message: 'eroare de id cerere' });
+        }
+      });
+    };
 
     return {
       id,
@@ -503,6 +583,10 @@ export default {
       disableClientInputs,
       tabs,
       tab,
+      openPopupForSumChange,
+      getInitialsForLogo,
+      getLogo,
+      getColorForLogo,
     };
   },
 };

@@ -290,6 +290,7 @@
             </div>
             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-12 q-pa-xs text-right">
               <q-banner class="bg-positive rounded-borders text-white text-left"
+                        inline-actions
                         v-if="bidSuccess">
                 {{bidSuccess}}
                 <template v-slot:action>
@@ -299,6 +300,7 @@
                 </template>
               </q-banner>
               <q-banner class="bg-negative rounded-borders text-white text-left"
+                        inline-actions
                         v-if="bidError">
                 {{bidError}}
                 <template v-slot:action>
@@ -389,6 +391,8 @@ export default defineComponent({
     const bidSuccess = ref('');
 
     const calendarLocaleRoLocal = computed(() => calendarLocaleRo);
+
+    $store.commit('auth/updateActiveModule', 'Calculator');
 
     const printPreContract = () => {
       downloadPDF(1, '/print/pre-contract', 'pre-contract');
