@@ -121,7 +121,7 @@ import {
   onMounted,
   ref,
   watchEffect,
-  computed,
+  computed, onBeforeMount,
 } from 'vue';
 import { useStore } from 'vuex';
 import { api } from 'boot/axios';
@@ -219,11 +219,14 @@ export default defineComponent({
       $store.commit('users/updateRefreshGridBidsCalculator', false);
       loading.value = true;
 
-      api.post('/bids/get-list', { ...props })
+      api.post('/bids/get-list', {
+        ...props,
+        activeModule: $store.getters['auth/getActiveModule'],
+      })
         .then((response) => {
           loading.value = false;
           if (response.data.success) {
-            rows.value = response.data.data.data;
+            rows.value = [...response.data.data.data];
             pagination.value.page = response.data.data.current_page;
             pagination.value.rowsPerPage = response.data.data.per_page;
             pagination.value.rowsNumber = response.data.data.total;
@@ -301,6 +304,9 @@ export default defineComponent({
     });
     onMounted(() => {
       onRequest();
+    });
+    onBeforeMount(() => {
+      rows.value = [];
     });
 
     const columns = [

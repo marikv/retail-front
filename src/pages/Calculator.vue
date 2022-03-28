@@ -260,6 +260,26 @@
                 v-model="clientStreet">
               </q-input>
             </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+              <q-input
+                dense
+                outlined
+                :disable="!calcResultsExist || disableInputs"
+                type="text"
+                label="Bloc"
+                v-model="clientHouse">
+              </q-input>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+              <q-input
+                dense
+                outlined
+                :disable="!calcResultsExist || disableInputs"
+                type="text"
+                label="Apartament"
+                v-model="clientFlat">
+              </q-input>
+            </div>
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs text-caption">
               <q-checkbox size="sm"
                           :disable="!calcResultsExist || disableInputs"
@@ -385,6 +405,8 @@ export default defineComponent({
     const clientLocalitate = ref('');
     const clientLocalitateHasError = ref(false);
     const clientStreet = ref('');
+    const clientHouse = ref('');
+    const clientFlat = ref('');
     const clientCb = ref(false);
     const clientCbHasError = ref(false);
     const bidError = ref('');
@@ -520,6 +542,8 @@ export default defineComponent({
           buletin_idnp: clientBuletinIDNP.value,
           localitate: clientLocalitate.value,
           street: clientStreet.value,
+          house: clientHouse.value,
+          flat: clientFlat.value,
           type_credit_id: typeCreditsSelected.value.id,
           type_credit_name: typeCreditsSelected.value.name,
           calc_results: calcResults.value,
@@ -607,6 +631,8 @@ export default defineComponent({
       clientLocalitate,
       clientLocalitateHasError,
       clientStreet,
+      clientHouse,
+      clientFlat,
       clientCb,
       clientCbHasError,
       addNewBid,

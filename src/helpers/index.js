@@ -9,12 +9,14 @@ export const BID_STATUS_NEW = 0;
 export const BID_STATUS_IN_WORK = 1;
 export const BID_STATUS_APPROVED = 2;
 export const BID_STATUS_REFUSED = 3;
+export const BID_STATUS_SIGNED_CONTRACT = 4;
 export const getBidStatusName = (n) => {
   const BID_STATUS = {};
   BID_STATUS[BID_STATUS_NEW] = 'Cerere nouă';
   BID_STATUS[BID_STATUS_IN_WORK] = 'Cerere în lucru';
   BID_STATUS[BID_STATUS_APPROVED] = 'Cerere aprobată';
   BID_STATUS[BID_STATUS_REFUSED] = 'Cerere refuzată';
+  BID_STATUS[BID_STATUS_SIGNED_CONTRACT] = 'Contract semnat';
   return BID_STATUS[n];
 };
 
@@ -27,6 +29,27 @@ export const getRoleName = (n) => {
   USER_ROLE[USER_ROLE_DEALER] = 'Dealer';
   USER_ROLE[USER_ROLE_EXECUTOR] = 'Executor';
   return USER_ROLE[n];
+};
+
+export const FILE_TYPE_LOGO = 1;
+export const FILE_TYPE_AVATAR = 2;
+export const FILE_TYPE_UNSIGN_CONTRACT = 3;
+export const FILE_TYPE_SIGN_CONTRACT = 4;
+export const FILE_TYPE_BULETIN_1 = 5;
+export const FILE_TYPE_BULETIN_2 = 6;
+export const FILE_TYPE_OTHERS_1 = 7;
+export const FILE_TYPE_OTHERS_2 = 8;
+export const getFileTypeName = (n) => {
+  const FILE_TYPE = {};
+  FILE_TYPE[FILE_TYPE_LOGO] = 'Logo';
+  FILE_TYPE[FILE_TYPE_AVATAR] = 'Avatar';
+  FILE_TYPE[FILE_TYPE_UNSIGN_CONTRACT] = 'Contract ne semnat';
+  FILE_TYPE[FILE_TYPE_SIGN_CONTRACT] = 'Contract semnat';
+  FILE_TYPE[FILE_TYPE_BULETIN_1] = 'Copia actului de identitate 1';
+  FILE_TYPE[FILE_TYPE_BULETIN_2] = 'Copia actului de identitate 2';
+  FILE_TYPE[FILE_TYPE_OTHERS_1] = 'Alte fișiere 1';
+  FILE_TYPE[FILE_TYPE_OTHERS_2] = 'Alte fișiere 2';
+  return FILE_TYPE[n];
 };
 
 export const zeroLeftPad = (num, size = 4) => {
@@ -185,10 +208,9 @@ export const downloadPDF = (id, link = '/print/contract', name = 'contract') => 
     })
       .then((response) => {
         hideLoading();
-        // eslint-disable-next-line no-shadow
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url2 = window.URL.createObjectURL(new Blob([response.data]));
         const linkA = document.createElement('a');
-        linkA.href = url;
+        linkA.href = url2;
         linkA.setAttribute('download', `${name}_${id}.pdf`);
         document.body.appendChild(linkA);
         linkA.click();
@@ -215,30 +237,6 @@ export const youtubeUrlParser = (url) => {
   const match = url.match(regExp);
   return (match && match[7].length === 11) ? match[7] : false;
 };
-
-// export const isAdmin = (store) => {
-//   const currentUser = store.getters['auth/getUser'];
-//   let isAdminVar = false;
-//   if (currentUser && currentUser.roles && currentUser.roles.length > 0) {
-//     currentUser.roles.forEach((role) => {
-//       if (role.name === 'Admin') {
-//         isAdminVar = true;
-//       }
-//     });
-//   }
-//   return isAdminVar;
-// };
-//
-// export const userRole = (store) => {
-//   const currentUser = store.getters['auth/getUser'];
-//   let role = '';
-//   if (currentUser && currentUser.roles && currentUser.roles.length > 0) {
-//     currentUser.roles.forEach((role2) => {
-//       role = role2.name;
-//     });
-//   }
-//   return role;
-// };
 
 export const cyrb53 = (strVar, seed = 0) => {
   // eslint-disable-next-line no-bitwise

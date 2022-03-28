@@ -312,7 +312,6 @@ export default {
               user_id: props.user_id || null,
               dealer_id: props.dealer_id || null,
               bid_id: props.bid_id || null,
-              contract_id: props.contract_id || null,
             };
             const formData = new FormData();
             formData.append(fieldName, imageFile);

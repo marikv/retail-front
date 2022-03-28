@@ -241,19 +241,153 @@
                   v-model="clientStreet">
                 </q-input>
               </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Bloc"
+                  v-model="clientHouse">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Apartament"
+                  v-model="clientFlat">
+                </q-input>
+              </div>
+              <div class="col-12"></div>
               <div v-if="bidData.status_id === BID_STATUS_REFUSED"
                    class="col-12 text-red">
                 Cerere refuzată
               </div>
               <div v-if="bidData.status_id === BID_STATUS_APPROVED"
-                   class="col-6 text-green text-subtitle1">
+                   class="col-12 text-green-8 text-subtitle1">
                 Cerere aprobată
-              </div>
-              <div class="col-6"
-                   v-if="sumMaximPermis && bidData.status_id !== BID_STATUS_IN_WORK">
-                <span class="text-red text-subtitle1">
+
+                <span class="text-green-10 text-subtitle2 q-ml-xl">
                   Suma maximă permisă: <strong>{{sumMaximPermis}}</strong>
                 </span>
+              </div>
+              <div v-if="bidData.status_id === BID_STATUS_APPROVED" class="col-12 row">
+                <div class="col-12">
+                  <q-btn size="md"
+                         @click="printContract()"
+                         icon="print"
+                         label="Print Contract"
+                         class="q-ma-md"
+                  ></q-btn>
+                </div>
+                <div class="col-5">
+                  <file-upload module="bid_id"
+                               :typeId="fileTypeSignContract"
+                               @onUploaded="onFileUploaded"
+                               :id="id">
+                    <template v-slot:button>
+                      <q-btn size="md"
+                             icon="attach_file"
+                             label="Adaugă contractul semnat"
+                             class="q-ma-md"
+                      ></q-btn>
+                    </template>
+                  </file-upload>
+                </div>
+                <div class="col-7 q-pt-md">
+                  {{
+                    fileUploadedResponses[String(fileTypeSignContract)].name
+                    ? fileUploadedResponses[String(fileTypeSignContract)].name
+                    : ''
+                  }}
+                </div>
+                <div class="col-5">
+                  <file-upload module="bid_id"
+                               :typeId="fileTypeBuletin1"
+                               @onUploaded="onFileUploaded"
+                               :id="id">
+                    <template v-slot:button>
+                      <q-btn size="md"
+                             icon="attach_file"
+                             label="Adaugă copia actului de identitate 1"
+                             class="q-ma-md"
+                      ></q-btn>
+                    </template>
+                  </file-upload>
+                </div>
+                <div class="col-7 q-pt-md">
+                  {{
+                    fileUploadedResponses[String(fileTypeBuletin1)].name
+                      ? fileUploadedResponses[String(fileTypeBuletin1)].name
+                      : ''
+                  }}
+                </div>
+                <div class="col-5">
+                  <file-upload module="bid_id"
+                               :typeId="fileTypeBuletin2"
+                               @onUploaded="onFileUploaded"
+                               :id="id">
+                    <template v-slot:button>
+                      <q-btn size="md"
+                             icon="attach_file"
+                             label="Adaugă copia actului de identitate 2"
+                             class="q-ma-md"
+                      ></q-btn>
+                    </template>
+                  </file-upload>
+                </div>
+                <div class="col-7 q-pt-md">
+                  {{
+                    fileUploadedResponses[String(fileTypeBuletin2)].name
+                      ? fileUploadedResponses[String(fileTypeBuletin2)].name
+                      : ''
+                  }}
+                </div>
+                <div class="col-5">
+                  <file-upload module="bid_id"
+                               :typeId="fileTypeOthers1"
+                               @onUploaded="onFileUploaded"
+                               :id="id">
+                    <template v-slot:button>
+                      <q-btn size="md"
+                             icon="attach_file"
+                             :label="`Adaugă orice alt fișier 1`"
+                             class="q-ma-md"
+                      ></q-btn>
+                    </template>
+                  </file-upload>
+                </div>
+                <div class="col-7 q-pt-md">
+                  {{
+                    fileUploadedResponses[String(fileTypeOthers1)].name
+                      ? fileUploadedResponses[String(fileTypeOthers1)].name
+                      : ''
+                  }}
+                </div>
+                <div class="col-5">
+                  <file-upload module="bid_id"
+                               :typeId="fileTypeOthers2"
+                               @onUploaded="onFileUploaded"
+                               :id="id">
+                    <template v-slot:button>
+                      <q-btn size="md"
+                             icon="attach_file"
+                             :label="`Adaugă orice alt fișier 2`"
+                             class="q-ma-md"
+                      ></q-btn>
+                    </template>
+                  </file-upload>
+                </div>
+                <div class="col-7 q-pt-md">
+                  {{
+                    fileUploadedResponses[String(fileTypeOthers2)].name
+                      ? fileUploadedResponses[String(fileTypeOthers2)].name
+                      : ''
+                  }}
+                </div>
               </div>
               <div
                 v-if="!isDealer && bidData.status_id === BID_STATUS_IN_WORK"
@@ -303,31 +437,42 @@
       </q-card-section>
       <q-separator />
       <q-card-actions align="right">
-        <q-btn  label="Închide" @click="onCancelClick" />
+        <q-btn label="Trimite contractul semnat / închide cererea"
+               color="primary"
+               v-if="bidData.status_id === BID_STATUS_APPROVED"
+               @click="sendBidToContract" />
+        <q-btn label="Închide" @click="onCancelClick" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script>
-import {
-  ref,
-  watchEffect,
-  computed,
-} from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useStore } from 'vuex';
 import {
-  BID_STATUS_NEW,
-  BID_STATUS_IN_WORK,
+  baseURL,
   BID_STATUS_APPROVED,
-  BID_STATUS_REFUSED,
+  BID_STATUS_IN_WORK,
+  BID_STATUS_NEW,
+  BID_STATUS_REFUSED, BID_STATUS_SIGNED_CONTRACT,
+  dateToDot,
+  downloadPDF,
+  FILE_TYPE_BULETIN_1,
+  FILE_TYPE_BULETIN_2,
+  FILE_TYPE_OTHERS_1,
+  FILE_TYPE_OTHERS_2,
+  FILE_TYPE_SIGN_CONTRACT,
+  FILE_TYPE_UNSIGN_CONTRACT,
+  generateColorFromString,
+  getInitials,
+  getMiniPhotoFromServer,
   hideLoading,
   showLoading,
   showNotify,
   USER_ROLE_ADMIN,
+  USER_ROLE_DEALER,
   USER_ROLE_EXECUTOR,
-  dateToDot,
-  USER_ROLE_DEALER, getMiniPhotoFromServer, baseURL, getInitials, generateColorFromString,
 } from 'src/helpers';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
@@ -335,10 +480,12 @@ import Chat from 'components/Chat';
 import HeaderTabsForForms from 'components/HeadersTabsForForms';
 import LogsTableForForms from 'components/LogsTableForForms';
 import FilesForm from 'components/FilesForm';
+import FileUpload from 'components/Fields/FileUpload';
 
 export default {
   name: 'BidDialog',
   components: {
+    FileUpload,
     FilesForm,
     LogsTableForForms,
     HeaderTabsForForms,
@@ -373,8 +520,24 @@ export default {
     const clientLocalitate = ref('');
     const clientLocalitateHasError = ref(false);
     const clientStreet = ref('');
+    const clientHouse = ref('');
+    const clientFlat = ref('');
     const disableClientInputs = ref(true);
     const disableSumMaximPermis = ref(true);
+    const fileTypeSignContract = ref(FILE_TYPE_SIGN_CONTRACT);
+    const fileTypeUnSignContract = ref(FILE_TYPE_UNSIGN_CONTRACT);
+    const fileTypeBuletin1 = ref(FILE_TYPE_BULETIN_1);
+    const fileTypeBuletin2 = ref(FILE_TYPE_BULETIN_2);
+    const fileTypeOthers1 = ref(FILE_TYPE_OTHERS_1);
+    const fileTypeOthers2 = ref(FILE_TYPE_OTHERS_2);
+    const fileUploadedResponsesObj = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_SIGN_CONTRACT)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_UNSIGN_CONTRACT)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_1)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_2)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_OTHERS_1)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_OTHERS_2)] = {};
+    const fileUploadedResponses = ref({ ...fileUploadedResponsesObj });
     const user = computed(() => $store.getters['auth/getUser']);
 
     const getLogo = (logo) => {
@@ -439,8 +602,24 @@ export default {
         clientBirthDate.value = dateToDot(bidData.value.birth_date);
         clientLocalitate.value = bidData.value.localitate;
         clientStreet.value = bidData.value.street;
+        clientHouse.value = bidData.value.house;
+        clientFlat.value = bidData.value.flat;
         sumMax.value = bidData.value.sum_max;
         sumMin.value = bidData.value.sum_min;
+
+        Object.keys(fileUploadedResponses.value).forEach((k) => {
+          fileUploadedResponses.value[k] = {};
+        });
+        if (bidData.value.files
+          && Array.isArray(bidData.value.files)
+          && bidData.value.files.length
+        ) {
+          bidData.value.files.forEach((file) => {
+            if (Object.keys(fileUploadedResponses.value).indexOf(String(file.type_id)) > -1) {
+              fileUploadedResponses.value[String(file.type_id)] = file;
+            }
+          });
+        }
       }
     });
     const onCancelClick = () => {
@@ -503,6 +682,26 @@ export default {
         }
       }
     };
+    const sendBidToContract = () => {
+      if (!fileUploadedResponses.value[String(FILE_TYPE_SIGN_CONTRACT)].name) {
+        $q.dialog({
+          title: 'Eroare',
+          message: 'Nu ați atașat contractul semnat?',
+          color: 'negative',
+          cancel: false,
+          persistent: true,
+        });
+      } else {
+        $q.dialog({
+          title: 'Atenție',
+          message: 'Sunteți sigur că doriți să închideți cererea?',
+          cancel: true,
+          persistent: true,
+        }).onOk(() => {
+          setBidStatus(BID_STATUS_SIGNED_CONTRACT);
+        });
+      }
+    };
     const openPopupForSumChange = () => {
       let sumMaxLocal = sumMax.value;
       if (sumMaximPermis.value > sumMin.value) {
@@ -546,6 +745,17 @@ export default {
       });
     };
 
+    const printContract = () => {
+      downloadPDF(id.value, '/print/contract', 'contract');
+    };
+
+    const onFileUploaded = (fileData) => {
+      if (fileData.response.data.data) {
+        const t = String(fileData.linkFileToData.type_id);
+        fileUploadedResponses.value[t] = fileData.response.data.data;
+      }
+    };
+
     return {
       id,
       bidData,
@@ -580,6 +790,8 @@ export default {
       clientLocalitate,
       clientLocalitateHasError,
       clientStreet,
+      clientHouse,
+      clientFlat,
       disableClientInputs,
       tabs,
       tab,
@@ -587,6 +799,16 @@ export default {
       getInitialsForLogo,
       getLogo,
       getColorForLogo,
+      printContract,
+      fileTypeSignContract,
+      fileTypeUnSignContract,
+      fileTypeBuletin1,
+      fileTypeBuletin2,
+      fileTypeOthers1,
+      fileTypeOthers2,
+      fileUploadedResponses,
+      onFileUploaded,
+      sendBidToContract,
     };
   },
 };

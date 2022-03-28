@@ -10,6 +10,7 @@ const routes = [
       { path: 'calculator', component: () => import('pages/Calculator.vue') },
       { path: 'settings', component: () => import('pages/Settings.vue') },
       { path: 'bids', component: () => import('pages/Bids.vue') },
+      { path: 'contracts', component: () => import('pages/Contracts.vue') },
     ],
   },
 

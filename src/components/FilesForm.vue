@@ -3,40 +3,7 @@
     <div class="row" v-if="idExist">
 
       <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12 q-pa-sm">
-        <input type="file"
-               ref="file"
-               multiple
-               v-if="showJustFileInput"
-               :id="uploadFieldId"
-               :name="uploadFieldName"
-               @change="onFileChange($event.target.name, $event.target.files)"
-               value="Alege fisierul"
-               style="font-size: 18px; padding: 25px; background: #5ddcc6;"
-        >
-        <q-card
-          v-else
-          class="files-card bg-primary text-white cursor-pointer"
-          @click="launchFilePicker()"
-        >
-          <div class="files-card__overlay"></div>
-          <q-card-section class="text-center"  style="height: 100px;">
-            <input type="file"
-                   ref="file"
-                   multiple
-                   :id="uploadFieldId"
-                   :name="uploadFieldName"
-                   @change="onFileChange($event.target.name, $event.target.files)"
-                   style="display:none">
-            <div class="text-subtitle1">Adaugă fișier nou</div>
-            <q-icon class=""
-                    name="add"
-                    size="xl"></q-icon>
-          </q-card-section>
-          <q-card-actions align="around">
-            <q-btn dense size="sm" icon="" flat></q-btn>
-            <q-btn dense size="sm" icon="" flat></q-btn>
-          </q-card-actions>
-        </q-card>
+        <file-upload :module="module" :id="id" @onUploaded="load"></file-upload>
       </div>
 
       <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-xs-12 q-pa-sm"
@@ -89,11 +56,9 @@
 <script>
 import {
   getMiniPhotoFromServer,
-  hideLoading,
-  showLoading,
-  showNotify,
 } from 'src/helpers';
 import { api } from 'boot/axios';
+import FileUpload from 'components/Fields/FileUpload';
 
 export default {
   name: 'FilesForm',
@@ -114,37 +79,50 @@ export default {
       type: Number,
       default: 0,
     },
-    contract_id: {
-      type: Number,
-      default: 0,
-    },
   },
-  components: {},
+  components: { FileUpload },
   data: () => ({
-    errorText: '',
-    uploadFieldName: 'fileForUpload',
-    maxSize: 20480,
     files: [],
   }),
   computed: {
-    uploadFieldId() {
-      return `id${Math.floor(Math.random() * 100000)}`;
-    },
-    showJustFileInput() {
-      return this.$q.platform.is.ios;
-    },
     idExist() {
       return this.bid_id
         || this.user_id
         || this.client_id
-        || this.dealer_id
-        || this.contract_id;
+        || this.dealer_id;
+    },
+    module() {
+      if (this.bid_id) {
+        return 'bid_id';
+      }
+      if (this.user_id) {
+        return 'user_id';
+      }
+      if (this.client_id) {
+        return 'client_id';
+      }
+      if (this.dealer_id) {
+        return 'dealer_id';
+      }
+      return '';
+    },
+    id() {
+      if (this.bid_id) {
+        return this.bid_id;
+      }
+      if (this.user_id) {
+        return this.user_id;
+      }
+      if (this.client_id) {
+        return this.client_id;
+      }
+      if (this.dealer_id) {
+        return this.dealer_id;
+      }
+      return 0;
     },
   },
   methods: {
-    autoClickAddButton() {
-      this.launchFilePicker();
-    },
     load() {
       this.files = [];
       if (this.idExist) {
@@ -153,7 +131,6 @@ export default {
           user_id: this.user_id,
           dealer_id: this.dealer_id,
           bid_id: this.bid_id,
-          contract_id: this.contract_id,
         })
           .then((response) => {
             if (response.data.success) {
@@ -191,9 +168,6 @@ export default {
           });
       }
     },
-    loadFiles() {
-      this.load();
-    },
     deleteFile(id) {
       this.$q.dialog({
         title: 'Atenție',
@@ -216,78 +190,6 @@ export default {
             });
         });
     },
-    launchFilePicker() {
-      document.getElementById(this.uploadFieldId).click();
-    },
-    onFileChange(fieldName, file) {
-      const { maxSize } = this;
-      for (let ii = 0; ii < file.length; ii += 1) {
-        const imageFile = file[ii];
-
-        if (file.length > 0) {
-          const size = imageFile.size / maxSize / maxSize;
-
-          if (
-            !imageFile.type.match('image.*')
-            && imageFile.type !== 'application/pdf'
-            && imageFile.type !== 'application/doc'
-            && imageFile.type !== 'text/plain'
-            && !imageFile.type.match('.*officedocument.*')
-            && !imageFile.type.match('.*excel.*')
-            && !imageFile.type.match('.*msword.*')
-            && !imageFile.type.match('.*ms-doc.*')
-            && !imageFile.type.match('.*zip-compressed.*')
-            && !imageFile.name.match('.*rar')
-          ) {
-            showNotify({
-              message: 'Extensie inacceptabilă. (jpg, jpeg, png, bmp, gif, rar, zip, doc, docx, xls, xlsx, pdf, txt, csv) ',
-            });
-          } else if (size > 1) {
-            showNotify({
-              message: `Fișierul este prea mare! Alegeți un fișier mai mic ${this.maxSize / 1024}Мб`,
-            });
-          } else {
-            const linkFileToObj = {
-              client_id: this.client_id,
-              user_id: this.user_id,
-              dealer_id: this.dealer_id,
-              bid_id: this.bid_id,
-              contract_id: this.contract_id,
-            };
-            const formData = new FormData();
-            formData.append(fieldName, imageFile);
-            showLoading();
-            api.post('/files/uploadFile', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            })
-              .then((response) => {
-                hideLoading();
-                if (response.data.success) {
-                  api.post('/files/linkFileTo', {
-                    ...linkFileToObj,
-                    file_id: response.data.data.id,
-                  })
-                    .then(() => {
-                      this.load();
-                    });
-                } else {
-                  showNotify({
-                    message: 'Eroare de încărcare a fișierului pe server!',
-                  });
-                }
-              })
-              .catch(async (error) => {
-                hideLoading();
-                showNotify({
-                  message: 'Eroare de încărcare a fișierului pe server',
-                }, error);
-              });
-          }
-        }
-      }
-    },
   },
   watch: {
     client_id() {
@@ -302,7 +204,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>
