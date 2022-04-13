@@ -261,6 +261,48 @@
                   v-model="clientFlat">
                 </q-input>
               </div>
+              <div class="col-12 text-primary">Persoana de contact</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Nume"
+                  v-model="clientFirstNameContPers1">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Prenume"
+                  v-model="clientLastNameContPers1">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Telefon"
+                  v-model="clientPhoneContPers1">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Cine este"
+                  v-model="clientWhoIsContPers1">
+                </q-input>
+              </div>
+
               <div class="col-12"></div>
               <div v-if="bidData.status_id === BID_STATUS_REFUSED"
                    class="col-12 text-red">
@@ -522,6 +564,10 @@ export default {
     const clientStreet = ref('');
     const clientHouse = ref('');
     const clientFlat = ref('');
+    const clientWhoIsContPers1 = ref('');
+    const clientPhoneContPers1 = ref('');
+    const clientLastNameContPers1 = ref('');
+    const clientFirstNameContPers1 = ref('');
     const disableClientInputs = ref(true);
     const disableSumMaximPermis = ref(true);
     const fileTypeSignContract = ref(FILE_TYPE_SIGN_CONTRACT);
@@ -604,6 +650,10 @@ export default {
         clientStreet.value = bidData.value.street;
         clientHouse.value = bidData.value.house;
         clientFlat.value = bidData.value.flat;
+        clientWhoIsContPers1.value = bidData.value.who_is_cont_pers1;
+        clientPhoneContPers1.value = bidData.value.phone_cont_pers1;
+        clientLastNameContPers1.value = bidData.value.last_name_cont_pers1;
+        clientFirstNameContPers1.value = bidData.value.first_name_cont_pers1;
         sumMax.value = bidData.value.sum_max;
         sumMin.value = bidData.value.sum_min;
 
@@ -792,6 +842,10 @@ export default {
       clientStreet,
       clientHouse,
       clientFlat,
+      clientWhoIsContPers1,
+      clientPhoneContPers1,
+      clientLastNameContPers1,
+      clientFirstNameContPers1,
       disableClientInputs,
       tabs,
       tab,

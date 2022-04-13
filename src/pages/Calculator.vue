@@ -3,14 +3,16 @@
     <q-banner v-if="!authenticated"></q-banner>
     <div v-else class="row content-start" >
       <q-splitter
+        class="full-width"
         v-model="splitterModel"
         unit="px"
+        reverse
         separator-class="bg-indigo-3"
         separator-style="width: 2px"
       >
         <template v-slot:before>
-          <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 q-pa-md">
-            <div class="row" style="max-width: 500px;margin: auto;">
+          <div class="q-pa-md">
+            <div class="row" style="max-width: 600px;margin: auto;">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h6 class="q-pa-none q-ma-none text-primary">Calculator</h6>
               </div>
@@ -52,27 +54,27 @@
                          readonly
                          :disable="disableInputs"
                          v-model="creditDate"
-                         label="Data primei achitări"
+                         label="Data cererii"
                          mask="##.##.####">
-                  <template v-slot:append>
-                    <q-icon name="event"
-                            color="primary"
-                            class="cursor-pointer">
-                      <q-popup-proxy ref="qDateProxy"
-                                     v-if="!disableInputs"
-                                     cover transition-show="scale" transition-hide="scale">
-                        <q-date v-model="creditDate"
-                                lang="ro"
-                                :options="calendarOptions"
-                                mask="DD.MM.YYYY"
-                                :locale="calendarLocaleRoLocal">
-                          <div class="row items-center justify-end">
-                            <q-btn v-close-popup label="Închide" color="primary" flat />
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
+<!--                  <template v-slot:append>-->
+<!--                    <q-icon name="event"-->
+<!--                            color="primary"-->
+<!--                            class="cursor-pointer">-->
+<!--                      <q-popup-proxy ref="qDateProxy"-->
+<!--                                     v-if="!disableInputs"-->
+<!--                                     cover transition-show="scale" transition-hide="scale">-->
+<!--                        <q-date v-model="creditDate"-->
+<!--                                lang="ro"-->
+<!--                                :options="calendarOptions"-->
+<!--                                mask="DD.MM.YYYY"-->
+<!--                                :locale="calendarLocaleRoLocal">-->
+<!--                          <div class="row items-center justify-end">-->
+<!--                            <q-btn v-close-popup label="Închide" color="primary" flat />-->
+<!--                          </div>-->
+<!--                        </q-date>-->
+<!--                      </q-popup-proxy>-->
+<!--                    </q-icon>-->
+<!--                  </template>-->
                 </q-input>
               </div>
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 q-pa-xs">
@@ -101,7 +103,7 @@
                 </q-banner>
                 <div v-else-if="calcResultsExist" class="row">
                   <div class="col-xl-2 col-lg-2 col-md-2 col-sm-3 col-xs-3 q-pt-lg">
-                    APR: <span v-if="calcResults">{{calcResults.APR}}%</span>
+                    DAE: <span v-if="calcResults">{{calcResults.DAE}}%</span>
                   </div>
                   <div class="col-xl-10 col-lg-10 col-md-10 col-sm-9 col-xs-9 text-right q-py-md">
                     <q-btn size="md"
@@ -144,152 +146,206 @@
                 </div>
               </div>
             </div>
-          </div>
-        </template>
 
-        <template v-slot:separator>
-          <q-icon color="indigo-4" size="25px" name="more_vert" />
-        </template>
+            <div class="col-12 row q-pb-xl q-mb-xl" v-show="calcResultsExist">
+              <div class="col-12">
+                <h6 class="q-pa-none q-ma-none text-primary">Adaugă o cerere nouă</h6>
+              </div>
+              <div v-if="!isDealer" class="col-12 q-pa-xs q-mb-md">
+                <q-select
+                  dense
+                  outlined
+                  color="primary"
+                  :disable="!calcResultsExist || disableInputs"
+                  v-model="dealer"
+                  :options="dealerOptions"
+                  emit-value
+                  map-options
+                  option-value="id"
+                  option-label="name"
+                  label="Dealer" >
+                  <template v-slot:label>
+                    <span class="text-primary">Dealer</span>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientFirstNameHasError"
+                  @blur="clientFirstNameHasError = false"
+                  @focus="clientFirstNameHasError = false"
+                  type="text"
+                  label="Nume client"
+                  v-model="clientFirstName">
+                </autocomplete-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientLastNameHasError"
+                  @blur="clientLastNameHasError = false"
+                  @focus="clientLastNameHasError = false"
+                  type="text"
+                  label="Prenume client"
+                  v-model="clientLastName">
+                </autocomplete-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientPhoneHasError"
+                  @blur="clientPhoneHasError = false"
+                  @focus="clientPhoneHasError = false"
+                  type="text"
+                  label="Telefon"
+                  v-model="clientPhone">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientBirthDateHasError"
+                  @blur="clientBirthDateHasError = false"
+                  @focus="clientBirthDateHasError = false"
+                  type="text"
+                  mask="##.##.####"
+                  label="Data de naștere"
+                  v-model="clientBirthDate">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinSNHasError"
+                  @blur="clientBuletinSNHasError = false"
+                  @focus="clientBuletinSNHasError = false"
+                  type="text"
+                  :rules="[(val) => val.length === 9 || '9 caractere']"
+                  label="Buletin S/N"
+                  v-model="clientBuletinSN">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinIDNPHasError"
+                  @blur="clientBuletinIDNPHasError = false"
+                  @focus="clientBuletinIDNPHasError = false"
+                  type="text"
+                  :rules="[(val) => val.length === 13 || '13 cifre']"
+                  label="Buletin IDNP"
+                  v-model="clientBuletinIDNP">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientLocalitateHasError"
+                  @blur="clientLocalitateHasError = false"
+                  @focus="clientLocalitateHasError = false"
+                  type="text"
+                  label="Localitate"
+                  v-model="clientLocalitate">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Strada"
+                  v-model="clientStreet">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Bloc"
+                  v-model="clientHouse">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Apartament"
+                  v-model="clientFlat">
+                </q-input>
+              </div>
 
-        <template v-slot:after>
-          <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12 col-xs-12 q-pa-md row content-start">
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <h6 class="q-pa-none q-ma-none text-primary">Cerere pentru credit</h6>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientFirstNameHasError"
-                @blur="clientFirstNameHasError = false"
-                @focus="clientFirstNameHasError = false"
-                type="text"
-                label="Nume"
-                v-model="clientFirstName">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientLastNameHasError"
-                @blur="clientLastNameHasError = false"
-                @focus="clientLastNameHasError = false"
-                type="text"
-                label="Prenume"
-                v-model="clientLastName">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientPhoneHasError"
-                @blur="clientPhoneHasError = false"
-                @focus="clientPhoneHasError = false"
-                type="text"
-                label="Telefon"
-                v-model="clientPhone">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientBirthDateHasError"
-                @blur="clientBirthDateHasError = false"
-                @focus="clientBirthDateHasError = false"
-                type="text"
-                mask="##.##.####"
-                label="Data de naștere"
-                v-model="clientBirthDate">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientBuletinSNHasError"
-                @blur="clientBuletinSNHasError = false"
-                @focus="clientBuletinSNHasError = false"
-                type="text"
-                :rules="[(val) => val.length === 9 || '9 caractere']"
-                label="Buletin S/N"
-                v-model="clientBuletinSN">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientBuletinIDNPHasError"
-                @blur="clientBuletinIDNPHasError = false"
-                @focus="clientBuletinIDNPHasError = false"
-                type="text"
-                :rules="[(val) => val.length === 13 || '13 cifre']"
-                label="Buletin IDNP"
-                v-model="clientBuletinIDNP">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                :error="clientLocalitateHasError"
-                @blur="clientLocalitateHasError = false"
-                @focus="clientLocalitateHasError = false"
-                type="text"
-                label="Localitate"
-                v-model="clientLocalitate">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                type="text"
-                label="Strada"
-                v-model="clientStreet">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                type="text"
-                label="Bloc"
-                v-model="clientHouse">
-              </q-input>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-              <q-input
-                dense
-                outlined
-                :disable="!calcResultsExist || disableInputs"
-                type="text"
-                label="Apartament"
-                v-model="clientFlat">
-              </q-input>
-            </div>
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs text-caption">
-              <q-checkbox size="sm"
-                          :disable="!calcResultsExist || disableInputs"
-                          keep-color
-                          :color="clientCbHasError ? 'red' : 'primary'"
-                          @blur="clientCbHasError = false"
-                          @focus="clientCbHasError = false"
-                          v-model="clientCb"
-              ></q-checkbox>
-              <span :class="clientCbHasError ? 'text-red' : 'text-gray-6'">
+              <div class="col-12 text-primary">Persoana de contact</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Nume"
+                  v-model="clientFirstNameContPers1">
+                </autocomplete-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Prenume"
+                  v-model="clientLastNameContPers1">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Telefon"
+                  v-model="clientPhoneContPers1">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Cine este"
+                  v-model="clientWhoIsContPers1">
+                </q-input>
+              </div>
+
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs text-caption">
+                <q-checkbox size="sm"
+                            :disable="!calcResultsExist || disableInputs"
+                            keep-color
+                            :color="clientCbHasError ? 'red' : 'primary'"
+                            @blur="clientCbHasError = false"
+                            @focus="clientCbHasError = false"
+                            v-model="clientCb"
+                ></q-checkbox>
+                <span :class="clientCbHasError ? 'text-red' : 'text-gray-6'">
             Sunt de acord cu ............
             ....... . . ......
             ........... . . ................ ......... .........................
@@ -307,42 +363,47 @@
             ....... . . ......
             ........... . . ................ ......... .............
           </span>
-            </div>
-            <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-12 q-pa-xs text-right">
-              <q-banner class="bg-positive rounded-borders text-white text-left"
-                        inline-actions
-                        v-if="bidSuccess">
-                {{bidSuccess}}
-                <template v-slot:action>
-                  <q-btn flat color="white"
-                         @click="bidSuccess = ''"
-                         round icon="close" />
-                </template>
-              </q-banner>
-              <q-banner class="bg-negative rounded-borders text-white text-left"
-                        inline-actions
-                        v-if="bidError">
-                {{bidError}}
-                <template v-slot:action>
-                  <q-btn flat color="white"
-                         @click="bidSuccess = ''"
-                         round icon="close" />
-                </template>
-              </q-banner>
-            </div>
-            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12 q-pa-xs text-right">
-              <q-btn color="primary"
-                     size="md"
-                     :disable="!calcResultsExist || disableInputs"
-                     @click="addNewBid()"
-                     label="Trimite"
-              ></q-btn>
-            </div>
-
-            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
-              <bids-list-for-calculator></bids-list-for-calculator>
+              </div>
+              <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-12 q-pa-xs text-right">
+                <q-banner class="bg-positive rounded-borders text-white text-left"
+                          inline-actions
+                          v-if="bidSuccess">
+                  {{bidSuccess}}
+                  <template v-slot:action>
+                    <q-btn flat color="white"
+                           @click="bidSuccess = ''"
+                           round icon="close" />
+                  </template>
+                </q-banner>
+                <q-banner class="bg-negative rounded-borders text-white text-left"
+                          inline-actions
+                          v-if="bidError">
+                  {{bidError}}
+                  <template v-slot:action>
+                    <q-btn flat color="white"
+                           @click="bidSuccess = ''"
+                           round icon="close" />
+                  </template>
+                </q-banner>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-xs-12 q-pa-xs text-right">
+                <q-btn color="primary"
+                       size="md"
+                       :disable="!calcResultsExist || disableInputs"
+                       @click="addNewBid()"
+                       label="Trimite"
+                ></q-btn>
+              </div>
             </div>
           </div>
+        </template>
+
+        <template v-slot:separator>
+          <q-icon color="indigo-4" size="25px" name="more_vert" />
+        </template>
+
+        <template v-slot:after>
+          <bids-list-for-calculator></bids-list-for-calculator>
         </template>
 
       </q-splitter>
@@ -364,23 +425,31 @@ import {
   dateFormat, downloadPDF,
   hideLoading,
   showNotify,
+  USER_ROLE_ADMIN,
+  USER_ROLE_DEALER,
+  USER_ROLE_EXECUTOR,
 } from 'src/helpers';
 import { useStore } from 'vuex';
 import BidsListForCalculator from 'components/BidsListForCalculator';
+import AutocompleteField from 'components/Fields/AutocompleteField';
 
 export default defineComponent({
   name: 'Calculator',
-  components: { BidsListForCalculator },
+  components: { AutocompleteField, BidsListForCalculator },
   setup() {
-    const splitterModel = ref(480);
+    const splitterModel = ref(580);
     // 470px
     const $store = useStore();
+    const isAdmin = ref(false);
+    const isExecutor = ref(false);
+    const isDealer = ref(false);
     const authenticated = computed(() => !!$store.getters['auth/getToken']);
     const calcResults = ref(null);
     const calcError = ref('');
     const typeCredits = ref(null);
     const typeCreditsSelected = ref({});
     const typeCreditsOptions = ref([]);
+    const dealerOptions = ref([]);
     const creditSum = ref(0);
     const creditMonths = ref(0);
     const disableInputs = ref(false);
@@ -407,10 +476,22 @@ export default defineComponent({
     const clientStreet = ref('');
     const clientHouse = ref('');
     const clientFlat = ref('');
+    const clientWhoIsContPers1 = ref('');
+    const dealer = ref(0);
+    const clientPhoneContPers1 = ref('');
+    const clientLastNameContPers1 = ref('');
+    const clientFirstNameContPers1 = ref('');
     const clientCb = ref(false);
     const clientCbHasError = ref(false);
     const bidError = ref('');
     const bidSuccess = ref('');
+    const user = computed(() => $store.getters['auth/getUser']);
+
+    watchEffect(() => {
+      isExecutor.value = user.value.role_id === USER_ROLE_EXECUTOR;
+      isAdmin.value = user.value.role_id === USER_ROLE_ADMIN;
+      isDealer.value = user.value.role_id === USER_ROLE_DEALER;
+    });
 
     const calendarLocaleRoLocal = computed(() => calendarLocaleRo);
 
@@ -544,6 +625,11 @@ export default defineComponent({
           street: clientStreet.value,
           house: clientHouse.value,
           flat: clientFlat.value,
+          who_is_cont_pers1: clientWhoIsContPers1.value,
+          dealer: dealer.value,
+          phone_cont_pers1: clientPhoneContPers1.value,
+          last_name_cont_pers1: clientLastNameContPers1.value,
+          first_name_cont_pers1: clientFirstNameContPers1.value,
           type_credit_id: typeCreditsSelected.value.id,
           type_credit_name: typeCreditsSelected.value.name,
           calc_results: calcResults.value,
@@ -597,9 +683,28 @@ export default defineComponent({
           hideLoading();
           showNotify({}, error);
         });
+      api.post('/dealers-list', {})
+        .then((response) => {
+          hideLoading();
+          if (response.data.success) {
+            response.data.data.data.forEach((row, i) => {
+              dealerOptions.value.push(row);
+              if (i === 0) {
+                dealer.value = row.id;
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          hideLoading();
+          showNotify({}, error);
+        });
     });
 
     return {
+      isExecutor,
+      isAdmin,
+      isDealer,
       authenticated,
       typeCredits,
       typeCreditsOptions,
@@ -633,12 +738,18 @@ export default defineComponent({
       clientStreet,
       clientHouse,
       clientFlat,
+      dealer,
+      clientWhoIsContPers1,
+      clientPhoneContPers1,
+      clientLastNameContPers1,
+      clientFirstNameContPers1,
       clientCb,
       clientCbHasError,
       addNewBid,
       bidError,
       bidSuccess,
       splitterModel,
+      dealerOptions,
     };
   },
 });

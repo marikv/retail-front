@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="full-width">
     <q-table
       class="full-width"
       :flat="true"
@@ -39,15 +39,16 @@
           <q-tooltip>Caută</q-tooltip>
         </q-btn>
       </template>
-      <template v-slot:body-cell-actions="props">
-        <q-td :props="props" class="actions-td">
+      <template v-slot:body-cell-id="props">
+        <q-td :props="props" class="actions-td text-center">
+          {{props.row.id}}<br>
           <q-btn dense round flat
                  size="md"
                  color="positive"
                  @click="editRow(props.row.id, false)"
                  icon="edit">
             <q-tooltip>Redactează</q-tooltip>
-          </q-btn>
+          </q-btn><br>
           <q-btn dense round flat
                  size="md"
                  :color="!unreadChats[props.row.id] ? 'positive' : 'negative'"
@@ -60,7 +61,7 @@
               {{unreadChats[props.row.id]}}
             </q-badge>
             <q-tooltip>Chat</q-tooltip>
-          </q-btn>
+          </q-btn><br>
           <q-btn dense round flat
                  size="md"
                  color="negative"
@@ -316,6 +317,7 @@ export default defineComponent({
         field: 'id',
         sortable: true,
         style: 'width: 20px',
+        align: 'center',
         classes: (row) => getRowClasses(row),
       },
       {
@@ -334,13 +336,13 @@ export default defineComponent({
         align: 'left',
         classes: (row) => getRowClasses(row),
       },
-      {
-        name: 'actions',
-        label: '',
-        align: 'center',
-        style: 'width: 60px',
-        classes: (row) => getRowClasses(row),
-      },
+      // {
+      //   name: 'actions',
+      //   label: '',
+      //   align: 'center',
+      //   style: 'width: 60px',
+      //   classes: (row) => getRowClasses(row),
+      // },
     ];
 
     return {

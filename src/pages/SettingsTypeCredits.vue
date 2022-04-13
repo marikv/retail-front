@@ -32,19 +32,19 @@
                 </div>
                 <div class="col-12 text-grey">{{tipCard.description_mini}}</div>
                 <div class="col-12">
-                  <span class="text-grey">ID:</span>
+                  <span class="text-grey">ID: </span>
                   <span class="text-black">{{tipCard.id}}</span>
                 </div>
                 <div class="col-12" v-if="tipCard.months_fix">
-                  <span class="text-grey">Nr de luni:</span>
+                  <span class="text-grey">Nr de luni: </span>
                   <span class="text-black">{{tipCard.months_fix || '0'}}</span>
                 </div>
                 <div class="col-12">
-                  <span class="text-grey">Suma minima:</span>
+                  <span class="text-grey">Suma minima: </span>
                   <span class="text-black">{{tipCard.sum_min || '0'}}</span>
                 </div>
                 <div class="col-12">
-                  <span class="text-grey">Suma maxima:</span>
+                  <span class="text-grey">Suma maxima: </span>
                   <span class="text-black">{{tipCard.sum_max || '0'}}</span>
                 </div>
                 <div class="col-12">
@@ -72,12 +72,12 @@
                   <span class="text-black">{{tipCard.comision_admin || '0'}}</span>
                 </div>
                 <div class="col-12">
-                  <span class="text-grey">Procent comision magazin:</span>
-                  <span class="text-black">{{tipCard.percent_comision_magazin || '0'}}</span>
+                  <span class="text-grey">Comision magazin: </span>
+                  <span class="text-black">{{tipCard.percent_comision_magazin || '0'}}%</span>
                 </div>
                 <div class="col-12">
-                  <span class="text-grey">Procent bonus magazin:</span>
-                  <span class="text-black">{{tipCard.percent_bonus_magazin || '0'}}</span>
+                  <span class="text-grey">Bonus magazin: </span>
+                  <span class="text-black">{{tipCard.percent_bonus_magazin || '0'}}%</span>
                 </div>
               </div>
             </q-card-section>

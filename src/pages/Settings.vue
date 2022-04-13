@@ -10,15 +10,15 @@
           <div class="q-pa-sm">
             <q-list>
 
-              <q-item
-                @click="openedItem = 'page-settings-type-credits'"
+              <q-item :key="item.component"
+                v-for="item in components"
                 v-ripple class="cursor-pointer">
-                <q-item-section>
+                <q-item-section @click="setOpenedComponent(item.component)">
                   <q-item-label>
-                    Tip credite
+                    {{item.label}}
                   </q-item-label>
                 </q-item-section>
-                <q-item-section side>
+                <q-item-section side @click="setOpenedComponent(item.component)">
                   <q-icon name="arrow_right" class="cursor-pointer" color="gray" ></q-icon>
                 </q-item-section>
               </q-item>
@@ -37,11 +37,7 @@
 
       <q-page-container>
         <q-page style="padding-top: 20px" class="q-pa-md">
-
-          <page-settings-type-credits
-            v-if="openedItem === 'page-settings-type-credits'">
-          </page-settings-type-credits>
-
+          <component :is="openedComponent"></component>
         </q-page>
       </q-page-container>
     </q-layout>
@@ -50,24 +46,41 @@
 
 <script>
 import {
-  defineComponent,
+  defineComponent, onMounted,
   ref,
 } from 'vue';
 import PageSettingsTypeCredits from 'pages/SettingsTypeCredits';
+import PageSettingsGenerals from 'pages/SettingsGenerals';
 import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'PageSettings',
-  components: { PageSettingsTypeCredits },
+  components: {
+    PageSettingsGenerals,
+    PageSettingsTypeCredits,
+  },
   setup() {
     const drawerLeft = ref(true);
-    const openedItem = ref('page-settings-type-credits');
+    const openedComponent = ref('page-settings-type-credits');
+    const components = ref([
+      { component: 'page-settings-type-credits', label: 'Tip credite' },
+      { component: 'page-settings-generals', label: 'Generale' },
+    ]);
     const $store = useStore();
 
-    $store.commit('auth/updateActiveModule', 'Settings');
+    const setOpenedComponent = (v) => {
+      openedComponent.value = v;
+    };
+
+    onMounted(() => {
+      $store.commit('auth/updateActiveModule', 'Settings');
+    });
+
     return {
       drawerLeft,
-      openedItem,
+      openedComponent,
+      setOpenedComponent,
+      components,
     };
   },
 });

@@ -158,6 +158,23 @@
                        label="Procent" />
             </div>
           </div>
+          <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-6 q-pa-xs text-right q-pt-md">
+            SHOP FEE
+          </div>
+          <div class="col-xl-10 col-lg-10 col-md-10 col-sm-6 col-xs-6 q-pa-xs">
+            <div class="q-gutter-sm">
+              <q-radio v-model="isShopFee"
+                       checked-icon="task_alt"
+                       unchecked-icon="panorama_fish_eye"
+                       :val="1"
+                       label="Da" />
+              <q-radio v-model="isShopFee"
+                       checked-icon="task_alt"
+                       unchecked-icon="panorama_fish_eye"
+                       :val="0"
+                       label="Nu " />
+            </div>
+          </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
             <q-input type="number"
                      v-model="percentComisionMagazin"
@@ -224,6 +241,7 @@ export default {
     const comision = ref(0);
     const comisionHasError = ref(false);
     const comisionAdminIsPercent = ref(0);
+    const isShopFee = ref(0);
     const comisionAdmin = ref(0);
     const comisionAdminHasError = ref(false);
     const dobindaIsPercent = ref(0);
@@ -263,6 +281,7 @@ export default {
       comisionIsPercent.value = TypeCreditsData.value.comision_is_percent ? 1 : 0;
       comision.value = TypeCreditsData.value.comision;
       comisionAdminIsPercent.value = TypeCreditsData.value.comision_admin_is_percent ? 1 : 0;
+      isShopFee.value = TypeCreditsData.value.is_shop_fee ? 1 : 0;
       comisionAdmin.value = TypeCreditsData.value.comision_admin;
       dobindaIsPercent.value = TypeCreditsData.value.dobinda_is_percent ? 1 : 0;
       dobinda.value = TypeCreditsData.value.dobinda;
@@ -317,6 +336,7 @@ export default {
           comision_is_percent: comisionIsPercent.value,
           comision: comision.value,
           comision_admin_is_percent: comisionAdminIsPercent.value,
+          is_shop_fee: isShopFee.value,
           comision_admin: comisionAdmin.value,
           percent_comision_magazin: percentComisionMagazin.value,
           percent_bonus_magazin: percentBonusMagazin.value,
@@ -360,6 +380,7 @@ export default {
       comision,
       comisionIsPercent,
       comisionAdminIsPercent,
+      isShopFee,
       comisionHasError,
       comisionAdmin,
       comisionAdminHasError,

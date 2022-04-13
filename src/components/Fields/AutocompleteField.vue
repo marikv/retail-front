@@ -5,6 +5,7 @@
     :outlined="outlined"
     :value="model"
     :readonly="readonly"
+    :disable="disable"
     :error="error"
     use-input
     hide-selected
@@ -55,6 +56,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disable: {
+      type: Boolean,
+      default: false,
+    },
     error: {
       type: Boolean,
       default: false,
@@ -99,7 +104,7 @@ export default {
       update(() => {
         this.loading = true;
         api.post('/autocomplete', {
-          search: this.what,
+          search: this.what ? this.what : this.label,
           q: this.model,
         }).then((response) => {
           this.loading = false;

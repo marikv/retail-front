@@ -36,8 +36,14 @@
       </q-card-section>
       <q-separator  v-if="tab === 'general'"/>
       <q-card-actions align="right" v-if="tab === 'general'">
-        <q-btn color="primary" label="Salvează" @click="onOKClick" />
-        <q-btn  label="Închide" @click="onCancelClick" />
+        <q-btn v-if="id"
+               @click="printContract()" icon="print" label="Contract"></q-btn>
+        <q-btn v-if="id"
+               @click="printAnexa()" icon="print" label="Anexa"></q-btn>
+        <q-btn color="primary"
+               icon="save"
+               label="Salvează" @click="onOKClick" />
+        <q-btn label="Închide" @click="onCancelClick" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -48,11 +54,16 @@ import { useDialogPluginComponent } from 'quasar';
 import { ref, watchEffect } from 'vue';
 import HeaderTabsForForms from 'components/HeadersTabsForForms';
 import DealerGeneral from 'components/modals/DealerGeneral';
-import { hideLoading, showLoading, showNotify } from 'src/helpers';
 import { api } from 'boot/axios';
 import { useStore } from 'vuex';
 import FilesForm from 'components/FilesForm';
 import LogsTableForForms from 'components/LogsTableForForms';
+import {
+  downloadPDF,
+  hideLoading,
+  showLoading,
+  showNotify,
+} from 'src/helpers';
 
 export default {
   name: 'Dealer',
@@ -159,12 +170,21 @@ export default {
       }
     };
 
+    const printContract = () => {
+      downloadPDF(id.value, '/print/contractDealer', 'contract_colaborare');
+    };
+    const printAnexa = () => {
+      downloadPDF(id.value, '/print/contractAnexa', 'contract_anexa');
+    };
+
     return {
       dialogRef,
       onDialogHide: onDialogHideLocal,
       onOKClick: onOKClickLocal,
       onCancelClick: onDialogCancel,
       isOpenedLocal,
+      printContract,
+      printAnexa,
       id,
       tab,
       tabs,

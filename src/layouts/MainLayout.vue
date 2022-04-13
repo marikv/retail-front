@@ -93,7 +93,7 @@ const linksList = [
     link: 'bids',
   },
   {
-    title: 'Contracte clienți',
+    title: 'Contracte',
     // caption: 'github.com/quasarframework',
     icon: 'gavel',
     link: 'contracts',
