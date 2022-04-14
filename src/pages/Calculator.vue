@@ -514,7 +514,7 @@ export default defineComponent({
           typeCreditsSelected.value = v;
           creditMonths.value = v.months_fix;
           if (!creditSum.value) {
-            creditSum.value = v.sum_min;
+            creditSum.value = v.sum_min > 1 ? v.sum_min : 1000;
           }
         }
       });
