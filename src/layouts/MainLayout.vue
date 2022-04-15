@@ -198,7 +198,7 @@ export default defineComponent({
     };
 
     const checkNewMessages = () => {
-      if (user.value && user.value) {
+      if (user.value && user.value.id) {
         api.post('/checkNewMessages', {
           activeModule: $store.getters['auth/getActiveModule'],
         }).then((response) => {
