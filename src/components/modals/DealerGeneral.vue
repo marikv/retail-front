@@ -116,6 +116,17 @@
     <div
       v-if="id > 0"
       class="col-xs-12 row text-subtitle1 text-primary q-pa-xs">
+      Contract de colaborare
+    </div>
+    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        outlined
+        v-model="contractDate"
+        label="Data"/>
+    </div>
+    <div
+      v-if="id > 0"
+      class="col-xs-12 row text-subtitle1 text-primary q-pa-xs">
       Produse
     </div>
     <div
@@ -247,6 +258,7 @@ export default defineComponent({
     const bankCb = ref('');
     const bankIban = ref('');
     const bankValuta = ref('');
+    const contractDate = ref('');
     const phone1 = ref('');
     const phone1HasError = ref(false);
     const phone2 = ref('');
@@ -323,6 +335,7 @@ export default defineComponent({
       bankCb.value = dealerData.value.bank_cb || '';
       bankIban.value = dealerData.value.bank_iban || '';
       bankValuta.value = dealerData.value.bank_valuta || '';
+      contractDate.value = dealerData.value.contract_date || '';
       phone1.value = dealerData.value.phone1 || '';
       phone2.value = dealerData.value.phone2 || '';
       phone2.value = dealerData.value.phone2 || '';
@@ -370,6 +383,7 @@ export default defineComponent({
           bank_cb: bankCb.value,
           bank_iban: bankIban.value,
           bank_valuta: bankValuta.value,
+          contract_date: contractDate.value,
           type_credits: dealerTypeCredits.value,
         };
         showLoading();
@@ -450,6 +464,7 @@ export default defineComponent({
       bankCb,
       bankIban,
       bankValuta,
+      contractDate,
       save,
       newPassword,
       newUser,

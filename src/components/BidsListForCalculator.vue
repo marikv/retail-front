@@ -286,6 +286,7 @@ export default defineComponent({
         unreadChats.value = unreadChatsLocal;
 
         if (getCheckNewMessages.bids) {
+          console.log(getCheckNewMessages.bids);
           getCheckNewMessages.bids.forEach((bid) => {
             let found = false;
             rows.value.forEach((row, i) => {

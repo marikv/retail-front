@@ -170,7 +170,7 @@
                 </q-select>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <autocomplete-field
+                <q-input
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
@@ -180,10 +180,10 @@
                   type="text"
                   label="Nume client"
                   v-model="clientFirstName">
-                </autocomplete-field>
+                </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <autocomplete-field
+                <q-input
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
@@ -193,7 +193,7 @@
                   type="text"
                   label="Prenume client"
                   v-model="clientLastName">
-                </autocomplete-field>
+                </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
