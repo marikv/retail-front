@@ -6,6 +6,7 @@ import dealers from './dealers';
 import bids from './bids';
 import users from './users';
 import settingsTypeCredits from './settings-type-credits';
+import settingsProducts from './settings-products';
 
 /*
  * If not building with SSR mode, you can
@@ -24,6 +25,7 @@ export default store((/* { ssrContext } */) => {
       bids,
       users,
       settingsTypeCredits,
+      settingsProducts,
     },
 
     // enable strict mode (adds overhead!)

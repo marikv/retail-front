@@ -19,39 +19,16 @@
         style="min-height: calc(100vh - 165px);max-height: calc(100vh - 165px);"
         class="scroll">
         <div class="row">
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
-            <q-input
-              outlined
-              :error="nameHasError"
-              @blur="nameHasError = false"
-              @focus="nameHasError = false"
-              v-model="name"
-              :rules="[(val) => val.length >= 2 || 'Minimum 2 caractere']"
-              label="Nume"/>
-          </div>
-          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
-            <q-input type="textarea"
-                     v-model="descriptionMini"
-                     outlined
-                     autogrow
-                     :error="false"
-                     label="Descriere"
-            ></q-input>
-          </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 q-pa-xs">
-            <div class="q-gutter-sm">
-              <q-radio v-model="isDiapazon"
-                       checked-icon="task_alt"
-                       unchecked-icon="panorama_fish_eye"
-                       :val="0"
-                       label="Număr fix de luni" />
-              <q-radio v-model="isDiapazon"
-                       disable
-                       checked-icon="task_alt"
-                       unchecked-icon="panorama_fish_eye"
-                       :val="1"
-                       label="Periodă (Diapazon de luni)" />
-            </div>
+            <q-select
+              outlined
+              :options="productOptions"
+              emit-value
+              map-options
+              option-value="id"
+              option-label="name"
+              v-model="productId"
+              label="Produs"/>
           </div>
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
             <q-input type="number"
@@ -66,6 +43,40 @@
                      label="Numărul de luni"
             ></q-input>
           </div>
+<!--          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 q-pa-xs">-->
+<!--            <q-input-->
+<!--              outlined-->
+<!--              :error="nameHasError"-->
+<!--              @blur="nameHasError = false"-->
+<!--              @focus="nameHasError = false"-->
+<!--              v-model="name"-->
+<!--              :rules="[(val) => val.length >= 2 || 'Minimum 2 caractere']"-->
+<!--              label="Nume"/>-->
+<!--          </div>-->
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
+            <q-input type="textarea"
+                     v-model="descriptionMini"
+                     outlined
+                     autogrow
+                     :error="false"
+                     label="Descriere"
+            ></q-input>
+          </div>
+<!--          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 q-pa-xs">-->
+<!--            <div class="q-gutter-sm">-->
+<!--              <q-radio v-model="isDiapazon"-->
+<!--                       checked-icon="task_alt"-->
+<!--                       unchecked-icon="panorama_fish_eye"-->
+<!--                       :val="0"-->
+<!--                       label="Număr fix de luni" />-->
+<!--              <q-radio v-model="isDiapazon"-->
+<!--                       disable-->
+<!--                       checked-icon="task_alt"-->
+<!--                       unchecked-icon="panorama_fish_eye"-->
+<!--                       :val="1"-->
+<!--                       label="Periodă (Diapazon de luni)" />-->
+<!--            </div>-->
+<!--          </div>-->
           <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
             <q-input type="number"
                      v-model="sumMin"
@@ -252,6 +263,8 @@ export default {
     const percentBonusMagazin = ref(0);
     const percentBonusMagazinHasError = ref(false);
     const descriptionMini = ref('');
+    const productId = ref(0);
+    const productOptions = ref([]);
     const TypeCreditsData = ref({});
 
     const {
@@ -288,6 +301,7 @@ export default {
       percentComisionMagazin.value = TypeCreditsData.value.percent_comision_magazin;
       percentBonusMagazin.value = TypeCreditsData.value.percent_bonus_magazin;
       descriptionMini.value = TypeCreditsData.value.description_mini;
+      productId.value = TypeCreditsData.value.product_id;
     });
 
     const getDataById = (idLocal = null) => {
@@ -296,7 +310,6 @@ export default {
       $store.commit('settingsTypeCredits/updateOpenedSettingsDialogData', oldData);
 
       showLoading();
-
       api.get(`/type-credits/get-data-by-id/${idLocal}`).then((response) => {
         hideLoading();
         if (response.data.success) {
@@ -307,6 +320,16 @@ export default {
         }
       }).catch((error) => {
         hideLoading();
+        showNotify({}, error);
+      });
+
+      api.post('/products-list').then((response) => {
+        if (response.data.success) {
+          productOptions.value = response.data.data.data;
+        } else {
+          showNotify({ message: response.data.data.message });
+        }
+      }).catch((error) => {
         showNotify({}, error);
       });
     };
@@ -340,6 +363,7 @@ export default {
           comision_admin: comisionAdmin.value,
           percent_comision_magazin: percentComisionMagazin.value,
           percent_bonus_magazin: percentBonusMagazin.value,
+          product_id: productId.value,
         };
         showLoading();
         const idLocal = parseInt(String(id.value), 10);
@@ -392,6 +416,8 @@ export default {
       percentBonusMagazin,
       percentBonusMagazinHasError,
       descriptionMini,
+      productId,
+      productOptions,
     };
   },
 };

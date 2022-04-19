@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-layout view="lhh LpR lff" container style="height: calc(100vh - 50px)" class="bg-grey-2">
+    <q-layout view="lhh LpR lff" container style="height: calc(100vh - 60px)" class="bg-grey-2">
       <q-drawer
         v-model="drawerLeft"
         :width="220"
@@ -50,6 +50,7 @@ import {
   ref,
 } from 'vue';
 import PageSettingsTypeCredits from 'pages/SettingsTypeCredits';
+import PageSettingsProducts from 'pages/SettingsProducts';
 import PageSettingsGenerals from 'pages/SettingsGenerals';
 import { useStore } from 'vuex';
 
@@ -58,12 +59,14 @@ export default defineComponent({
   components: {
     PageSettingsGenerals,
     PageSettingsTypeCredits,
+    PageSettingsProducts,
   },
   setup() {
     const drawerLeft = ref(true);
     const openedComponent = ref('page-settings-type-credits');
     const components = ref([
       { component: 'page-settings-type-credits', label: 'Tip credite' },
+      { component: 'page-settings-products', label: 'Lista Produse' },
       { component: 'page-settings-generals', label: 'Generale' },
     ]);
     const $store = useStore();

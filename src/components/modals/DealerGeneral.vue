@@ -134,9 +134,9 @@
       class="col-xs-12 q-pb-lg">
       <q-select
         outlined
-        v-model="dealerTypeCredits"
+        v-model="dealerProducts"
         multiple
-        :options="dealerTypeCreditsOptions"
+        :options="dealerProductsOptions"
         use-chips
         stack-label
         emit-value
@@ -277,24 +277,23 @@ export default defineComponent({
     const newPasswordError = ref(false);
     const addUserPressed = ref(false);
     const allUsers = ref([]);
-    const dealerTypeCredits = ref([]);
-    const dealerTypeCreditsOptions = ref([]);
+    const dealerProducts = ref([]);
+    const dealerProductsOptions = ref([]);
 
-    const loadTypeCredits = () => {
-      api.get(`/dealer-type-credits/${id.value}`).then((response) => {
+    const loadProducts = () => {
+      api.get(`/dealer-products/${id.value}`).then((response) => {
         if (response.data.success) {
-          dealerTypeCredits.value = [];
-          response.data.data.DealerTypeCredits.forEach((v) => {
-            dealerTypeCredits.value.push(v.type_credit_id);
+          dealerProducts.value = [];
+          response.data.data.DealerProducts.forEach((v) => {
+            dealerProducts.value.push(v.product_id);
           });
-          console.log(dealerTypeCredits.value);
-          dealerTypeCreditsOptions.value = response.data.data.TypeCredits;
+          dealerProductsOptions.value = response.data.data.Products;
         }
       });
     };
 
     onMounted(() => {
-      loadTypeCredits();
+      loadProducts();
     });
 
     const loadUsers = () => {
@@ -346,7 +345,7 @@ export default defineComponent({
     watchEffect(() => {
       if (id.value) {
         loadUsers();
-        loadTypeCredits();
+        loadProducts();
       }
     });
 
@@ -384,7 +383,7 @@ export default defineComponent({
           bank_iban: bankIban.value,
           bank_valuta: bankValuta.value,
           contract_date: contractDate.value,
-          type_credits: dealerTypeCredits.value,
+          products: dealerProducts.value,
         };
         showLoading();
         const idLocal = parseInt(String(id.value), 10);
@@ -469,8 +468,8 @@ export default defineComponent({
       newPassword,
       newUser,
       addUserPressed,
-      dealerTypeCredits,
-      dealerTypeCreditsOptions,
+      dealerProducts,
+      dealerProductsOptions,
       addNewUser,
       newUserError,
       newPasswordError,

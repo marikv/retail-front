@@ -16,12 +16,30 @@
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h6 class="q-pa-none q-ma-none text-primary">Calculator</h6>
               </div>
+              <div v-if="!isDealer"
+                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
+                <q-select
+                  outlined
+                  color="primary"
+                  v-model="dealer"
+                  :options="dealerOptions"
+                  @update:model-value="dealerChanged"
+                  emit-value
+                  map-options
+                  option-value="id"
+                  option-label="name"
+                  label="Dealer" >
+                  <template v-slot:label>
+                    <span class="text-primary">Dealer</span>
+                  </template>
+                </q-select>
+              </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
                 <q-select outlined
                           color="primary"
                           :disable="disableInputs"
-                          v-model="typeCredits"
-                          :options="typeCreditsOptions"
+                          v-model="product"
+                          :options="productOptions"
                           emit-value
                           map-options
                           option-value="id"
@@ -36,18 +54,21 @@
                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
                 <div class="bg-green-1 q-pa-sm text-grey-7
            q-card--bordered rounded-borders text-caption">
-                  {{typeCreditsSelected.description_mini}}
+                  {{typeCreditsSelected.name}} {{typeCreditsSelected.description_mini}}
                 </div>
               </div>
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 q-pa-xs">
-                <q-input
-                  outlined
-                  :disable="disableInputs"
-                  :readonly="!!typeCreditsSelected.months_fix"
-                  type="text"
-                  label="Termenul creditului (luni)"
-                  v-model="creditMonths">
-                </q-input>
+                <q-select outlined
+                          color="primary"
+                          :disable="disableInputs"
+                          v-model="creditMonths"
+                          :options="creditMonthsOptions"
+                          @update:model-value="creditMonthsChanged"
+                          label="Termenul creditului (luni)" >
+                  <template v-slot:label>
+                    <span class="text-primary">Termenul creditului (luni)</span>
+                  </template>
+                </q-select>
               </div>
               <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 q-pa-xs">
                 <q-input outlined
@@ -97,6 +118,8 @@
                        color="primary"
                 ></q-btn>
               </div>
+            </div>
+            <div class="row" style="max-width: 800px;margin: auto;">
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
                 <q-banner v-if="calcError" class="bg-red-2 rounded-borders">
                   {{calcError}}
@@ -118,31 +141,50 @@
                            label="Anulează"
                     ></q-btn>
                   </div>
-                  <div class="col-2 text-subtitle2">Data</div>
-                  <div class="col-2 text-subtitle2 text-right">Suma</div>
-                  <div class="col-2 text-subtitle2 text-right">Dob.</div>
-                  <div class="col-2 text-subtitle2 text-right">Com.</div>
-                  <div class="col-2 text-subtitle2 text-right">Com.admin</div>
-                  <div class="col-2 text-subtitle2 text-right">Total</div>
-                  <template v-for="(row, rowIndex) in calcResults.tabel" :key="`res-${rowIndex}`">
-                    <div class="col-2 ">{{row.data}}</div>
-                    <div class="col-2 text-right">{{row.imprumtPerLuna}}</div>
-                    <div class="col-2 text-right">{{row.dobindaPerLuna}}</div>
-                    <div class="col-2 text-right">{{row.comisionPerLuna}}</div>
-                    <div class="col-2 text-right">{{row.comisionAdminPerLuna}}</div>
-                    <div class="col-2 text-right">{{row.totalPerLuna}}</div>
-                  </template>
-                  <div class="col-2 text-subtitle2">Total</div>
-                  <div class="col-2 text-subtitle2 text-right">
-                    {{calcResults.tabelTotal.imprumut}}</div>
-                  <div class="col-2 text-subtitle2 text-right">
-                    {{calcResults.tabelTotal.dobinda}}</div>
-                  <div class="col-2 text-subtitle2 text-right">
-                    {{calcResults.tabelTotal.comision}}</div>
-                  <div class="col-2 text-subtitle2 text-right">
-                    {{calcResults.tabelTotal.comisionAdmin}}</div>
-                  <div class="col-2 text-subtitle2 text-right">
-                    {{calcResults.tabelTotal.total}}</div>
+                  <div class="q-table__container q-table--horizontal-separator
+                   column no-wrap q-table--dense q-table--no-wrap full-width">
+                    <table class="q-table">
+                      <thead>
+                      <tr>
+                        <th>Număr<br>rate</th>
+                        <th>Data plății</th>
+                        <th class="text-right">Rambursări<br>suma de bază</th>
+                        <th class="text-right">Dobânda</th>
+                        <th class="text-right">Comision de<br>examinare</th>
+                        <th class="text-right">Comision de<br>administrare</th>
+                        <th class="text-right">Total de<br>plată</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                        <td></td>
+                        <td class="text-center">{{creditDate}}</td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right">0</td>
+                        <td></td>
+                        <td class="text-right">0</td>
+                      </tr>
+                      <tr v-for="(row, rowIndex) in calcResults.tabel" :key="`res-${rowIndex}`">
+                        <td class="text-center">{{rowIndex}}</td>
+                        <td class="text-center">{{row.data}}</td>
+                        <td class="text-right">{{row.imprumtPerLuna}}</td>
+                        <td class="text-right">{{row.dobindaPerLuna}}</td>
+                        <td class="text-right">{{row.comisionPerLuna}}</td>
+                        <td class="text-right">{{row.comisionAdminPerLuna}}</td>
+                        <td class="text-right">{{row.totalPerLuna}}</td>
+                      </tr>
+                      <tr>
+                        <td class="text-right" colspan="2">Total</td>
+                        <td class="text-right">{{calcResults.tabelTotal.imprumut}}</td>
+                        <td class="text-right">{{calcResults.tabelTotal.dobinda}}</td>
+                        <td class="text-right">{{calcResults.tabelTotal.comision}}</td>
+                        <td class="text-right">{{calcResults.tabelTotal.comisionAdmin}}</td>
+                        <td class="text-right">{{calcResults.tabelTotal.total}}</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -150,24 +192,6 @@
             <div class="col-12 row q-pb-xl q-mb-xl" v-show="calcResultsExist">
               <div class="col-12">
                 <h6 class="q-pa-none q-ma-none text-primary">Adaugă o cerere nouă</h6>
-              </div>
-              <div v-if="!isDealer" class="col-12 q-pa-xs q-mb-md">
-                <q-select
-                  dense
-                  outlined
-                  color="primary"
-                  :disable="!calcResultsExist || disableInputs"
-                  v-model="dealer"
-                  :options="dealerOptions"
-                  emit-value
-                  map-options
-                  option-value="id"
-                  option-label="name"
-                  label="Dealer" >
-                  <template v-slot:label>
-                    <span class="text-primary">Dealer</span>
-                  </template>
-                </q-select>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -346,23 +370,21 @@
                             v-model="clientCb"
                 ></q-checkbox>
                 <span :class="clientCbHasError ? 'text-red' : 'text-gray-6'">
-            Sunt de acord cu ............
-            ....... . . ......
-            ........... . . ................ ......... .........................
-            ....... . . ......
-            ........... . . ................ ......... .........................
-            ....... . . ......
-            ........... . . ................ ......... .........................
-            ....... . . ......
-            ........... . . ................ ......... .........................
-            ....... . . ......
-            ........... . . ................ ......... .............
-            ........... . . ................ ......... .........................
-            ....... . . ......
-            ........... . . ................ ......... .........................
-            ....... . . ......
-            ........... . . ................ ......... .............
-          </span>
+                  Prin bifarea acestei opțiuni, declar pe propria răspundere căci am fost adus la
+                  cunoștință că datele mele cu caracter personal colectate de către
+                  OCN „CREDIT BOX” SRL
+                  vor fi procesate și prelucrate, cu respectarea regimului de securitate
+                  și confidențialitate,
+                  în conformitate cu prevederile Legii nr. 133 din 8 iulie 2011 privind protecția
+                  datelor cu caracter personal, informația nefiind folosită în alte scopuri
+                  incompatibile sau remisă fără temei altor companii, urmând a fi păstrată
+                  doar pentru o perioadă de 3 ani, urmând ulterior a fi distrusă sau transformată
+                  în date anonime. Sunt conștient căci în conformitate cu art. 13-16 ale Legii
+                  nr. 133 din 8 iulie 2011 privind protecția datelor cu caracter personal am dreptul
+                  de acces, de intervenție, de opoziție, precum și de adresare în instanța
+                  de judecată,în contextul prelucrărilor efectuate asupra datelor cu caracter
+                  personal care mă vizează.
+                </span>
               </div>
               <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-12 q-pa-xs text-right">
                 <q-banner class="bg-positive rounded-borders text-white text-left"
@@ -446,7 +468,10 @@ export default defineComponent({
     const authenticated = computed(() => !!$store.getters['auth/getToken']);
     const calcResults = ref(null);
     const calcError = ref('');
+    const product = ref(null);
+    const productOptions = ref([]);
     const typeCredits = ref(null);
+    const creditMonthsOptions = ref([]);
     const typeCreditsSelected = ref({});
     const typeCreditsOptions = ref([]);
     const dealerOptions = ref([]);
@@ -501,21 +526,33 @@ export default defineComponent({
       downloadPDF(1, '/print/pre-contract', 'pre-contract');
     };
 
-    const typeCreditsChanged = () => {
-      typeCreditsOptions.value.forEach((v) => {
-        if (v
-          && v.id === typeCredits.value
-          && (
-            !typeCreditsSelected.value
-            || !typeCreditsSelected.value.id
-            || typeCreditsSelected.value.id !== v.id
-          )
-        ) {
-          typeCreditsSelected.value = v;
-          creditMonths.value = v.months_fix;
-          if (!creditSum.value) {
-            creditSum.value = v.sum_min > 1 ? v.sum_min : 1000;
-          }
+    const dealerChanged = () => {};
+
+    const productChanged = () => {
+      typeCreditsSelected.value = {};
+      creditMonthsOptions.value = [];
+      productOptions.value.forEach((v) => {
+        if (v && v.id === product.value) {
+          typeCreditsOptions.value.forEach((v2) => {
+            if (v2 && v2.product_id === v.id) {
+              typeCreditsSelected.value = v2;
+              creditMonths.value = v2.months_fix;
+              creditMonthsOptions.value.push(v2.months_fix);
+              creditSum.value = v2.sum_min > 1 ? v2.sum_min : 1000;
+            }
+          });
+        }
+      });
+    };
+
+    const creditMonthsChanged = () => {
+      productOptions.value.forEach((v) => {
+        if (v && v.id === product.value) {
+          typeCreditsOptions.value.forEach((v2) => {
+            if (v2 && v2.product_id === v.id && creditMonths.value === v2.months_fix) {
+              typeCreditsSelected.value = v2;
+            }
+          });
         }
       });
     };
@@ -658,10 +695,11 @@ export default defineComponent({
     };
 
     watchEffect(() => {
-      if (typeCredits.value) {
-        typeCreditsChanged();
+      if (product.value) {
+        productChanged();
       }
     });
+
     watchEffect(() => {
       calcResultsExist.value = calcResults.value && calcResults.value.tabel;
     });
@@ -671,11 +709,25 @@ export default defineComponent({
         .then((response) => {
           hideLoading();
           if (response.data.success) {
-            response.data.data.data.forEach((row, i) => {
-              typeCreditsOptions.value.push(row);
-              if (i === 0) {
-                typeCredits.value = row.id;
+            api.post('/products-list').then((response2) => {
+              if (response2.data.success) {
+                productOptions.value = response2.data.data.data;
+                productOptions.value.forEach((row2, i2) => {
+                  if (i2 === 0) {
+                    product.value = row2.id;
+                    response.data.data.data.forEach((row) => {
+                      typeCreditsOptions.value.push(row);
+                      if (row.product_id === row2.id) {
+                        typeCredits.value = row.id;
+                      }
+                    });
+                  }
+                });
+              } else {
+                showNotify({ message: response.data.data.message });
               }
+            }).catch((error) => {
+              showNotify({}, error);
             });
           }
         })
@@ -683,22 +735,25 @@ export default defineComponent({
           hideLoading();
           showNotify({}, error);
         });
-      api.post('/dealers-list', {})
-        .then((response) => {
-          hideLoading();
-          if (response.data.success) {
-            response.data.data.data.forEach((row, i) => {
-              dealerOptions.value.push(row);
-              if (i === 0) {
-                dealer.value = row.id;
-              }
-            });
-          }
-        })
-        .catch((error) => {
-          hideLoading();
-          showNotify({}, error);
-        });
+
+      if (!isDealer.value) {
+        api.post('/dealers-list', {})
+          .then((response) => {
+            hideLoading();
+            if (response.data.success) {
+              response.data.data.data.forEach((row, i) => {
+                dealerOptions.value.push(row);
+                if (i === 0) {
+                  dealer.value = row.id;
+                }
+              });
+            }
+          })
+          .catch((error) => {
+            hideLoading();
+            showNotify({}, error);
+          });
+      }
     });
 
     return {
@@ -750,6 +805,11 @@ export default defineComponent({
       bidSuccess,
       splitterModel,
       dealerOptions,
+      productOptions,
+      product,
+      dealerChanged,
+      creditMonthsOptions,
+      creditMonthsChanged,
     };
   },
 });
