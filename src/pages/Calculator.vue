@@ -526,9 +526,25 @@ export default defineComponent({
       downloadPDF(1, '/print/pre-contract', 'pre-contract');
     };
 
+    const clearCalcResults = () => {
+      calcResults.value = null;
+      disableInputs.value = false;
+      calcError.value = '';
+      clientFirstName.value = '';
+      clientLastName.value = '';
+      clientPhone.value = '';
+      clientBuletinSN.value = '';
+      clientBuletinIDNP.value = '';
+      clientBirthDate.value = '';
+      clientLocalitate.value = '';
+      clientCb.value = false;
+      clientCbHasError.value = false;
+    };
+
     const dealerChanged = () => {};
 
     const productChanged = () => {
+      clearCalcResults();
       typeCreditsSelected.value = {};
       creditMonthsOptions.value = [];
       productOptions.value.forEach((v) => {
@@ -546,6 +562,7 @@ export default defineComponent({
     };
 
     const creditMonthsChanged = () => {
+      clearCalcResults();
       productOptions.value.forEach((v) => {
         if (v && v.id === product.value) {
           typeCreditsOptions.value.forEach((v2) => {
@@ -594,21 +611,6 @@ export default defineComponent({
           disableInputs.value = false;
           showNotify({}, error);
         });
-    };
-
-    const clearCalcResults = () => {
-      calcResults.value = null;
-      disableInputs.value = false;
-      calcError.value = '';
-      clientFirstName.value = '';
-      clientLastName.value = '';
-      clientPhone.value = '';
-      clientBuletinSN.value = '';
-      clientBuletinIDNP.value = '';
-      clientBirthDate.value = '';
-      clientLocalitate.value = '';
-      clientCb.value = false;
-      clientCbHasError.value = false;
     };
 
     const addNewBid = () => {
@@ -694,17 +696,7 @@ export default defineComponent({
       }
     };
 
-    watchEffect(() => {
-      if (product.value) {
-        productChanged();
-      }
-    });
-
-    watchEffect(() => {
-      calcResultsExist.value = calcResults.value && calcResults.value.tabel;
-    });
-
-    onMounted(() => {
+    const loadProducts = () => {
       api.post('/type-credits-list', {})
         .then((response) => {
           hideLoading();
@@ -735,6 +727,20 @@ export default defineComponent({
           hideLoading();
           showNotify({}, error);
         });
+    };
+
+    watchEffect(() => {
+      if (product.value) {
+        productChanged();
+      }
+    });
+
+    watchEffect(() => {
+      calcResultsExist.value = calcResults.value && calcResults.value.tabel;
+    });
+
+    onMounted(() => {
+      loadProducts();
 
       if (!isDealer.value) {
         api.post('/dealers-list', {})

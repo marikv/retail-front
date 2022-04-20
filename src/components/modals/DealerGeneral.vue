@@ -83,17 +83,29 @@
         v-model="email"
         label="Email"/>
     </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        outlined
+        v-model="website"
+        label="WEB site"/>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        outlined
+        v-model="directorGeneral"
+        label="Director (Nume Prenume)"/>
+    </div>
     <div class="col-xs-12 row text-subtitle1 text-primary q-pa-xs">
       Date bancare
     </div>
-    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12 col-xs-12 q-pa-xs">
+    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs">
       <q-input
         outlined
         :error="addressJurHasError"
         @blur="addressJurHasError = false"
         @focus="addressJurHasError = false"
         v-model="bankName"
-        label="Nume bancă"/>
+        label="Nume bancă, filiala"/>
     </div>
     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
@@ -101,7 +113,7 @@
         v-model="bankCb"
         label="c/b"/>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         outlined
         v-model="bankIban"
@@ -110,8 +122,20 @@
     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         outlined
+        v-model="bankSwift"
+        label="SWIFT"/>
+    </div>
+    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        outlined
         v-model="bankValuta"
         label="Valuta"/>
+    </div>
+    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        outlined
+        v-model="bankTva"
+        label="TVA"/>
     </div>
     <div
       v-if="id > 0"
@@ -257,7 +281,9 @@ export default defineComponent({
     const bankNameHasError = ref(false);
     const bankCb = ref('');
     const bankIban = ref('');
+    const bankSwift = ref('');
     const bankValuta = ref('');
+    const bankTva = ref('');
     const contractDate = ref('');
     const phone1 = ref('');
     const phone1HasError = ref(false);
@@ -265,6 +291,8 @@ export default defineComponent({
     const phone2HasError = ref(false);
     const fax = ref('');
     const faxHasError = ref(false);
+    const website = ref('');
+    const directorGeneral = ref('');
     const email = ref('');
     const description = ref('');
     const emailHasError = ref(false);
@@ -333,12 +361,16 @@ export default defineComponent({
       bankName.value = dealerData.value.bank_name || '';
       bankCb.value = dealerData.value.bank_cb || '';
       bankIban.value = dealerData.value.bank_iban || '';
+      bankSwift.value = dealerData.value.bank_swift || '';
       bankValuta.value = dealerData.value.bank_valuta || '';
+      bankTva.value = dealerData.value.bank_tva || '';
       contractDate.value = dealerData.value.contract_date || '';
       phone1.value = dealerData.value.phone1 || '';
       phone2.value = dealerData.value.phone2 || '';
       phone2.value = dealerData.value.phone2 || '';
       fax.value = dealerData.value.fax || '';
+      website.value = dealerData.value.website || '';
+      directorGeneral.value = dealerData.value.director_general || '';
       email.value = dealerData.value.email || '';
       description.value = dealerData.value.description || '';
     });
@@ -376,12 +408,16 @@ export default defineComponent({
           phone1: phone1.value,
           phone2: phone1.value,
           fax: fax.value,
+          website: website.value,
+          director_general: directorGeneral.value,
           email: email.value,
           description: description.value,
           bank_name: bankName.value,
           bank_cb: bankCb.value,
           bank_iban: bankIban.value,
+          bank_swift: bankSwift.value,
           bank_valuta: bankValuta.value,
+          bank_tva: bankTva.value,
           contract_date: contractDate.value,
           products: dealerProducts.value,
         };
@@ -454,6 +490,8 @@ export default defineComponent({
       phone1HasError,
       phone2,
       phone2HasError,
+      website,
+      directorGeneral,
       fax,
       faxHasError,
       email,
@@ -462,7 +500,9 @@ export default defineComponent({
       bankNameHasError,
       bankCb,
       bankIban,
+      bankSwift,
       bankValuta,
+      bankTva,
       contractDate,
       save,
       newPassword,

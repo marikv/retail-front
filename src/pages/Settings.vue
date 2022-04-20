@@ -12,7 +12,7 @@
 
               <q-item :key="item.component"
                 v-for="item in components"
-                v-ripple class="cursor-pointer">
+                v-ripple :class="getItemClass(item.component)">
                 <q-item-section @click="setOpenedComponent(item.component)">
                   <q-item-label>
                     {{item.label}}
@@ -46,6 +46,7 @@
 
 <script>
 import {
+  computed,
   defineComponent, onMounted,
   ref,
 } from 'vue';
@@ -71,6 +72,14 @@ export default defineComponent({
     ]);
     const $store = useStore();
 
+    const getItemClass = computed(() => (component) => {
+      let cl = 'cursor-pointer';
+      if (component === openedComponent.value) {
+        cl += ' text-primary text-weight-bold';
+      }
+      return cl;
+    });
+
     const setOpenedComponent = (v) => {
       openedComponent.value = v;
     };
@@ -84,6 +93,7 @@ export default defineComponent({
       openedComponent,
       setOpenedComponent,
       components,
+      getItemClass,
     };
   },
 });
