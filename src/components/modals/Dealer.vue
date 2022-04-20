@@ -39,7 +39,9 @@
         <q-btn v-if="id"
                @click="printContract()" icon="print" label="Contract"></q-btn>
         <q-btn v-if="id"
-               @click="printAnexa()" icon="print" label="Anexa"></q-btn>
+               @click="printAcord()" icon="print" label="Acord"></q-btn>
+        <q-btn v-if="id"
+               @click="printConsimtamant()" icon="print" label="Consimțământul"></q-btn>
         <q-btn color="primary"
                icon="save"
                label="Salvează" @click="onOKClick" />
@@ -173,8 +175,11 @@ export default {
     const printContract = () => {
       downloadPDF(id.value, '/print/contractDealer', 'contract_colaborare');
     };
-    const printAnexa = () => {
-      downloadPDF(id.value, '/print/contractAnexa', 'contract_anexa');
+    const printConsimtamant = () => {
+      downloadPDF(id.value, '/print/contractDealerConsimtamant', 'contract_consimtamant');
+    };
+    const printAcord = () => {
+      downloadPDF(id.value, '/print/contractDealerAcord', 'contract_acord');
     };
 
     return {
@@ -184,7 +189,8 @@ export default {
       onCancelClick: onDialogCancel,
       isOpenedLocal,
       printContract,
-      printAnexa,
+      printConsimtamant,
+      printAcord,
       id,
       tab,
       tabs,
