@@ -261,7 +261,7 @@
                   v-model="clientFlat">
                 </q-input>
               </div>
-              <div class="col-12 text-primary">Persoana de contact</div>
+              <div class="col-12 text-primary">Persoana de contact 1</div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
                   dense
@@ -302,8 +302,51 @@
                   v-model="clientWhoIsContPers1">
                 </q-input>
               </div>
+              <div class="col-12 text-primary">Persoana de contact 2</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Nume"
+                  v-model="clientFirstNameContPers2">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Prenume"
+                  v-model="clientLastNameContPers2">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Telefon"
+                  v-model="clientPhoneContPers2">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="disableClientInputs"
+                  type="text"
+                  label="Cine este"
+                  v-model="clientWhoIsContPers2">
+                </q-input>
+              </div>
 
-              <div class="col-12"></div>
+              <div class="col-12">
+                <bid-client-scoring :bid_id="id" :bidData="bidData"></bid-client-scoring>
+              </div>
               <div v-if="bidData.status_id === BID_STATUS_REFUSED"
                    class="col-12 text-red">
                 Cerere refuzată
@@ -523,10 +566,12 @@ import HeaderTabsForForms from 'components/HeadersTabsForForms';
 import LogsTableForForms from 'components/LogsTableForForms';
 import FilesForm from 'components/FilesForm';
 import FileUpload from 'components/Fields/FileUpload';
+import BidClientScoring from 'components/BidClientScoring';
 
 export default {
   name: 'BidDialog',
   components: {
+    BidClientScoring,
     FileUpload,
     FilesForm,
     LogsTableForForms,
@@ -568,6 +613,10 @@ export default {
     const clientPhoneContPers1 = ref('');
     const clientLastNameContPers1 = ref('');
     const clientFirstNameContPers1 = ref('');
+    const clientWhoIsContPers2 = ref('');
+    const clientPhoneContPers2 = ref('');
+    const clientLastNameContPers2 = ref('');
+    const clientFirstNameContPers2 = ref('');
     const disableClientInputs = ref(true);
     const disableSumMaximPermis = ref(true);
     const fileTypeSignContract = ref(FILE_TYPE_SIGN_CONTRACT);
@@ -654,6 +703,10 @@ export default {
         clientPhoneContPers1.value = bidData.value.phone_cont_pers1;
         clientLastNameContPers1.value = bidData.value.last_name_cont_pers1;
         clientFirstNameContPers1.value = bidData.value.first_name_cont_pers1;
+        clientWhoIsContPers2.value = bidData.value.who_is_cont_pers2;
+        clientPhoneContPers2.value = bidData.value.phone_cont_pers2;
+        clientLastNameContPers2.value = bidData.value.last_name_cont_pers2;
+        clientFirstNameContPers2.value = bidData.value.first_name_cont_pers2;
         sumMax.value = bidData.value.sum_max;
         sumMin.value = bidData.value.sum_min;
 
@@ -686,6 +739,7 @@ export default {
         hideLoading();
         if (response.data.success) {
           $store.commit('bids/updateOpenedBidData', response.data.data);
+          bidData.value = response.data.data;
         } else {
           showNotify({ message: response.data.data.message });
         }
@@ -846,6 +900,10 @@ export default {
       clientPhoneContPers1,
       clientLastNameContPers1,
       clientFirstNameContPers1,
+      clientWhoIsContPers2,
+      clientPhoneContPers2,
+      clientLastNameContPers2,
+      clientFirstNameContPers2,
       disableClientInputs,
       tabs,
       tab,

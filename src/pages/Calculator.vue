@@ -23,7 +23,6 @@
                   color="primary"
                   v-model="dealer"
                   :options="dealerOptions"
-                  @update:model-value="dealerChanged"
                   emit-value
                   map-options
                   option-value="id"
@@ -279,6 +278,19 @@
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
+                  :error="clientRaionHasError"
+                  @blur="clientRaionHasError = false"
+                  @focus="clientRaionHasError = false"
+                  type="text"
+                  label="Raion"
+                  v-model="clientRaion">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
                   :error="clientLocalitateHasError"
                   @blur="clientLocalitateHasError = false"
                   @focus="clientLocalitateHasError = false"
@@ -318,16 +330,16 @@
                 </q-input>
               </div>
 
-              <div class="col-12 text-primary">Persoana de contact</div>
+              <div class="col-12 text-primary">Persoana de contact 1</div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <autocomplete-field
+                <q-input
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Nume"
                   v-model="clientFirstNameContPers1">
-                </autocomplete-field>
+                </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -357,6 +369,48 @@
                   type="text"
                   label="Cine este"
                   v-model="clientWhoIsContPers1">
+                </q-input>
+              </div>
+
+              <div class="col-12 text-primary">Persoana de contact 2</div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Nume"
+                  v-model="clientFirstNameContPers2">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Prenume"
+                  v-model="clientLastNameContPers2">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Telefon"
+                  v-model="clientPhoneContPers2">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Cine este"
+                  v-model="clientWhoIsContPers2">
                 </q-input>
               </div>
 
@@ -444,8 +498,10 @@ import {
 import { api } from 'boot/axios';
 import {
   calendarLocaleRo,
-  dateFormat, downloadPDF,
+  dateFormat,
+  downloadPDF,
   hideLoading,
+  showLoading,
   showNotify,
   USER_ROLE_ADMIN,
   USER_ROLE_DEALER,
@@ -453,11 +509,10 @@ import {
 } from 'src/helpers';
 import { useStore } from 'vuex';
 import BidsListForCalculator from 'components/BidsListForCalculator';
-import AutocompleteField from 'components/Fields/AutocompleteField';
 
 export default defineComponent({
   name: 'Calculator',
-  components: { AutocompleteField, BidsListForCalculator },
+  components: { BidsListForCalculator },
   setup() {
     const splitterModel = ref(580);
     // 470px
@@ -469,6 +524,7 @@ export default defineComponent({
     const calcResults = ref(null);
     const calcError = ref('');
     const product = ref(null);
+    const productOptionsAll = ref([]);
     const productOptions = ref([]);
     const typeCredits = ref(null);
     const creditMonthsOptions = ref([]);
@@ -496,16 +552,23 @@ export default defineComponent({
     const clientBuletinIDNPHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
+    const clientRaion = ref('');
+    const clientRaionHasError = ref(false);
     const clientLocalitate = ref('');
     const clientLocalitateHasError = ref(false);
     const clientStreet = ref('');
     const clientHouse = ref('');
     const clientFlat = ref('');
-    const clientWhoIsContPers1 = ref('');
     const dealer = ref(0);
+    const dealerData = ref({});
+    const clientWhoIsContPers1 = ref('');
     const clientPhoneContPers1 = ref('');
     const clientLastNameContPers1 = ref('');
     const clientFirstNameContPers1 = ref('');
+    const clientWhoIsContPers2 = ref('');
+    const clientPhoneContPers2 = ref('');
+    const clientLastNameContPers2 = ref('');
+    const clientFirstNameContPers2 = ref('');
     const clientCb = ref(false);
     const clientCbHasError = ref(false);
     const bidError = ref('');
@@ -537,11 +600,42 @@ export default defineComponent({
       clientBuletinIDNP.value = '';
       clientBirthDate.value = '';
       clientLocalitate.value = '';
+      clientRaion.value = '';
       clientCb.value = false;
       clientCbHasError.value = false;
     };
 
-    const dealerChanged = () => {};
+    const dealerChanged = () => {
+      if (dealer.value) {
+        showLoading();
+        api.get(`/dealers/get-data-by-id/${dealer.value}`).then((response) => {
+          hideLoading();
+          if (response.data.success) {
+            $store.commit('dealers/updateOpenedDealerData', response.data.data);
+            dealerData.value = response.data.data;
+            if (dealerData.value.dealer_products) {
+              productOptions.value = [];
+              Object.keys(dealerData.value.dealer_products).forEach((k) => {
+                const productId = dealerData.value.dealer_products[k].product_id;
+                productOptionsAll.value.forEach((opt, index) => {
+                  if (opt.id === productId) {
+                    productOptions.value.push(opt);
+                  }
+                  if (index === 0) {
+                    product.value = productId;
+                  }
+                });
+              });
+            }
+          } else {
+            showNotify({ message: response.data.data.message });
+          }
+        }).catch((error) => {
+          hideLoading();
+          showNotify({}, error);
+        });
+      }
+    };
 
     const productChanged = () => {
       clearCalcResults();
@@ -632,8 +726,22 @@ export default defineComponent({
       }
       if (!clientBirthDate.value) {
         clientBirthDateHasError.value = true;
+      } else {
+        const expl = clientBirthDate.value.split('.');
+        if (expl[0] && parseInt(expl[0], 10) > 31) {
+          clientBirthDateHasError.value = true;
+        }
+        if (expl[1] && parseInt(expl[1], 10) > 12) {
+          clientBirthDateHasError.value = true;
+        }
+        if (expl[2] && parseInt(expl[2], 10) < 1930) {
+          clientBirthDateHasError.value = true;
+        }
+        if (expl[2] && parseInt(expl[2], 10) > 2022) {
+          clientBirthDateHasError.value = true;
+        }
       }
-      if (!clientLocalitate.value) {
+      if (!clientRaion.value && !clientLocalitate.value) {
         clientLocalitateHasError.value = true;
       }
       if (!clientCb.value) {
@@ -648,6 +756,7 @@ export default defineComponent({
         && !clientBuletinIDNPHasError.value
         && !clientBirthDateHasError.value
         && !clientLocalitateHasError.value
+        && !clientRaionHasError.value
         && !clientCbHasError.value
         && calcResultsExist.value
         && typeCreditsSelected.value
@@ -661,14 +770,19 @@ export default defineComponent({
           buletin_sn: clientBuletinSN.value,
           buletin_idnp: clientBuletinIDNP.value,
           localitate: clientLocalitate.value,
+          raion: clientRaion.value,
           street: clientStreet.value,
           house: clientHouse.value,
           flat: clientFlat.value,
-          who_is_cont_pers1: clientWhoIsContPers1.value,
           dealer: dealer.value,
+          who_is_cont_pers1: clientWhoIsContPers1.value,
           phone_cont_pers1: clientPhoneContPers1.value,
           last_name_cont_pers1: clientLastNameContPers1.value,
           first_name_cont_pers1: clientFirstNameContPers1.value,
+          who_is_cont_pers2: clientWhoIsContPers2.value,
+          phone_cont_pers2: clientPhoneContPers2.value,
+          last_name_cont_pers2: clientLastNameContPers2.value,
+          first_name_cont_pers2: clientFirstNameContPers2.value,
           type_credit_id: typeCreditsSelected.value.id,
           type_credit_name: typeCreditsSelected.value.name,
           calc_results: calcResults.value,
@@ -703,6 +817,7 @@ export default defineComponent({
           if (response.data.success) {
             api.post('/products-list').then((response2) => {
               if (response2.data.success) {
+                productOptionsAll.value = response2.data.data.data;
                 productOptions.value = response2.data.data.data;
                 productOptions.value.forEach((row2, i2) => {
                   if (i2 === 0) {
@@ -736,30 +851,33 @@ export default defineComponent({
     });
 
     watchEffect(() => {
+      if (dealer.value) {
+        dealerChanged();
+      }
+    });
+
+    watchEffect(() => {
       calcResultsExist.value = calcResults.value && calcResults.value.tabel;
     });
 
     onMounted(() => {
       loadProducts();
-
-      if (!isDealer.value) {
-        api.post('/dealers-list', {})
-          .then((response) => {
-            hideLoading();
-            if (response.data.success) {
-              response.data.data.data.forEach((row, i) => {
-                dealerOptions.value.push(row);
-                if (i === 0) {
-                  dealer.value = row.id;
-                }
-              });
-            }
-          })
-          .catch((error) => {
-            hideLoading();
-            showNotify({}, error);
-          });
-      }
+      api.post('/dealers-list', {})
+        .then((response) => {
+          hideLoading();
+          if (response.data.success) {
+            response.data.data.data.forEach((row, i) => {
+              dealerOptions.value.push(row);
+              if (i === 0) {
+                dealer.value = row.id;
+              }
+            });
+          }
+        })
+        .catch((error) => {
+          hideLoading();
+          showNotify({}, error);
+        });
     });
 
     return {
@@ -794,6 +912,8 @@ export default defineComponent({
       clientBuletinIDNPHasError,
       clientBirthDate,
       clientBirthDateHasError,
+      clientRaion,
+      clientRaionHasError,
       clientLocalitate,
       clientLocalitateHasError,
       clientStreet,
@@ -804,6 +924,10 @@ export default defineComponent({
       clientPhoneContPers1,
       clientLastNameContPers1,
       clientFirstNameContPers1,
+      clientWhoIsContPers2,
+      clientPhoneContPers2,
+      clientLastNameContPers2,
+      clientFirstNameContPers2,
       clientCb,
       clientCbHasError,
       addNewBid,
