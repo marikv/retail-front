@@ -33,30 +33,32 @@
               </div>
               <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs"></div>
 
-              <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12 col-xs-12 q-pa-xs">
-                <span class="text-primary" style="font-size: 20px;">
+              <div class="col-xl-7 col-lg-7 col-md-6 col-sm-12 col-xs-12 q-pa-xs">
+                <span class="text-primary text-h6" >
                   {{bidData && bidData.type_credit ? bidData.type_credit.name : ''}}
                 </span>
-                <span class="text-grey q-mx-md">/</span>
-                <span class="text-black" style="font-size: 16px;">
+<!--                <span class="text-grey q-mx-md">/</span>-->
+<!--                <span class="text-black" style="font-size: 20px;">-->
+<!--                  <span style="font-weight: bold;">-->
+<!--                    {{bidData && bidData.months ? bidData.months : '0'}}-->
+<!--                  </span>-->
+<!--                  <span style="font-size: 16px;"> Luni</span>-->
+<!--                </span>-->
+                <span class="text-grey q-ml-lg">{{dateToDot(bidData.created_at)}}</span>
+              </div>
+              <div
+                class="col-xl-5 col-lg-5 col-md-6 col-sm-12 col-xs-12 q-pa-xs text-right">
+                <span class="text-red" style="font-size: 16px;">
                   <span style="font-size: 23px;">
                     <span style="font-weight: bold;">
                       {{bidData && bidData.imprumut ? bidData.imprumut : '0'}}
                     </span>
                   </span> Lei
                 </span>
-                <span class="text-grey q-mx-md">/</span>
-                <span class="text-black" style="font-size: 20px;">
-                  <span style="font-weight: bold;">
-                    {{bidData && bidData.months ? bidData.months : '0'}}
-                  </span>
-                  <span style="font-size: 16px;"> Luni</span>
-                </span>
-                <span class="text-grey q-ml-lg">{{dateToDot(bidData.created_at)}}</span>
-              </div>
-              <div v-if="!isDealer && bidData.status_id !== BID_STATUS_REFUSED"
-                class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-xs-12 q-pa-xs text-right">
-                  <q-btn color="primary"
+                  <q-btn v-if="!isDealer && (bidData.status_id === BID_STATUS_APPROVED
+                || bidData.status_id === BID_STATUS_IN_WORK)"
+                         color="primary"
+                         class="q-ml-md"
                          @click="openPopupForSumChange"
                          label="Schimbă suma cererii"></q-btn>
               </div>
@@ -123,7 +125,7 @@
                 <div
                   v-if="bidData.dealer">
                   <q-avatar size="md"
-                    class="cursor-pointer bg-white q-mr-sm" style="border: 1px solid white;">
+                    class="cursor-pointer bg-white q-mr-sm" style="border: 1px solid #cbcbcb;">
                     <q-img :src="getLogo(bidData.dealer.logo)"
                            v-if="getLogo(bidData.dealer.logo)" alt="" ></q-img>
                     <div v-else :style="`color: ${getColorForLogo(bidData.dealer.name)}`">
@@ -134,218 +136,11 @@
                   <span class="text-grey q-ml-lg">User: {{bidData.user.name}}</span>
                 </div>
               </div>
-              <div class="col-12 q-mt-lg">
-                <span class="text-primary" style="font-size: 18px;">Client</span>
+              <div class="col-12 q-mt-md">
+                <bid-client-form></bid-client-form>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientFirstNameHasError"
-                  @blur="clientFirstNameHasError = false"
-                  @focus="clientFirstNameHasError = false"
-                  type="text"
-                  label="Nume"
-                  v-model="clientFirstName">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientLastNameHasError"
-                  @blur="clientLastNameHasError = false"
-                  @focus="clientLastNameHasError = false"
-                  type="text"
-                  label="Prenume"
-                  v-model="clientLastName">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientPhoneHasError"
-                  @blur="clientPhoneHasError = false"
-                  @focus="clientPhoneHasError = false"
-                  type="text"
-                  label="Telefon"
-                  v-model="clientPhone">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientBirthDateHasError"
-                  @blur="clientBirthDateHasError = false"
-                  @focus="clientBirthDateHasError = false"
-                  type="text"
-                  mask="##.##.####"
-                  label="Data de naștere"
-                  v-model="clientBirthDate">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientBuletinSNHasError"
-                  @blur="clientBuletinSNHasError = false"
-                  @focus="clientBuletinSNHasError = false"
-                  type="text"
-                  :rules="[(val) => val.length === 9 || '9 caractere']"
-                  label="Buletin S/N"
-                  v-model="clientBuletinSN">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientBuletinIDNPHasError"
-                  @blur="clientBuletinIDNPHasError = false"
-                  @focus="clientBuletinIDNPHasError = false"
-                  type="text"
-                  :rules="[(val) => val.length === 13 || '13 cifre']"
-                  label="Buletin IDNP"
-                  v-model="clientBuletinIDNP">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  :error="clientLocalitateHasError"
-                  @blur="clientLocalitateHasError = false"
-                  @focus="clientLocalitateHasError = false"
-                  type="text"
-                  label="Localitate"
-                  v-model="clientLocalitate">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Strada"
-                  v-model="clientStreet">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Bloc"
-                  v-model="clientHouse">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Apartament"
-                  v-model="clientFlat">
-                </q-input>
-              </div>
-              <div class="col-12 text-primary">Persoana de contact 1</div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Nume"
-                  v-model="clientFirstNameContPers1">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Prenume"
-                  v-model="clientLastNameContPers1">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Telefon"
-                  v-model="clientPhoneContPers1">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Cine este"
-                  v-model="clientWhoIsContPers1">
-                </q-input>
-              </div>
-              <div class="col-12 text-primary">Persoana de contact 2</div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Nume"
-                  v-model="clientFirstNameContPers2">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Prenume"
-                  v-model="clientLastNameContPers2">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Telefon"
-                  v-model="clientPhoneContPers2">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="disableClientInputs"
-                  type="text"
-                  label="Cine este"
-                  v-model="clientWhoIsContPers2">
-                </q-input>
-              </div>
-
-              <div class="col-12">
-                <bid-client-scoring :bid_id="id" :bidData="bidData"></bid-client-scoring>
+              <div class="col-12 q-mt-md q-mb-md">
+                <bid-client-scoring v-if="!isDealer"></bid-client-scoring>
               </div>
               <div v-if="bidData.status_id === BID_STATUS_REFUSED"
                    class="col-12 text-red">
@@ -481,8 +276,9 @@
                   <q-input
                     outlined
                     type="number"
-                    class="text-subtitle1 text-primary bg-white"
+                    class="text-subtitle1 text-primary"
                     input-class=""
+                    bg-color="white"
                     v-model="sumMaximPermis"
                     label="Suma maximă permisă">
                   </q-input>
@@ -567,10 +363,12 @@ import LogsTableForForms from 'components/LogsTableForForms';
 import FilesForm from 'components/FilesForm';
 import FileUpload from 'components/Fields/FileUpload';
 import BidClientScoring from 'components/BidClientScoring';
+import BidClientForm from 'components/BidClientForm';
 
 export default {
   name: 'BidDialog',
   components: {
+    BidClientForm,
     BidClientScoring,
     FileUpload,
     FilesForm,
@@ -592,32 +390,6 @@ export default {
     const sumMaximPermis = ref(0);
     const sumMax = ref(0);
     const sumMin = ref(0);
-    const clientFirstName = ref('');
-    const clientFirstNameHasError = ref(false);
-    const clientLastName = ref('');
-    const clientLastNameHasError = ref(false);
-    const clientPhone = ref('');
-    const clientPhoneHasError = ref(false);
-    const clientBuletinSN = ref('');
-    const clientBuletinSNHasError = ref(false);
-    const clientBuletinIDNP = ref('');
-    const clientBuletinIDNPHasError = ref(false);
-    const clientBirthDate = ref('');
-    const clientBirthDateHasError = ref(false);
-    const clientLocalitate = ref('');
-    const clientLocalitateHasError = ref(false);
-    const clientStreet = ref('');
-    const clientHouse = ref('');
-    const clientFlat = ref('');
-    const clientWhoIsContPers1 = ref('');
-    const clientPhoneContPers1 = ref('');
-    const clientLastNameContPers1 = ref('');
-    const clientFirstNameContPers1 = ref('');
-    const clientWhoIsContPers2 = ref('');
-    const clientPhoneContPers2 = ref('');
-    const clientLastNameContPers2 = ref('');
-    const clientFirstNameContPers2 = ref('');
-    const disableClientInputs = ref(true);
     const disableSumMaximPermis = ref(true);
     const fileTypeSignContract = ref(FILE_TYPE_SIGN_CONTRACT);
     const fileTypeUnSignContract = ref(FILE_TYPE_UNSIGN_CONTRACT);
@@ -689,24 +461,6 @@ export default {
         id.value = bidData.value.id ? bidData.value.id : 0;
         statusId.value = bidData.value.status_id ? parseInt(bidData.value.status_id, 10) : 0;
         sumMaximPermis.value = bidData.value.sum_max_permis;
-        clientFirstName.value = bidData.value.first_name;
-        clientLastName.value = bidData.value.last_name;
-        clientPhone.value = bidData.value.phone1;
-        clientBuletinSN.value = bidData.value.buletin_sn;
-        clientBuletinIDNP.value = bidData.value.buletin_idnp;
-        clientBirthDate.value = dateToDot(bidData.value.birth_date);
-        clientLocalitate.value = bidData.value.localitate;
-        clientStreet.value = bidData.value.street;
-        clientHouse.value = bidData.value.house;
-        clientFlat.value = bidData.value.flat;
-        clientWhoIsContPers1.value = bidData.value.who_is_cont_pers1;
-        clientPhoneContPers1.value = bidData.value.phone_cont_pers1;
-        clientLastNameContPers1.value = bidData.value.last_name_cont_pers1;
-        clientFirstNameContPers1.value = bidData.value.first_name_cont_pers1;
-        clientWhoIsContPers2.value = bidData.value.who_is_cont_pers2;
-        clientPhoneContPers2.value = bidData.value.phone_cont_pers2;
-        clientLastNameContPers2.value = bidData.value.last_name_cont_pers2;
-        clientFirstNameContPers2.value = bidData.value.first_name_cont_pers2;
         sumMax.value = bidData.value.sum_max;
         sumMin.value = bidData.value.sum_min;
 
@@ -879,32 +633,6 @@ export default {
       showAllBidMonths,
       sumMaximPermis,
       disableSumMaximPermis,
-      clientFirstName,
-      clientFirstNameHasError,
-      clientLastName,
-      clientLastNameHasError,
-      clientPhone,
-      clientPhoneHasError,
-      clientBuletinSN,
-      clientBuletinSNHasError,
-      clientBuletinIDNP,
-      clientBuletinIDNPHasError,
-      clientBirthDate,
-      clientBirthDateHasError,
-      clientLocalitate,
-      clientLocalitateHasError,
-      clientStreet,
-      clientHouse,
-      clientFlat,
-      clientWhoIsContPers1,
-      clientPhoneContPers1,
-      clientLastNameContPers1,
-      clientFirstNameContPers1,
-      clientWhoIsContPers2,
-      clientPhoneContPers2,
-      clientLastNameContPers2,
-      clientFirstNameContPers2,
-      disableClientInputs,
       tabs,
       tab,
       openPopupForSumChange,

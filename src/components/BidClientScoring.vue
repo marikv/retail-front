@@ -7,6 +7,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="studiiClass"
         v-model="studii"
         :options="studiiOptions"
@@ -20,6 +21,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="virstaClass"
         v-model="virsta"
         :options="virstaOptions"
@@ -33,6 +35,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="stareaCivilaClass"
         v-model="stareaCivila"
         :options="stareaCivilaOptions"
@@ -46,6 +49,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="locMuncaClass"
         v-model="locMunca"
         :options="locMuncaOptions"
@@ -59,6 +63,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="functieMuncaClass"
         v-model="functieMunca"
         :options="functieMuncaOptions"
@@ -72,6 +77,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="durataMuncaClass"
         v-model="durataMunca"
         :options="durataMuncaOptions"
@@ -85,6 +91,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="bunuriImobileClass"
         v-model="bunuriImobile"
         :options="bunuriImobileOptions"
@@ -98,6 +105,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="bunuriMobileClass"
         v-model="bunuriMobile"
         :options="bunuriMobileOptions"
@@ -111,6 +119,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="salariuClass"
         v-model="salariu"
         :options="salariuOptions"
@@ -124,6 +133,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="alteVenituriClass"
         v-model="alteVenituri"
         :options="alteVenituriOptions"
@@ -137,6 +147,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="alteVenituriFamilieClass"
         v-model="alteVenituriFamilie"
         :options="alteVenituriFamilieOptions"
@@ -150,6 +161,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="istorieCreditClass"
         v-model="istorieCredit"
         :options="istorieCreditOptions"
@@ -163,6 +175,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="datoriiClass"
         v-model="datorii"
         :options="datoriiOptions"
@@ -176,6 +189,7 @@
       <q-select
         outlined
         dense
+        :disable="disableClientInputs"
         :class="letigiiClass"
         v-model="letigii"
         :options="letigiiOptions"
@@ -202,24 +216,20 @@ import {
   watchEffect,
 } from 'vue';
 import { api } from 'boot/axios';
+import { useStore } from 'vuex';
+import { BID_STATUS_SIGNED_CONTRACT } from 'src/helpers';
 
 export default {
   name: 'BidClientScoring',
 
-  props: {
-    bid_id: {
-      type: Number,
-      default: null,
-    },
-    bidData: {
-      type: Object,
-      default() {
-        return {};
-      },
-    },
-  },
+  props: {},
 
-  setup(props) {
+  setup() {
+    const $store = useStore();
+    const id = ref(0);
+    const statusId = ref(null);
+    const disableClientInputs = ref(false);
+    const bidData = ref({});
     const barem = ref(20);
     const studii = ref(0);
     const studiiClass = ref('bg-white');
@@ -853,8 +863,8 @@ export default {
     });
 
     const updateValue = () => {
-      if (props.bid_id) {
-        api.post(`/update-scoring/${props.bid_id}`, {
+      if (id.value) {
+        api.post(`/update-scoring/${id.value}`, {
           studii: studii.value,
           virsta: virsta.value,
           stareaCivila: stareaCivila.value,
@@ -872,14 +882,29 @@ export default {
         });
       }
     };
+
     watchEffect(() => {
-      if (props.bidData
-        && props.bidData.bid_scorings
-        && props.bidData.bid_scorings[0]
-        && props.bidData.bid_scorings[0].json_date
-        && props.bidData.bid_scorings[0].json_date.length
+      bidData.value = $store.getters['bids/getOpenedBidData'];
+    });
+
+    watchEffect(() => {
+      if (bidData.value && bidData.value.id) {
+        id.value = bidData.value.id ? bidData.value.id : 0;
+        statusId.value = bidData.value.status_id ? parseInt(bidData.value.status_id, 10) : 0;
+        if (statusId.value === BID_STATUS_SIGNED_CONTRACT) {
+          disableClientInputs.value = true;
+        }
+      }
+    });
+
+    watchEffect(() => {
+      if (bidData.value
+        && bidData.value.bid_scorings
+        && bidData.value.bid_scorings[0]
+        && bidData.value.bid_scorings[0].json_date
+        && bidData.value.bid_scorings[0].json_date.length
       ) {
-        const jsonData = JSON.parse(props.bidData.bid_scorings[0].json_date);
+        const jsonData = JSON.parse(bidData.value.bid_scorings[0].json_date);
         if (jsonData && jsonData.studii !== undefined) {
           studii.value = jsonData.studii;
           virsta.value = jsonData.virsta;
@@ -945,6 +970,7 @@ export default {
       total,
       barem,
       updateValue,
+      disableClientInputs,
     };
   },
 };

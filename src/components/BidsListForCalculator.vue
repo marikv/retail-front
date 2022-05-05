@@ -3,7 +3,7 @@
     <q-table
       class="full-width"
       :flat="true"
-      title="Cereri trimise"
+      title=""
       :rows="rows"
       :columns="columns"
       row-key="id"
@@ -46,11 +46,14 @@
                  size="md"
                  color="positive"
                  @click="editRow(props.row.id, false)"
-                 icon="edit">
-            <q-tooltip>Redactează</q-tooltip>
+                 :icon="props.row.status_id === bidStatusSignedContract ? 'visibility' : 'edit'">
+            <q-tooltip>
+              {{(props.row.status_id === bidStatusSignedContract ? 'Deschide' : 'Redactează')}}
+            </q-tooltip>
           </q-btn><br>
           <q-btn dense round flat
                  size="md"
+                 v-if="props.row.status_id !== bidStatusSignedContract"
                  :color="!unreadChats[props.row.id] ? 'positive' : 'negative'"
                  @click="editRow(props.row.id, true)"
                  :icon="!unreadChats[props.row.id] ? 'chat_bubble_outline' : 'chat_bubble'">
@@ -65,7 +68,7 @@
           <q-btn dense round flat
                  size="md"
                  color="negative"
-                 v-if="!isDealer"
+                 v-if="isAdmin"
                  @click="deleteRow(props)"
                  icon="delete">
             <q-tooltip>Șterge</q-tooltip>
@@ -127,7 +130,12 @@ import {
 import { useStore } from 'vuex';
 import { api } from 'boot/axios';
 import {
-  baseURL, BID_STATUS_APPROVED, BID_STATUS_IN_WORK, BID_STATUS_NEW, BID_STATUS_REFUSED,
+  baseURL,
+  BID_STATUS_APPROVED,
+  BID_STATUS_IN_WORK,
+  BID_STATUS_NEW,
+  BID_STATUS_REFUSED,
+  BID_STATUS_SIGNED_CONTRACT,
   generateColorFromString, getBidStatusName,
   getInitials,
   getMiniPhotoFromServer,
@@ -145,18 +153,20 @@ export default defineComponent({
     const rows = ref([]);
     const unreadChats = ref([]);
     const loading = ref(false);
+    const bidStatusSignedContract = ref(BID_STATUS_SIGNED_CONTRACT);
     const BidDialogRef = ref(null);
     const filter = ref('');
     const isExecutor = ref(false);
     const isAdmin = ref(false);
     const isDealer = ref(false);
     const user = computed(() => $store.getters['auth/getUser']);
-    const pagination = ref({
+    const paginationInit = {
       sortBy: 'id',
       descending: true,
       page: 1,
       rowsPerPage: 100,
-    });
+    };
+    const pagination = ref(paginationInit);
 
     const getLogo = (logo) => {
       if (logo) {
@@ -218,25 +228,28 @@ export default defineComponent({
 
     const onRequest = (props) => {
       $store.commit('users/updateRefreshGridBidsCalculator', false);
-      loading.value = true;
+      if (!loading.value) {
+        loading.value = true;
 
-      api.post('/bids/get-list', {
-        ...props,
-        activeModule: $store.getters['auth/getActiveModule'],
-      })
-        .then((response) => {
-          loading.value = false;
-          if (response.data.success) {
-            rows.value = [...response.data.data.data];
-            pagination.value.page = response.data.data.current_page;
-            pagination.value.rowsPerPage = response.data.data.per_page;
-            pagination.value.rowsNumber = response.data.data.total;
-          }
+        api.post('/bids/get-list', {
+          ...props,
+          activeModule: $store.getters['auth/getActiveModule'],
+          pagination: pagination.value,
         })
-        .catch((error) => {
-          loading.value = false;
-          showNotify({}, error);
-        });
+          .then((response) => {
+            loading.value = false;
+            if (response.data.success) {
+              rows.value = [...response.data.data.data];
+              pagination.value.page = response.data.data.current_page;
+              pagination.value.rowsPerPage = response.data.data.per_page;
+              pagination.value.rowsNumber = response.data.data.total;
+            }
+          })
+          .catch((error) => {
+            loading.value = false;
+            showNotify({}, error);
+          });
+      }
     };
 
     const editRow = (id, openChatTab = false) => {
@@ -267,8 +280,13 @@ export default defineComponent({
       isDealer.value = user.value.role_id === USER_ROLE_DEALER;
     });
     watchEffect(() => {
-      if ($store.getters['users/getRefreshGridBidsCalculator']) {
-        onRequest();
+      if ($store.getters['users/getRefreshGridBidsCalculator'] === true) {
+        $store.commit('users/updateRefreshGridBidsCalculator', false);
+        if (!loading.value) {
+          setTimeout(() => {
+            onRequest();
+          }, 10);
+        }
       }
     });
     watchEffect(() => {
@@ -286,7 +304,6 @@ export default defineComponent({
         unreadChats.value = unreadChatsLocal;
 
         if (getCheckNewMessages.bids) {
-          console.log(getCheckNewMessages.bids);
           getCheckNewMessages.bids.forEach((bid) => {
             let found = false;
             rows.value.forEach((row, i) => {
@@ -299,6 +316,7 @@ export default defineComponent({
             });
             if (!found) {
               rows.value = [bid, ...rows.value];
+              $store.commit('users/updateRefreshGridBidsCalculator', true);
             }
           });
         }
@@ -367,6 +385,7 @@ export default defineComponent({
       isExecutor,
       isDealer,
       isAdmin,
+      bidStatusSignedContract,
     };
   },
 });

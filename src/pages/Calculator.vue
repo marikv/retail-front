@@ -479,7 +479,7 @@
         </template>
 
         <template v-slot:after>
-          <bids-list-for-calculator></bids-list-for-calculator>
+          <calculator-right-panel></calculator-right-panel>
         </template>
 
       </q-splitter>
@@ -508,11 +508,11 @@ import {
   USER_ROLE_EXECUTOR,
 } from 'src/helpers';
 import { useStore } from 'vuex';
-import BidsListForCalculator from 'components/BidsListForCalculator';
+import CalculatorRightPanel from 'components/CalculatorRightPanel';
 
 export default defineComponent({
   name: 'Calculator',
-  components: { BidsListForCalculator },
+  components: { CalculatorRightPanel },
   setup() {
     const splitterModel = ref(580);
     // 470px
@@ -786,7 +786,7 @@ export default defineComponent({
           type_credit_id: typeCreditsSelected.value.id,
           type_credit_name: typeCreditsSelected.value.name,
           calc_results: calcResults.value,
-          first_pay_date: creditDate.value,
+          bid_date: creditDate.value,
           months: creditMonths.value,
           imprumut: creditSum.value,
           total_dobinda: calcResults.value.tabelTotal.dobinda,
