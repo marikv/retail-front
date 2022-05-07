@@ -278,12 +278,12 @@
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
-                  :error="clientRaionHasError"
-                  @blur="clientRaionHasError = false"
-                  @focus="clientRaionHasError = false"
+                  :error="clientRegionHasError"
+                  @blur="clientRegionHasError = false"
+                  @focus="clientRegionHasError = false"
                   type="text"
-                  label="Raion"
-                  v-model="clientRaion">
+                  label="Region"
+                  v-model="clientRegion">
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
@@ -552,8 +552,8 @@ export default defineComponent({
     const clientBuletinIDNPHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
-    const clientRaion = ref('');
-    const clientRaionHasError = ref(false);
+    const clientRegion = ref('');
+    const clientRegionHasError = ref(false);
     const clientLocalitate = ref('');
     const clientLocalitateHasError = ref(false);
     const clientStreet = ref('');
@@ -600,7 +600,7 @@ export default defineComponent({
       clientBuletinIDNP.value = '';
       clientBirthDate.value = '';
       clientLocalitate.value = '';
-      clientRaion.value = '';
+      clientRegion.value = '';
       clientCb.value = false;
       clientCbHasError.value = false;
     };
@@ -741,7 +741,7 @@ export default defineComponent({
           clientBirthDateHasError.value = true;
         }
       }
-      if (!clientRaion.value && !clientLocalitate.value) {
+      if (!clientRegion.value && !clientLocalitate.value) {
         clientLocalitateHasError.value = true;
       }
       if (!clientCb.value) {
@@ -756,7 +756,7 @@ export default defineComponent({
         && !clientBuletinIDNPHasError.value
         && !clientBirthDateHasError.value
         && !clientLocalitateHasError.value
-        && !clientRaionHasError.value
+        && !clientRegionHasError.value
         && !clientCbHasError.value
         && calcResultsExist.value
         && typeCreditsSelected.value
@@ -770,7 +770,7 @@ export default defineComponent({
           buletin_sn: clientBuletinSN.value,
           buletin_idnp: clientBuletinIDNP.value,
           localitate: clientLocalitate.value,
-          raion: clientRaion.value,
+          region: clientRegion.value,
           street: clientStreet.value,
           house: clientHouse.value,
           flat: clientFlat.value,
@@ -912,8 +912,8 @@ export default defineComponent({
       clientBuletinIDNPHasError,
       clientBirthDate,
       clientBirthDateHasError,
-      clientRaion,
-      clientRaionHasError,
+      clientRegion,
+      clientRegionHasError,
       clientLocalitate,
       clientLocalitateHasError,
       clientStreet,

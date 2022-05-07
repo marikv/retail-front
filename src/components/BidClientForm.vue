@@ -96,6 +96,20 @@
         outlined
         :disable="disableClientInputs"
         class="client-input" bg-color="white"
+        :error="clientRegionHasError"
+        @blur="clientRegionHasError = false"
+        @focus="clientRegionHasError = false"
+        type="text"
+        label="Region"
+        v-model="clientRegion">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
         :error="clientLocalitateHasError"
         @blur="clientLocalitateHasError = false"
         @focus="clientLocalitateHasError = false"
@@ -272,6 +286,8 @@ export default {
     const clientBuletinIDNPHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
+    const clientRegion = ref('');
+    const clientRegionHasError = ref(false);
     const clientLocalitate = ref('');
     const clientLocalitateHasError = ref(false);
     const clientStreet = ref('');
@@ -307,6 +323,7 @@ export default {
             buletin_sn: clientBuletinSN.value,
             buletin_idnp: clientBuletinIDNP.value,
             birth_date: clientBirthDate.value,
+            region: clientRegion.value,
             localitate: clientLocalitate.value,
             street: clientStreet.value,
             house: clientHouse.value,
@@ -353,6 +370,7 @@ export default {
         clientBuletinSN.value = bidData.value.buletin_sn;
         clientBuletinIDNP.value = bidData.value.buletin_idnp;
         clientBirthDate.value = dateToDot(bidData.value.birth_date);
+        clientRegion.value = bidData.value.region;
         clientLocalitate.value = bidData.value.localitate;
         clientStreet.value = bidData.value.street;
         clientHouse.value = bidData.value.house;
@@ -381,6 +399,8 @@ export default {
       clientBuletinIDNPHasError,
       clientBirthDate,
       clientBirthDateHasError,
+      clientRegion,
+      clientRegionHasError,
       clientLocalitate,
       clientLocalitateHasError,
       clientStreet,
