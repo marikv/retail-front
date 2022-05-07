@@ -188,7 +188,7 @@
               </div>
             </div>
 
-            <div class="col-12 row q-pb-xl q-mb-xl" v-show="calcResultsExist">
+            <div class="col-12 row q-pb-xl q-mb-xl" v-show="calcResultsExist && isDealer">
               <div class="col-12">
                 <h6 class="q-pa-none q-ma-none text-primary">Adaugă o cerere nouă</h6>
               </div>
@@ -284,6 +284,19 @@
                   :rules="[(val) => val.length === 13 || '13 cifre']"
                   label="Buletin IDNP"
                   v-model="clientBuletinIDNP">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinOfficeHasError"
+                  @blur="clientBuletinOfficeHasError = false"
+                  @focus="clientBuletinOfficeHasError = false"
+                  type="text"
+                  label="Buletin eliberat de"
+                  v-model="clientBuletinOffice">
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
@@ -575,6 +588,8 @@ export default defineComponent({
     const clientBuletinSNHasError = ref(false);
     const clientBuletinIDNP = ref('');
     const clientBuletinIDNPHasError = ref(false);
+    const clientBuletinOffice = ref('');
+    const clientBuletinOfficeHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
     const clientRegion = ref('');
@@ -625,6 +640,7 @@ export default defineComponent({
       clientEmail.value = '';
       clientBuletinSN.value = '';
       clientBuletinIDNP.value = '';
+      clientBuletinOffice.value = '';
       clientBirthDate.value = '';
       clientLocalitate.value = '';
       clientRegion.value = '';
@@ -797,6 +813,7 @@ export default defineComponent({
           birth_date: clientBirthDate.value,
           buletin_sn: clientBuletinSN.value,
           buletin_idnp: clientBuletinIDNP.value,
+          buletin_office: clientBuletinOffice.value,
           localitate: clientLocalitate.value,
           region: clientRegion.value,
           street: clientStreet.value,
@@ -941,6 +958,8 @@ export default defineComponent({
       clientBuletinSNHasError,
       clientBuletinIDNP,
       clientBuletinIDNPHasError,
+      clientBuletinOffice,
+      clientBuletinOfficeHasError,
       clientBirthDate,
       clientBirthDateHasError,
       clientRegion,

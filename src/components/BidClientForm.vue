@@ -110,6 +110,20 @@
         outlined
         :disable="disableClientInputs"
         class="client-input" bg-color="white"
+        :error="clientBuletinOfficeHasError"
+        @blur="clientBuletinOfficeHasError = false"
+        @focus="clientBuletinOfficeHasError = false"
+        type="text"
+        label="Buletin Eliberat de"
+        v-model="clientBuletinOffice">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
         :error="clientRegionHasError"
         @blur="clientRegionHasError = false"
         @focus="clientRegionHasError = false"
@@ -313,6 +327,8 @@ export default {
     const clientBuletinSNHasError = ref(false);
     const clientBuletinIDNP = ref('');
     const clientBuletinIDNPHasError = ref(false);
+    const clientBuletinOffice = ref('');
+    const clientBuletinOfficeHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
     const clientRegion = ref('');
@@ -353,6 +369,7 @@ export default {
             email: clientEmail.value,
             buletin_sn: clientBuletinSN.value,
             buletin_idnp: clientBuletinIDNP.value,
+            buletin_office: clientBuletinOffice.value,
             birth_date: clientBirthDate.value,
             region: clientRegion.value,
             localitate: clientLocalitate.value,
@@ -402,6 +419,7 @@ export default {
         clientEmail.value = bidData.value.email;
         clientBuletinSN.value = bidData.value.buletin_sn;
         clientBuletinIDNP.value = bidData.value.buletin_idnp;
+        clientBuletinOffice.value = bidData.value.buletin_office;
         clientBirthDate.value = dateToDot(bidData.value.birth_date);
         clientRegion.value = bidData.value.region;
         clientLocalitate.value = bidData.value.localitate;
@@ -433,6 +451,8 @@ export default {
       clientBuletinSNHasError,
       clientBuletinIDNP,
       clientBuletinIDNPHasError,
+      clientBuletinOffice,
+      clientBuletinOfficeHasError,
       clientBirthDate,
       clientBirthDateHasError,
       clientRegion,
