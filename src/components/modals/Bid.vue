@@ -83,12 +83,13 @@
                 <div class="col-12" v-else>
                   <div style="max-width: 700px; width: 100%; margin: auto;" class="row">
 
-                    <div class="col-2 text-subtitle2">Data</div>
-                    <div class="col-2 text-subtitle2 text-right">Suma</div>
-                    <div class="col-2 text-subtitle2 text-right">Dob.</div>
-                    <div class="col-2 text-subtitle2 text-right">Com.</div>
-                    <div class="col-2 text-subtitle2 text-right">Com.admin</div>
-                    <div class="col-2 text-subtitle2 text-right">Total</div>
+                    <div class="col-2 text-subtitle2">Data plății</div>
+                    <div class="col-2 text-subtitle2 text-right">Rambursări<br>suma de bază</div>
+                    <div class="col-2 text-subtitle2 text-right">Dobânda</div>
+                    <div class="col-2 text-subtitle2 text-right">Comision de<br>examinare</div>
+                    <div class="col-2 text-subtitle2 text-right">Comision de<br>administrare</div>
+                    <div class="col-2 text-subtitle2 text-right">Total de<br>plată</div>
+
                     <template v-for="(row, rowIndex) in bidData.bid_months"
                               :key="`res-${rowIndex}`">
                       <div class="col-2 ">{{dateToDot(row.date)}}</div>
@@ -162,6 +163,12 @@
                          label="Print Contract"
                          class="q-ma-md"
                   ></q-btn>
+                  <q-btn size="md"
+                         @click="printAnexa()"
+                         icon="print"
+                         label="Print Anexa"
+                         class="q-ma-md"
+                  ></q-btn>
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
@@ -181,6 +188,27 @@
                   {{
                     fileUploadedResponses[String(fileTypeSignContract)].name
                     ? fileUploadedResponses[String(fileTypeSignContract)].name
+                    : ''
+                  }}
+                </div>
+                <div class="col-5">
+                  <file-upload module="bid_id"
+                               :typeId="fileTypeAnexa"
+                               @onUploaded="onFileUploaded"
+                               :id="id">
+                    <template v-slot:button>
+                      <q-btn size="md"
+                             icon="attach_file"
+                             label="Adaugă anexa"
+                             class="q-ma-md"
+                      ></q-btn>
+                    </template>
+                  </file-upload>
+                </div>
+                <div class="col-7 q-pt-md">
+                  {{
+                    fileUploadedResponses[String(fileTypeAnexa)].name
+                    ? fileUploadedResponses[String(fileTypeAnexa)].name
                     : ''
                   }}
                 </div>
@@ -344,6 +372,7 @@ import {
   FILE_TYPE_OTHERS_1,
   FILE_TYPE_OTHERS_2,
   FILE_TYPE_SIGN_CONTRACT,
+  FILE_TYPE_ANEXA,
   FILE_TYPE_UNSIGN_CONTRACT,
   generateColorFromString,
   getInitials,
@@ -392,6 +421,7 @@ export default {
     const sumMin = ref(0);
     const disableSumMaximPermis = ref(true);
     const fileTypeSignContract = ref(FILE_TYPE_SIGN_CONTRACT);
+    const fileTypeAnexa = ref(FILE_TYPE_ANEXA);
     const fileTypeUnSignContract = ref(FILE_TYPE_UNSIGN_CONTRACT);
     const fileTypeBuletin1 = ref(FILE_TYPE_BULETIN_1);
     const fileTypeBuletin2 = ref(FILE_TYPE_BULETIN_2);
@@ -399,6 +429,7 @@ export default {
     const fileTypeOthers2 = ref(FILE_TYPE_OTHERS_2);
     const fileUploadedResponsesObj = {};
     fileUploadedResponsesObj[String(FILE_TYPE_SIGN_CONTRACT)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_ANEXA)] = {};
     fileUploadedResponsesObj[String(FILE_TYPE_UNSIGN_CONTRACT)] = {};
     fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_1)] = {};
     fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_2)] = {};
@@ -606,6 +637,9 @@ export default {
     const printContract = () => {
       downloadPDF(id.value, '/print/contract', 'contract');
     };
+    const printAnexa = () => {
+      downloadPDF(id.value, '/print/anexa', 'anexa');
+    };
 
     const onFileUploaded = (fileData) => {
       if (fileData.response.data.data) {
@@ -640,7 +674,9 @@ export default {
       getLogo,
       getColorForLogo,
       printContract,
+      printAnexa,
       fileTypeSignContract,
+      fileTypeAnexa,
       fileTypeUnSignContract,
       fileTypeBuletin1,
       fileTypeBuletin2,

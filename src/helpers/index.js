@@ -39,12 +39,14 @@ export const FILE_TYPE_BULETIN_1 = 5;
 export const FILE_TYPE_BULETIN_2 = 6;
 export const FILE_TYPE_OTHERS_1 = 7;
 export const FILE_TYPE_OTHERS_2 = 8;
+export const FILE_TYPE_ANEXA = 9;
 export const getFileTypeName = (n) => {
   const FILE_TYPE = {};
   FILE_TYPE[FILE_TYPE_LOGO] = 'Logo';
   FILE_TYPE[FILE_TYPE_AVATAR] = 'Avatar';
   FILE_TYPE[FILE_TYPE_UNSIGN_CONTRACT] = 'Contract ne semnat';
   FILE_TYPE[FILE_TYPE_SIGN_CONTRACT] = 'Contract semnat';
+  FILE_TYPE[FILE_TYPE_ANEXA] = 'Anexa';
   FILE_TYPE[FILE_TYPE_BULETIN_1] = 'Copia actului de identitate 1';
   FILE_TYPE[FILE_TYPE_BULETIN_2] = 'Copia actului de identitate 2';
   FILE_TYPE[FILE_TYPE_OTHERS_1] = 'Alte fișiere 1';
