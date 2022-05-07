@@ -236,6 +236,19 @@
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
+                  :error="clientEmailHasError"
+                  @blur="clientEmailHasError = false"
+                  @focus="clientEmailHasError = false"
+                  type="email"
+                  label="Email"
+                  v-model="clientEmail">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
                   :error="clientBirthDateHasError"
                   @blur="clientBirthDateHasError = false"
                   @focus="clientBirthDateHasError = false"
@@ -413,7 +426,17 @@
                   v-model="clientWhoIsContPers2">
                 </q-input>
               </div>
-
+              <div class="col-12 text-primary">Produsul sau serviciul comercializat</div>
+              <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label=""
+                  v-model="clientProdus">
+                </q-input>
+              </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs text-caption">
                 <q-checkbox size="sm"
                             :disable="!calcResultsExist || disableInputs"
@@ -546,6 +569,8 @@ export default defineComponent({
     const clientLastNameHasError = ref(false);
     const clientPhone = ref('');
     const clientPhoneHasError = ref(false);
+    const clientEmail = ref('');
+    const clientEmailHasError = ref(false);
     const clientBuletinSN = ref('');
     const clientBuletinSNHasError = ref(false);
     const clientBuletinIDNP = ref('');
@@ -565,6 +590,7 @@ export default defineComponent({
     const clientPhoneContPers1 = ref('');
     const clientLastNameContPers1 = ref('');
     const clientFirstNameContPers1 = ref('');
+    const clientProdus = ref('');
     const clientWhoIsContPers2 = ref('');
     const clientPhoneContPers2 = ref('');
     const clientLastNameContPers2 = ref('');
@@ -596,6 +622,7 @@ export default defineComponent({
       clientFirstName.value = '';
       clientLastName.value = '';
       clientPhone.value = '';
+      clientEmail.value = '';
       clientBuletinSN.value = '';
       clientBuletinIDNP.value = '';
       clientBirthDate.value = '';
@@ -766,6 +793,7 @@ export default defineComponent({
           first_name: clientFirstName.value,
           last_name: clientLastName.value,
           phone1: clientPhone.value,
+          email: clientEmail.value,
           birth_date: clientBirthDate.value,
           buletin_sn: clientBuletinSN.value,
           buletin_idnp: clientBuletinIDNP.value,
@@ -780,6 +808,7 @@ export default defineComponent({
           last_name_cont_pers1: clientLastNameContPers1.value,
           first_name_cont_pers1: clientFirstNameContPers1.value,
           who_is_cont_pers2: clientWhoIsContPers2.value,
+          produs: clientProdus.value,
           phone_cont_pers2: clientPhoneContPers2.value,
           last_name_cont_pers2: clientLastNameContPers2.value,
           first_name_cont_pers2: clientFirstNameContPers2.value,
@@ -906,6 +935,8 @@ export default defineComponent({
       clientLastNameHasError,
       clientPhone,
       clientPhoneHasError,
+      clientEmail,
+      clientEmailHasError,
       clientBuletinSN,
       clientBuletinSNHasError,
       clientBuletinIDNP,
@@ -924,6 +955,7 @@ export default defineComponent({
       clientPhoneContPers1,
       clientLastNameContPers1,
       clientFirstNameContPers1,
+      clientProdus,
       clientWhoIsContPers2,
       clientPhoneContPers2,
       clientLastNameContPers2,

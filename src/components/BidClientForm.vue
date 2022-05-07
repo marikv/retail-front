@@ -51,6 +51,20 @@
         outlined
         :disable="disableClientInputs"
         class="client-input" bg-color="white"
+        :error="clientEmailHasError"
+        @blur="clientEmailHasError = false"
+        @focus="clientEmailHasError = false"
+        type="email"
+        label="Email"
+        v-model="clientEmail">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
         :error="clientBirthDateHasError"
         @blur="clientBirthDateHasError = false"
         @focus="clientBirthDateHasError = false"
@@ -241,6 +255,19 @@
         v-model="clientWhoIsContPers2">
       </q-input>
     </div>
+
+    <div class="col-12 text-primary">Produsul sau serviciul comercializat</div>
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        type="text"
+        label=""
+        v-model="clientProdus">
+      </q-input>
+    </div>
     <div class="col-12 text-right q-my-sm">
       <q-btn color="teal-7"
              icon="save"
@@ -280,6 +307,8 @@ export default {
     const clientLastNameHasError = ref(false);
     const clientPhone = ref('');
     const clientPhoneHasError = ref(false);
+    const clientEmail = ref('');
+    const clientEmailHasError = ref(false);
     const clientBuletinSN = ref('');
     const clientBuletinSNHasError = ref(false);
     const clientBuletinIDNP = ref('');
@@ -297,6 +326,7 @@ export default {
     const clientPhoneContPers1 = ref('');
     const clientLastNameContPers1 = ref('');
     const clientFirstNameContPers1 = ref('');
+    const clientProdus = ref('');
     const clientWhoIsContPers2 = ref('');
     const clientPhoneContPers2 = ref('');
     const clientLastNameContPers2 = ref('');
@@ -320,6 +350,7 @@ export default {
             first_name: clientFirstName.value,
             last_name: clientLastName.value,
             phone1: clientPhone.value,
+            email: clientEmail.value,
             buletin_sn: clientBuletinSN.value,
             buletin_idnp: clientBuletinIDNP.value,
             birth_date: clientBirthDate.value,
@@ -333,6 +364,7 @@ export default {
             last_name_cont_pers1: clientLastNameContPers1.value,
             first_name_cont_pers1: clientFirstNameContPers1.value,
             who_is_cont_pers2: clientWhoIsContPers2.value,
+            produs: clientProdus.value,
             phone_cont_pers2: clientPhoneContPers2.value,
             last_name_cont_pers2: clientLastNameContPers2.value,
             first_name_cont_pers2: clientFirstNameContPers2.value,
@@ -367,6 +399,7 @@ export default {
         clientFirstName.value = bidData.value.first_name;
         clientLastName.value = bidData.value.last_name;
         clientPhone.value = bidData.value.phone1;
+        clientEmail.value = bidData.value.email;
         clientBuletinSN.value = bidData.value.buletin_sn;
         clientBuletinIDNP.value = bidData.value.buletin_idnp;
         clientBirthDate.value = dateToDot(bidData.value.birth_date);
@@ -379,6 +412,7 @@ export default {
         clientPhoneContPers1.value = bidData.value.phone_cont_pers1;
         clientLastNameContPers1.value = bidData.value.last_name_cont_pers1;
         clientFirstNameContPers1.value = bidData.value.first_name_cont_pers1;
+        clientProdus.value = bidData.value.produs;
         clientWhoIsContPers2.value = bidData.value.who_is_cont_pers2;
         clientPhoneContPers2.value = bidData.value.phone_cont_pers2;
         clientLastNameContPers2.value = bidData.value.last_name_cont_pers2;
@@ -391,6 +425,8 @@ export default {
       clientFirstNameHasError,
       clientLastName,
       clientLastNameHasError,
+      clientEmail,
+      clientEmailHasError,
       clientPhone,
       clientPhoneHasError,
       clientBuletinSN,
@@ -410,6 +446,7 @@ export default {
       clientPhoneContPers1,
       clientLastNameContPers1,
       clientFirstNameContPers1,
+      clientProdus,
       clientWhoIsContPers2,
       clientPhoneContPers2,
       clientLastNameContPers2,
