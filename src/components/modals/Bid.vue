@@ -155,7 +155,8 @@
                   Suma maximă permisă: <strong>{{sumMaximPermis}}</strong>
                 </span>
               </div>
-              <div v-if="bidData.status_id === BID_STATUS_APPROVED" class="col-12 row">
+              <div v-if="bidData.status_id === BID_STATUS_APPROVED && isDealer"
+                   class="col-12 row">
                 <div class="col-12">
                   <q-btn size="md"
                          @click="printContract()"

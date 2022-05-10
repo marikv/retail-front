@@ -197,6 +197,54 @@
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinSNHasError"
+                  @blur="clientBuletinSNHasError = false"
+                  @focus="clientBuletinSNHasError = false"
+                  type="text"
+                  :rules="[(val) => val.length === 9 || '9 caractere']"
+                  label="Buletin S/N"
+                  v-model="clientBuletinSN">
+                  <q-menu v-model="showBuletinSNDropdown">
+                    <q-list style="min-width: 100px">
+                      <q-item clickable v-close-popup>
+                        <q-item-section>New tab</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinIDNPHasError"
+                  @blur="clientBuletinIDNPHasError = false"
+                  @focus="clientBuletinIDNPHasError = false"
+                  type="text"
+                  :rules="[(val) => val.length === 13 || '13 cifre']"
+                  label="Buletin IDNP"
+                  v-model="clientBuletinIDNP">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinOfficeHasError"
+                  @blur="clientBuletinOfficeHasError = false"
+                  @focus="clientBuletinOfficeHasError = false"
+                  type="text"
+                  label="Buletin eliberat de"
+                  v-model="clientBuletinOffice">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
                   :error="clientFirstNameHasError"
                   @blur="clientFirstNameHasError = false"
                   @focus="clientFirstNameHasError = false"
@@ -263,52 +311,11 @@
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
-                  :error="clientBuletinSNHasError"
-                  @blur="clientBuletinSNHasError = false"
-                  @focus="clientBuletinSNHasError = false"
-                  type="text"
-                  :rules="[(val) => val.length === 9 || '9 caractere']"
-                  label="Buletin S/N"
-                  v-model="clientBuletinSN">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="!calcResultsExist || disableInputs"
-                  :error="clientBuletinIDNPHasError"
-                  @blur="clientBuletinIDNPHasError = false"
-                  @focus="clientBuletinIDNPHasError = false"
-                  type="text"
-                  :rules="[(val) => val.length === 13 || '13 cifre']"
-                  label="Buletin IDNP"
-                  v-model="clientBuletinIDNP">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="!calcResultsExist || disableInputs"
-                  :error="clientBuletinOfficeHasError"
-                  @blur="clientBuletinOfficeHasError = false"
-                  @focus="clientBuletinOfficeHasError = false"
-                  type="text"
-                  label="Buletin eliberat de"
-                  v-model="clientBuletinOffice">
-                </q-input>
-              </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
-                  dense
-                  outlined
-                  :disable="!calcResultsExist || disableInputs"
                   :error="clientRegionHasError"
                   @blur="clientRegionHasError = false"
                   @focus="clientRegionHasError = false"
                   type="text"
-                  label="Region"
+                  label="Raion"
                   v-model="clientRegion">
                 </q-input>
               </div>
@@ -614,6 +621,7 @@ export default defineComponent({
     const clientCbHasError = ref(false);
     const bidError = ref('');
     const bidSuccess = ref('');
+    const showBuletinSNDropdown = ref(true);
     const user = computed(() => $store.getters['auth/getUser']);
 
     watchEffect(() => {
@@ -991,6 +999,7 @@ export default defineComponent({
       dealerChanged,
       creditMonthsOptions,
       creditMonthsChanged,
+      showBuletinSNDropdown,
     };
   },
 });

@@ -9,6 +9,50 @@
         outlined
         :disable="disableClientInputs"
         class="client-input" bg-color="white"
+        :error="clientBuletinSNHasError"
+        @blur="clientBuletinSNHasError = false"
+        @focus="clientBuletinSNHasError = false"
+        type="text"
+        :rules="[(val) => val.length === 9 || '9 caractere']"
+        label="Buletin S/N"
+        v-model="clientBuletinSN">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        :error="clientBuletinIDNPHasError"
+        @blur="clientBuletinIDNPHasError = false"
+        @focus="clientBuletinIDNPHasError = false"
+        type="text"
+        :rules="[(val) => val.length === 13 || '13 cifre']"
+        label="Buletin IDNP"
+        v-model="clientBuletinIDNP">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        :error="clientBuletinOfficeHasError"
+        @blur="clientBuletinOfficeHasError = false"
+        @focus="clientBuletinOfficeHasError = false"
+        type="text"
+        label="Buletin Eliberat de"
+        v-model="clientBuletinOffice">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
         :error="clientFirstNameHasError"
         @blur="clientFirstNameHasError = false"
         @focus="clientFirstNameHasError = false"
@@ -80,55 +124,11 @@
         outlined
         :disable="disableClientInputs"
         class="client-input" bg-color="white"
-        :error="clientBuletinSNHasError"
-        @blur="clientBuletinSNHasError = false"
-        @focus="clientBuletinSNHasError = false"
-        type="text"
-        :rules="[(val) => val.length === 9 || '9 caractere']"
-        label="Buletin S/N"
-        v-model="clientBuletinSN">
-      </q-input>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-      <q-input
-        dense
-        outlined
-        :disable="disableClientInputs"
-        class="client-input" bg-color="white"
-        :error="clientBuletinIDNPHasError"
-        @blur="clientBuletinIDNPHasError = false"
-        @focus="clientBuletinIDNPHasError = false"
-        type="text"
-        :rules="[(val) => val.length === 13 || '13 cifre']"
-        label="Buletin IDNP"
-        v-model="clientBuletinIDNP">
-      </q-input>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-      <q-input
-        dense
-        outlined
-        :disable="disableClientInputs"
-        class="client-input" bg-color="white"
-        :error="clientBuletinOfficeHasError"
-        @blur="clientBuletinOfficeHasError = false"
-        @focus="clientBuletinOfficeHasError = false"
-        type="text"
-        label="Buletin Eliberat de"
-        v-model="clientBuletinOffice">
-      </q-input>
-    </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-      <q-input
-        dense
-        outlined
-        :disable="disableClientInputs"
-        class="client-input" bg-color="white"
         :error="clientRegionHasError"
         @blur="clientRegionHasError = false"
         @focus="clientRegionHasError = false"
         type="text"
-        label="Region"
+        label="Raion"
         v-model="clientRegion">
       </q-input>
     </div>
