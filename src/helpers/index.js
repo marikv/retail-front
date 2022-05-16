@@ -67,6 +67,7 @@ export const baseURL = String(api.defaults.baseURL).replace('/api', '/');
 export const strToDate = (dateStr, formatStr) => date.extractDate(dateStr, formatStr);
 export const dateFormat = (dateObj, formatStr) => date.formatDate(dateObj, formatStr);
 export const dateToDot = (dateStr) => dateFormat(strToDate(dateStr, 'YYYY-MM-DD'), 'DD.MM.YYYY');
+export const dateTimeToDot = (dateStr) => dateFormat(strToDate(dateStr, 'YYYY-MM-DD HH:mm:ss'), 'DD.MM.YYYY HH:mm:ss');
 export const dateToLine = (dateStr) => dateFormat(strToDate(dateStr, 'DD.MM.YYYY'), 'YYYY-MM-DD');
 
 export const calendarLocaleRo = {
@@ -94,7 +95,10 @@ export const showNotify = (params = {}, error) => {
     if (error && error.response && error.response.data) {
       params.timeout = 15000;
       params.actions = [{ icon: 'close', color: 'white' }];
-      if (error.response.data.message && error.response.data.message.indexOf(' Duplicate entry ') > -1) {
+
+      if (error.response.data.message && error.response.data.message.indexOf('Unauthenticated') > -1) {
+        document.location.href = '/#/auth';
+      } else if (error.response.data.message && error.response.data.message.indexOf('Duplicate entry ') > -1) {
         params.message = 'Acest item deja există în baza de date';
       } else if (error.response.data.data && error.response.data.data.message) {
         params.message = `Eroare: ${error.response.data.data.message}`;

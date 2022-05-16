@@ -201,16 +201,33 @@
                   @blur="clientBuletinSNHasError = false"
                   @focus="clientBuletinSNHasError = false"
                   type="text"
-                  :rules="[(val) => val.length === 9 || '9 caractere']"
+                  :rules="[(val) => val && val.length === 9 || '9 caractere']"
                   label="Buletin S/N"
+                  @keyup="findClientBy('buletin_sn')"
                   v-model="clientBuletinSN">
-                  <q-menu v-model="showBuletinSNDropdown">
-                    <q-list style="min-width: 100px">
-                      <q-item clickable v-close-popup>
-                        <q-item-section>New tab</q-item-section>
-                      </q-item>
-                    </q-list>
-                  </q-menu>
+                  <template v-if="showBuletinSNDropdown">
+                    <q-menu v-model="showBuletinSNDropdown"  class="bg-teal-1">
+                      <q-list v-for="(foundedClient, ind) in foundedClients"
+                              :key="`fd${ind}`"
+                              style="min-width: 250px;">
+                        <q-item clickable
+                                @click="selectFoundedClient(foundedClient)"
+                                v-close-popup>
+                          <q-item-section>
+                            <div>
+                              {{foundedClient.last_name}} {{foundedClient.first_name}}
+                            </div>
+                            <div>
+                              <span class="text-grey">S/N:</span> {{foundedClient.buletin_sn}}
+                            </div>
+                            <div>
+                              <span class="text-grey">IDNP:</span> {{foundedClient.buletin_idnp}}
+                            </div>
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </template>
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
@@ -224,7 +241,31 @@
                   type="text"
                   :rules="[(val) => val.length === 13 || '13 cifre']"
                   label="Buletin IDNP"
+                  @keyup="findClientBy('buletin_idnp')"
                   v-model="clientBuletinIDNP">
+                  <template v-if="showBuletinIDNPDropdown">
+                    <q-menu v-model="showBuletinIDNPDropdown"  class="bg-teal-1">
+                      <q-list v-for="(foundedClient, ind) in foundedClients"
+                              :key="`fdIDNP${ind}`"
+                              style="min-width: 250px;">
+                        <q-item clickable
+                                @click="selectFoundedClient(foundedClient)"
+                                v-close-popup>
+                          <q-item-section>
+                            <div>
+                              {{foundedClient.last_name}} {{foundedClient.first_name}}
+                            </div>
+                            <div>
+                              <span class="text-grey">S/N:</span> {{foundedClient.buletin_sn}}
+                            </div>
+                            <div>
+                              <span class="text-grey">IDNP:</span> {{foundedClient.buletin_idnp}}
+                            </div>
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-menu>
+                  </template>
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
@@ -245,13 +286,28 @@
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
+                  :error="clientBuletinDateTillHasError"
+                  @blur="clientBuletinDateTillHasError = false"
+                  @focus="clientBuletinDateTillHasError = false"
+                  type="text"
+                  mask="##.##.####"
+                  label="Data eliberării"
+                  v-model="clientBuletinDateTill">
+                </q-input>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
                   :error="clientFirstNameHasError"
                   @blur="clientFirstNameHasError = false"
                   @focus="clientFirstNameHasError = false"
                   type="text"
                   label="Nume client"
+                  what="first_name"
                   v-model="clientFirstName">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -552,10 +608,11 @@ import {
 } from 'src/helpers';
 import { useStore } from 'vuex';
 import CalculatorRightPanel from 'components/CalculatorRightPanel';
+import AutocompleteField from 'components/Fields/AutocompleteField';
 
 export default defineComponent({
   name: 'Calculator',
-  components: { CalculatorRightPanel },
+  components: { AutocompleteField, CalculatorRightPanel },
   setup() {
     const splitterModel = ref(580);
     // 470px
@@ -583,6 +640,7 @@ export default defineComponent({
     const maxDate = ref(dateFormat(new Date(today.setMonth(today.getMonth() + 1)), 'YYYY/MM/DD'));
     const calcResultsExist = ref(false);
 
+    const clientId = ref(0);
     const clientFirstName = ref('');
     const clientFirstNameHasError = ref(false);
     const clientLastName = ref('');
@@ -597,6 +655,8 @@ export default defineComponent({
     const clientBuletinIDNPHasError = ref(false);
     const clientBuletinOffice = ref('');
     const clientBuletinOfficeHasError = ref(false);
+    const clientBuletinDateTill = ref('');
+    const clientBuletinDateTillHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
     const clientRegion = ref('');
@@ -621,7 +681,11 @@ export default defineComponent({
     const clientCbHasError = ref(false);
     const bidError = ref('');
     const bidSuccess = ref('');
-    const showBuletinSNDropdown = ref(true);
+    const showBuletinSNDropdown = ref(false);
+    const showBuletinIDNPDropdown = ref(false);
+    const foundedClients = ref([]);
+    const lastFoundedClientIDNP = ref(null);
+    const lastFoundedClientSN = ref(null);
     const user = computed(() => $store.getters['auth/getUser']);
 
     watchEffect(() => {
@@ -642,6 +706,7 @@ export default defineComponent({
       calcResults.value = null;
       disableInputs.value = false;
       calcError.value = '';
+      clientId.value = 0;
       clientFirstName.value = '';
       clientLastName.value = '';
       clientPhone.value = '';
@@ -649,6 +714,7 @@ export default defineComponent({
       clientBuletinSN.value = '';
       clientBuletinIDNP.value = '';
       clientBuletinOffice.value = '';
+      clientBuletinDateTill.value = '';
       clientBirthDate.value = '';
       clientLocalitate.value = '';
       clientRegion.value = '';
@@ -813,7 +879,14 @@ export default defineComponent({
         && typeCreditsSelected.value
         && typeCreditsSelected.value.id
       ) {
+        if ((lastFoundedClientIDNP.value && lastFoundedClientIDNP.value !== clientBuletinIDNP.value)
+            || (lastFoundedClientSN.value && lastFoundedClientSN.value !== clientBuletinSN.value)
+        ) {
+          clientId.value = 0;
+        }
+
         const formData = {
+          client_id: clientId.value,
           first_name: clientFirstName.value,
           last_name: clientLastName.value,
           phone1: clientPhone.value,
@@ -822,6 +895,7 @@ export default defineComponent({
           buletin_sn: clientBuletinSN.value,
           buletin_idnp: clientBuletinIDNP.value,
           buletin_office: clientBuletinOffice.value,
+          buletin_date_till: clientBuletinDateTill.value,
           localitate: clientLocalitate.value,
           region: clientRegion.value,
           street: clientStreet.value,
@@ -934,6 +1008,52 @@ export default defineComponent({
         });
     });
 
+    const findClientBy = (column) => {
+      showBuletinSNDropdown.value = false;
+      showBuletinIDNPDropdown.value = false;
+      foundedClients.value = [];
+      if (column) {
+        let filter = column === 'buletin_sn' && clientBuletinSN.value && clientBuletinSN.value.length === 9 ? clientBuletinSN.value : '';
+        filter = column === 'buletin_idnp' && clientBuletinIDNP.value && clientBuletinIDNP.value.length === 13 ? clientBuletinIDNP.value : filter;
+        if (filter) {
+          foundedClients.value = [];
+          api.post('/clients-list', { filter, column })
+            .then((response) => {
+              if (response.data.success) {
+                foundedClients.value = response.data.data.data;
+                showBuletinSNDropdown.value = column === 'buletin_sn' && foundedClients.value.length > 0;
+                showBuletinIDNPDropdown.value = column === 'buletin_idnp' && foundedClients.value.length > 0;
+              }
+            })
+            .catch((error) => {
+              showNotify({}, error);
+            });
+        }
+      }
+    };
+
+    const selectFoundedClient = (client) => {
+      clientId.value = client && client.id ? client.id : 0;
+      clientFirstName.value = client && client.first_name ? client.first_name : null;
+      clientLastName.value = client && client.last_name ? client.last_name : null;
+      clientPhone.value = client && client.phone1 ? client.phone1 : null;
+      clientEmail.value = client && client.email ? client.email : null;
+      clientBuletinSN.value = client && client.buletin_sn ? client.buletin_sn : null;
+      clientBuletinIDNP.value = client && client.buletin_idnp ? client.buletin_idnp : null;
+      clientBuletinOffice.value = client && client.buletin_office ? client.buletin_office : null;
+      clientBuletinDateTill.value = client && client.buletin_date_till2
+        ? client.buletin_date_till2 : null;
+      clientBirthDate.value = client && client.birth_date2 ? client.birth_date2 : null;
+      clientRegion.value = client && client.region ? client.region : null;
+      clientLocalitate.value = client && client.localitate ? client.localitate : null;
+      clientStreet.value = client && client.street ? client.street : null;
+      clientHouse.value = client && client.house ? client.house : null;
+      clientFlat.value = client && client.flat ? client.flat : null;
+
+      lastFoundedClientIDNP.value = clientBuletinIDNP.value;
+      lastFoundedClientSN.value = clientBuletinSN.value;
+    };
+
     return {
       isExecutor,
       isAdmin,
@@ -968,6 +1088,8 @@ export default defineComponent({
       clientBuletinIDNPHasError,
       clientBuletinOffice,
       clientBuletinOfficeHasError,
+      clientBuletinDateTill,
+      clientBuletinDateTillHasError,
       clientBirthDate,
       clientBirthDateHasError,
       clientRegion,
@@ -1000,6 +1122,10 @@ export default defineComponent({
       creditMonthsOptions,
       creditMonthsChanged,
       showBuletinSNDropdown,
+      showBuletinIDNPDropdown,
+      findClientBy,
+      foundedClients,
+      selectFoundedClient,
     };
   },
 });

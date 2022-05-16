@@ -5,6 +5,7 @@ import auth from './auth';
 import dealers from './dealers';
 import bids from './bids';
 import users from './users';
+import payments from './payments';
 import settingsTypeCredits from './settings-type-credits';
 import settingsProducts from './settings-products';
 
@@ -24,6 +25,7 @@ export default store((/* { ssrContext } */) => {
       dealers,
       bids,
       users,
+      payments,
       settingsTypeCredits,
       settingsProducts,
     },

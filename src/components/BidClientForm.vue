@@ -53,6 +53,21 @@
         outlined
         :disable="disableClientInputs"
         class="client-input" bg-color="white"
+        :error="clientBuletinDateTillHasError"
+        @blur="clientBuletinDateTillHasError = false"
+        @focus="clientBuletinDateTillHasError = false"
+        type="text"
+        mask="##.##.####"
+        label="Data eliberării"
+        v-model="clientBuletinDateTill">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
         :error="clientFirstNameHasError"
         @blur="clientFirstNameHasError = false"
         @focus="clientFirstNameHasError = false"
@@ -329,6 +344,8 @@ export default {
     const clientBuletinIDNPHasError = ref(false);
     const clientBuletinOffice = ref('');
     const clientBuletinOfficeHasError = ref(false);
+    const clientBuletinDateTill = ref('');
+    const clientBuletinDateTillHasError = ref(false);
     const clientBirthDate = ref('');
     const clientBirthDateHasError = ref(false);
     const clientRegion = ref('');
@@ -370,6 +387,7 @@ export default {
             buletin_sn: clientBuletinSN.value,
             buletin_idnp: clientBuletinIDNP.value,
             buletin_office: clientBuletinOffice.value,
+            buletin_date_till: clientBuletinDateTill.value,
             birth_date: clientBirthDate.value,
             region: clientRegion.value,
             localitate: clientLocalitate.value,
@@ -420,6 +438,7 @@ export default {
         clientBuletinSN.value = bidData.value.buletin_sn;
         clientBuletinIDNP.value = bidData.value.buletin_idnp;
         clientBuletinOffice.value = bidData.value.buletin_office;
+        clientBuletinDateTill.value = dateToDot(bidData.value.buletin_date_till);
         clientBirthDate.value = dateToDot(bidData.value.birth_date);
         clientRegion.value = bidData.value.region;
         clientLocalitate.value = bidData.value.localitate;
@@ -453,6 +472,8 @@ export default {
       clientBuletinIDNPHasError,
       clientBuletinOffice,
       clientBuletinOfficeHasError,
+      clientBuletinDateTill,
+      clientBuletinDateTillHasError,
       clientBirthDate,
       clientBirthDateHasError,
       clientRegion,

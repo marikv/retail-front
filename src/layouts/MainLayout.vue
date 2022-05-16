@@ -40,7 +40,7 @@
     </q-header>
 
     <q-drawer
-      v-if="authenticated && hasPermisionToLeftMenu"
+      v-if="authenticated && hasPermissionToLeftMenu"
       v-model="leftDrawerOpen"
       show-if-above
       bordered
@@ -151,7 +151,7 @@ export default defineComponent({
   setup() {
     const $router = useRouter();
     const leftDrawerOpen = ref(false);
-    const hasPermisionToLeftMenu = ref(false);
+    const hasPermissionToLeftMenu = ref(false);
     const $store = useStore();
     const authenticated = computed(() => !!$store.getters['auth/getToken']);
     const user = computed(() => $store.getters['auth/getUser']);
@@ -184,7 +184,7 @@ export default defineComponent({
       }
     });
     watchEffect(() => {
-      hasPermisionToLeftMenu.value = !!(user.value && user.value.role_id !== USER_ROLE_DEALER);
+      hasPermissionToLeftMenu.value = !!(user.value && user.value.role_id !== USER_ROLE_DEALER);
       if (user.value && user.value.role_id === USER_ROLE_DEALER) {
         $router.push({ path: '/calculator' });
       }
@@ -211,14 +211,14 @@ export default defineComponent({
     checkNewMessages();
     setInterval(() => {
       checkNewMessages();
-    }, 10000);
+    }, 12000);
 
     return {
       authenticated,
       linksList,
       leftDrawerOpen,
       logout,
-      hasPermisionToLeftMenu,
+      hasPermissionToLeftMenu,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },

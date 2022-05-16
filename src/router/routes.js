@@ -7,6 +7,7 @@ const routes = [
       { path: 'auth', component: () => import('pages/Auth.vue') },
       { path: 'dealers', component: () => import('pages/Dealers.vue') },
       { path: 'users', component: () => import('pages/Users.vue') },
+      { path: 'payments', component: () => import('pages/Payments.vue') },
       { path: 'calculator', component: () => import('pages/Calculator.vue') },
       { path: 'settings', component: () => import('pages/Settings.vue') },
       { path: 'bids', component: () => import('pages/Bids.vue') },

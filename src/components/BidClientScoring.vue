@@ -50,6 +50,20 @@
         outlined
         dense
         :disable="disableClientInputs"
+        :class="copiiClass"
+        v-model="copii"
+        :options="copiiOptions"
+        label="Copii"
+        emit-value
+        map-options
+        @update:model-value="updateValue"
+      />
+    </div>
+    <div class="col-4 q-px-sm q-py-xs">
+      <q-select
+        outlined
+        dense
+        :disable="disableClientInputs"
         :class="locMuncaClass"
         v-model="locMunca"
         :options="locMuncaOptions"
@@ -190,6 +204,20 @@
         outlined
         dense
         :disable="disableClientInputs"
+        :class="infodebitScoringClass"
+        v-model="infodebitScoring"
+        :options="infodebitScoringOptions"
+        label="Infodebit Scoring"
+        emit-value
+        map-options
+        @update:model-value="updateValue"
+      />
+    </div>
+    <div class="col-4 q-px-sm q-py-xs">
+      <q-select
+        outlined
+        dense
+        :disable="disableClientInputs"
         :class="letigiiClass"
         v-model="letigii"
         :options="letigiiOptions"
@@ -237,6 +265,8 @@ export default {
     const virstaClass = ref('bg-white');
     const stareaCivila = ref(0);
     const stareaCivilaClass = ref('bg-white');
+    const copii = ref(0);
+    const copiiClass = ref('bg-white');
     const locMunca = ref(0);
     const locMuncaClass = ref('bg-white');
     const functieMunca = ref(0);
@@ -257,6 +287,8 @@ export default {
     const istorieCreditClass = ref('bg-white');
     const datorii = ref(0);
     const datoriiClass = ref('bg-white');
+    const infodebitScoring = ref(0);
+    const infodebitScoringClass = ref('bg-white');
     const letigii = ref(0);
     const letigiiClass = ref('bg-white');
     const studiiOptions = ref([
@@ -359,6 +391,104 @@ export default {
         value: 2,
         fnc: '',
         bal: 1.5,
+      },
+    ]);
+    const copiiOptions = ref([
+      {
+        label: '0',
+        value: 0,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '1',
+        value: 1,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '2',
+        value: 2,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '3',
+        value: 3,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '4',
+        value: 4,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '5',
+        value: 5,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '6',
+        value: 6,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '7',
+        value: 7,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '8',
+        value: 8,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '9',
+        value: 9,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '10',
+        value: 10,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '11',
+        value: 11,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '12',
+        value: 12,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '13',
+        value: 13,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '14',
+        value: 14,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: '15',
+        value: 15,
+        fnc: '',
+        bal: 0,
       },
     ]);
     const locMuncaOptions = ref([
@@ -807,6 +937,38 @@ export default {
         bal: 0.5,
       },
     ]);
+    const infodebitScoringOptions = ref([
+      {
+        label: 'Excelent 40-44,5',
+        value: 0,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Foarte bine 30-40',
+        value: 1,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Bine 25-30',
+        value: 2,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Satisfacator 20,6-24',
+        value: 3,
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Refuz pina la 20,5',
+        value: 4,
+        fnc: '',
+        bal: 0,
+      },
+    ]);
     const letigiiOptions = ref([
       {
         label: 'fara antecedente penale',
@@ -848,6 +1010,7 @@ export default {
       t = inFnc(t, studiiOptions, studii);
       t = inFnc(t, virstaOptions, virsta);
       t = inFnc(t, stareaCivilaOptions, stareaCivila);
+      t = inFnc(t, copiiOptions, copii);
       t = inFnc(t, locMuncaOptions, locMunca);
       t = inFnc(t, functieMuncaOptions, functieMunca);
       t = inFnc(t, durataMuncaOptions, durataMunca);
@@ -858,6 +1021,7 @@ export default {
       t = inFnc(t, alteVenituriFamilieOptions, alteVenituriFamilie);
       t = inFnc(t, istorieCreditOptions, istorieCredit);
       t = inFnc(t, datoriiOptions, datorii);
+      t = inFnc(t, infodebitScoringOptions, infodebitScoring);
       t = inFnc(t, letigiiOptions, letigii);
       return parseFloat((Math.round(t * 100) / 100).toFixed(2));
     });
@@ -868,6 +1032,7 @@ export default {
           studii: studii.value,
           virsta: virsta.value,
           stareaCivila: stareaCivila.value,
+          copii: copii.value,
           locMunca: locMunca.value,
           functieMunca: functieMunca.value,
           durataMunca: durataMunca.value,
@@ -878,6 +1043,7 @@ export default {
           alteVenituriFamilie: alteVenituriFamilie.value,
           istorieCredit: istorieCredit.value,
           datorii: datorii.value,
+          infodebitScoring: infodebitScoring.value,
           letigii: letigii.value,
         });
       }
@@ -909,6 +1075,7 @@ export default {
           studii.value = jsonData.studii;
           virsta.value = jsonData.virsta;
           stareaCivila.value = jsonData.stareaCivila;
+          copii.value = jsonData.copii;
           locMunca.value = jsonData.locMunca;
           functieMunca.value = jsonData.functieMunca;
           durataMunca.value = jsonData.durataMunca;
@@ -919,6 +1086,7 @@ export default {
           alteVenituriFamilie.value = jsonData.alteVenituriFamilie;
           istorieCredit.value = jsonData.istorieCredit;
           datorii.value = jsonData.datorii;
+          infodebitScoring.value = jsonData.infodebitScoring;
           letigii.value = jsonData.letigii;
         }
       }
@@ -934,6 +1102,9 @@ export default {
       stareaCivilaOptions,
       stareaCivilaClass,
       stareaCivila,
+      copiiOptions,
+      copiiClass,
+      copii,
       locMuncaOptions,
       locMuncaClass,
       locMunca,
@@ -964,6 +1135,9 @@ export default {
       datoriiOptions,
       datoriiClass,
       datorii,
+      infodebitScoringOptions,
+      infodebitScoringClass,
+      infodebitScoring,
       letigiiOptions,
       letigiiClass,
       letigii,

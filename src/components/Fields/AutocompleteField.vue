@@ -1,37 +1,54 @@
 <template>
-  <q-select
-    :filled="filled"
-    :dense="dense"
-    :outlined="outlined"
-    :value="model"
-    :readonly="readonly"
-    :disable="disable"
-    :error="error"
-    use-input
-    hide-selected
-    fill-input
-    input-debounce="0"
-    :options="options"
-    @filter="filterFn"
-    @filter-abort="abortFilterFn"
-    @input-value="setModel"
-    @blur="onBlur"
-    @focus="onFocus"
-    :hide-dropdown-icon="true"
-    behavior="menu"
-    :loading="loading"
-    :hint="hint"
-    :label="label"
-    :autocomplete="`off-autocomplete-${uniqId}`"
-  >
-    <template v-slot:no-option>
-<!--      <q-item>-->
-<!--        <q-item-section class="text-grey">-->
-<!--          No results-->
-<!--        </q-item-section>-->
-<!--      </q-item>-->
-    </template>
-  </q-select>
+  <div>
+    <q-select
+      :filled="filled"
+      :dense="dense"
+      :outlined="outlined"
+      :model-value="model"
+      :readonly="readonly"
+      :disable="disable"
+      :error="error"
+      use-input
+      hide-selected
+      fill-input
+      input-debounce="0"
+      :options="options"
+      @filter="filterFn"
+      @filter-abort="abortFilterFn"
+      @input-value="setModel"
+      @blur="onBlur"
+      @focus="onFocus"
+      :hide-dropdown-icon="true"
+      behavior="menu"
+      :loading="loading"
+      :hint="hint"
+      :label="label"
+      :autocomplete="`off-autocomplete-${uniqId}`"
+    >
+    </q-select>
+
+    <!--  <q-select-->
+    <!--    filled-->
+    <!--    :model-value="model"-->
+    <!--    use-input-->
+    <!--    hide-selected-->
+    <!--    fill-input-->
+    <!--    input-debounce="0"-->
+    <!--    :options="options"-->
+    <!--    @filter="filterFn"-->
+    <!--    @input-value="setModel"-->
+    <!--    hint="Text autocomplete"-->
+    <!--    style="width: 250px; padding-bottom: 32px"-->
+    <!--  >-->
+    <!--    <template v-slot:no-option>-->
+    <!--      <q-item>-->
+    <!--        <q-item-section class="text-grey">-->
+    <!--          No results-->
+    <!--        </q-item-section>-->
+    <!--      </q-item>-->
+    <!--    </template>-->
+    <!--  </q-select>-->
+  </div>
 </template>
 
 <script>
@@ -116,9 +133,6 @@ export default {
               }
             });
           }
-          // const needle = val.toLocaleLowerCase();
-          // this.options = stringOptions.filter((v) => v.toLocaleLowerCase()
-          //   .indexOf(needle) > -1);
           this.options = stringOptions;
           update();
         }).catch(() => {
@@ -140,6 +154,7 @@ export default {
   },
   watch: {
     model(v) {
+      this.$emit('update:modelValue', v);
       this.$emit('input', v);
     },
     value(v) {
