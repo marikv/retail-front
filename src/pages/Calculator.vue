@@ -293,6 +293,7 @@
                   type="text"
                   mask="##.##.####"
                   label="Data eliberării"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientBuletinDateTill">
                 </q-input>
               </div>
@@ -334,6 +335,7 @@
                   @focus="clientPhoneHasError = false"
                   type="text"
                   label="Telefon"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientPhone">
                 </q-input>
               </div>
@@ -347,6 +349,7 @@
                   @focus="clientEmailHasError = false"
                   type="email"
                   label="Email"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientEmail">
                 </q-input>
               </div>
@@ -361,6 +364,7 @@
                   type="text"
                   mask="##.##.####"
                   label="Data de naștere"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientBirthDate">
                 </q-input>
               </div>
@@ -410,6 +414,7 @@
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Bloc"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientHouse">
                 </q-input>
               </div>
@@ -420,6 +425,7 @@
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Apartament"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientFlat">
                 </q-input>
               </div>
@@ -454,6 +460,7 @@
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Telefon"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientPhoneContPers1">
                 </q-input>
               </div>
@@ -499,6 +506,7 @@
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Telefon"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
                   v-model="clientPhoneContPers2">
                 </q-input>
               </div>
@@ -634,6 +642,7 @@ export default defineComponent({
     const isDealer = ref(false);
     const authenticated = computed(() => !!$store.getters['auth/getToken']);
     const calcResults = ref(null);
+    const uniqId = `id${Math.random().toString(16).slice(2)}`;
     const calcError = ref('');
     const product = ref(null);
     const productOptionsAll = ref([]);
@@ -1138,6 +1147,7 @@ export default defineComponent({
       findClientBy,
       foundedClients,
       selectFoundedClient,
+      uniqId,
     };
   },
 });
