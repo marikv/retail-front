@@ -26,28 +26,6 @@
       :autocomplete="`off-autocomplete-${uniqId}`"
     >
     </q-select>
-
-    <!--  <q-select-->
-    <!--    filled-->
-    <!--    :model-value="model"-->
-    <!--    use-input-->
-    <!--    hide-selected-->
-    <!--    fill-input-->
-    <!--    input-debounce="0"-->
-    <!--    :options="options"-->
-    <!--    @filter="filterFn"-->
-    <!--    @input-value="setModel"-->
-    <!--    hint="Text autocomplete"-->
-    <!--    style="width: 250px; padding-bottom: 32px"-->
-    <!--  >-->
-    <!--    <template v-slot:no-option>-->
-    <!--      <q-item>-->
-    <!--        <q-item-section class="text-grey">-->
-    <!--          No results-->
-    <!--        </q-item-section>-->
-    <!--      </q-item>-->
-    <!--    </template>-->
-    <!--  </q-select>-->
   </div>
 </template>
 
@@ -57,6 +35,11 @@ import { api } from 'boot/axios';
 export default {
   name: 'AutocompleteField',
   props: {
+    modelValue: {
+      type: String,
+      default: null,
+      required: false,
+    },
     outlined: {
       type: Boolean,
       default: false,
@@ -158,6 +141,9 @@ export default {
       this.$emit('input', v);
     },
     value(v) {
+      this.setModel(v);
+    },
+    modelValue(v) {
       this.setModel(v);
     },
   },

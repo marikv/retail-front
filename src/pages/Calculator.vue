@@ -269,7 +269,7 @@
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
@@ -278,8 +278,9 @@
                   @focus="clientBuletinOfficeHasError = false"
                   type="text"
                   label="Buletin eliberat de"
+                  what="buletin_office"
                   v-model="clientBuletinOffice">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -310,7 +311,7 @@
                 </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
@@ -319,8 +320,9 @@
                   @focus="clientLastNameHasError = false"
                   type="text"
                   label="Prenume client"
+                  what="last_name"
                   v-model="clientLastName">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -363,7 +365,7 @@
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
@@ -372,11 +374,12 @@
                   @focus="clientRegionHasError = false"
                   type="text"
                   label="Raion"
+                  what="region"
                   v-model="clientRegion">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
@@ -385,18 +388,20 @@
                   @focus="clientLocalitateHasError = false"
                   type="text"
                   label="Localitate"
+                  what="localitate"
                   v-model="clientLocalitate">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Strada"
+                  what="street"
                   v-model="clientStreet">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -421,24 +426,26 @@
 
               <div class="col-12 text-primary">Persoana de contact 1</div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Nume"
+                  what="first_name"
                   v-model="clientFirstNameContPers1">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Prenume"
+                  what="last_name"
                   v-model="clientLastNameContPers1">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -451,36 +458,39 @@
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Cine este"
+                  what="who_is_cont_pers"
                   v-model="clientWhoIsContPers1">
-                </q-input>
+                </autocomplete-field>
               </div>
 
               <div class="col-12 text-primary">Persoana de contact 2</div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Nume"
+                  what="first_name"
                   v-model="clientFirstNameContPers2">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Prenume"
+                  what="last_name"
                   v-model="clientLastNameContPers2">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
@@ -493,25 +503,27 @@
                 </q-input>
               </div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label="Cine este"
+                  what="who_is_cont_pers"
                   v-model="clientWhoIsContPers2">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-12 text-primary">Produsul sau serviciul comercializat</div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs">
-                <q-input
+                <autocomplete-field
                   dense
                   outlined
                   :disable="!calcResultsExist || disableInputs"
                   type="text"
                   label=""
+                  what="client_produs"
                   v-model="clientProdus">
-                </q-input>
+                </autocomplete-field>
               </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs text-caption">
                 <q-checkbox size="sm"
