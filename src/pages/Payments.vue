@@ -44,7 +44,7 @@
                 </q-btn>
         <q-btn icon="add"
                round
-               @click="showUserModalSetValue(true)"
+               @click="showPaymentModalSetValue(true)"
                class="q-ml-lg"
                color="positive">
           <q-tooltip>Adaugă</q-tooltip>
@@ -83,7 +83,7 @@
         </q-td>
       </template>
     </q-table>
-    <User ref="UserRef" @onCloseDialog="showUserModalSetValue(false)"></User>
+    <Payment ref="PaymentRef" @onCloseDialog="showPaymentModalSetValue(false)"></Payment>
   </q-page>
 </template>
 
@@ -104,7 +104,7 @@ import {
   getMiniPhotoFromServer,
   showNotify,
 } from 'src/helpers';
-import User from 'components/modals/User';
+import Payment from 'components/modals/Payment';
 import { useQuasar } from 'quasar';
 
 const columns = [
@@ -146,12 +146,12 @@ const columns = [
 export default defineComponent({
   name: 'Payments',
 
-  components: { User },
+  components: { Payment },
 
   setup() {
     const $q = useQuasar();
     const rows = ref([]);
-    const UserRef = ref(null);
+    const PaymentRef = ref(null);
     const filter = ref('');
     const contractNumber = ref(null);
     const loading = ref(false);
@@ -199,18 +199,18 @@ export default defineComponent({
         });
     };
 
-    const showUserModalSetValue = (v, id = 0) => {
-      $store.commit('payments/updateOpenedUserForm', v);
-      $store.commit('payments/updateOpenedUserData', {});
+    const showPaymentModalSetValue = (v, id = 0) => {
+      $store.commit('payments/updateOpenedPaymentForm', v);
+      $store.commit('payments/updateOpenedPaymentData', {});
       if (v && id > 0) {
-        if (UserRef.value) {
-          UserRef.value.getDataById(id);
+        if (PaymentRef.value) {
+          PaymentRef.value.getDataById(id);
         }
       }
     };
 
     const editRow = (props) => {
-      showUserModalSetValue(true, props.row.id);
+      showPaymentModalSetValue(true, props.row.id);
     };
     const deleteRow = (props) => {
       $q.dialog({
@@ -247,12 +247,12 @@ export default defineComponent({
       pagination,
       columns,
       rows,
-      showUserModalSetValue,
+      showPaymentModalSetValue,
       editRow,
       deleteRow,
       onRequest,
       contractNumber,
-      UserRef,
+      PaymentRef,
       getAvatar,
       getColorForLogo,
       getInitialsForLogo,
