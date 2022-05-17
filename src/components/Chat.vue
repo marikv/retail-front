@@ -123,6 +123,10 @@ export default {
       type: Number,
       default: null,
     },
+    user_id: {
+      type: Number,
+      default: null,
+    },
   },
 
   setup(props) {
@@ -202,6 +206,7 @@ export default {
       }
       api.post('/get-chat-messages', {
         bid_id: props.bid_id,
+        user_id: props.user_id,
         rowsPerPage: 300,
         page,
       }).then((response) => {
@@ -241,6 +246,7 @@ export default {
       scrollDown();
       api.post('/send-chat-message', {
         bid_id: props.bid_id,
+        user_id: props.user_id,
         message: newMessage.value,
       }).then((response) => {
         if (response.data.success) {

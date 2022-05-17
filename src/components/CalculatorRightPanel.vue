@@ -25,8 +25,8 @@
       <q-tab-panel name="Contracts" class="q-pa-none">
         <bids-list-for-calculator></bids-list-for-calculator>
       </q-tab-panel>
-      <q-tab-panel name="Chat" class="q-pa-none">
-        <div class="q-ma-lg text-red">work in progress :) modul in lucru</div>
+      <q-tab-panel name="ChatFull" class="q-pa-none">
+        <chat-full></chat-full>
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -36,10 +36,11 @@
 import BidsListForCalculator from 'components/BidsListForCalculator';
 import { ref } from 'vue';
 import { useStore } from 'vuex';
+import ChatFull from 'components/ChatFull';
 
 export default {
   name: 'CalculatorRightPanel',
-  components: { BidsListForCalculator },
+  components: { ChatFull, BidsListForCalculator },
   setup() {
     const $store = useStore();
     const tab = ref('Bids');
@@ -54,7 +55,7 @@ export default {
       icon: '',
       hidden: false,
     }, {
-      name: 'Chat',
+      name: 'ChatFull',
       label: 'Chat',
       icon: '',
       hidden: false,

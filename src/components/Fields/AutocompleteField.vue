@@ -102,25 +102,27 @@ export default {
   methods: {
     filterFn(val, update) {
       update(() => {
-        this.loading = true;
-        api.post('/autocomplete', {
-          search: this.what ? this.what : this.label,
-          q: this.model,
-        }).then((response) => {
-          this.loading = false;
-          const stringOptions = [];
-          if (response.data.data.data) {
-            response.data.data.data.forEach((e) => {
-              if (stringOptions.indexOf(e) === -1) {
-                stringOptions.push(e.text);
-              }
-            });
-          }
-          this.options = stringOptions;
-          update();
-        }).catch(() => {
-          this.loading = false;
-        });
+        if (this.model && this.model.length > 1) {
+          this.loading = true;
+          api.post('/autocomplete', {
+            search: this.what ? this.what : this.label,
+            q: this.model,
+          }).then((response) => {
+            this.loading = false;
+            const stringOptions = [];
+            if (response.data.data.data) {
+              response.data.data.data.forEach((e) => {
+                if (stringOptions.indexOf(e) === -1) {
+                  stringOptions.push(e.text);
+                }
+              });
+            }
+            this.options = stringOptions;
+            update();
+          }).catch(() => {
+            this.loading = false;
+          });
+        }
       });
     },
     abortFilterFn() {},
