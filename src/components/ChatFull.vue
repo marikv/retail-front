@@ -35,7 +35,14 @@
             {{chatItem.lastMessage.message.substr(0, 100)}}...
           </q-item-label>
         </q-item-section>
-        <q-item-section side></q-item-section>
+        <q-item-section
+          side
+          class="text-red"
+          v-if="chatItem.newMessages">
+          <q-badge color="negative"
+                   text-color="white"
+                   :label="chatItem.newMessages" />
+        </q-item-section>
       </q-item>
     </q-list>
     <div v-else class="full-width">
@@ -84,11 +91,13 @@ import { ref, watchEffect } from 'vue';
 import { generateColorFromString, getInitials, getMiniPhotoFromServer } from 'src/helpers';
 import config from 'src/config';
 import Chat from 'components/Chat';
+import { useStore } from 'vuex';
 
 export default {
   name: 'ChatFull',
   components: { Chat },
   setup() {
+    const $store = useStore();
     const chatsList = ref(null);
     const openedChat = ref(null);
     const openedChatBidId = ref(null);
@@ -132,6 +141,43 @@ export default {
       });
     };
     loadChats();
+
+    watchEffect(() => {
+      const getCheckNewMessages = $store.getters['auth/getCheckNewMessages'];
+      if (chatsList.value) {
+        chatsList.value.forEach((chatItemLocal, i) => {
+          chatsList.value[i].newMessages = 0;
+        });
+      }
+      if (getCheckNewMessages && getCheckNewMessages.unreadMessages) {
+        getCheckNewMessages.unreadMessages.forEach((message) => {
+          if (message.bid_id && chatsList.value) {
+            chatsList.value.forEach((chatItemLocal, i) => {
+              if (chatItemLocal.status_id !== undefined
+                && chatItemLocal.id === message.bid_id
+              ) {
+                if (chatsList.value[i].newMessages === undefined) {
+                  chatsList.value[i].newMessages = 0;
+                }
+                chatsList.value[i].newMessages += 1;
+              }
+            });
+          }
+          if (message.from_user_id && chatsList.value) {
+            chatsList.value.forEach((chatItemLocal, i) => {
+              if (chatItemLocal.status_id === undefined
+                && chatItemLocal.id === message.from_user_id
+              ) {
+                if (chatsList.value[i].newMessages === undefined) {
+                  chatsList.value[i].newMessages = 0;
+                }
+                chatsList.value[i].newMessages += 1;
+              }
+            });
+          }
+        });
+      }
+    });
 
     return {
       chatsList,
