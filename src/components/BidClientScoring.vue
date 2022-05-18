@@ -200,17 +200,16 @@
       />
     </div>
     <div class="col-4 q-px-sm q-py-xs">
-      <q-select
+      <q-input
         outlined
         dense
         :disable="disableClientInputs"
         :class="infodebitScoringClass"
         v-model="infodebitScoring"
-        :options="infodebitScoringOptions"
         label="Infodebit Scoring"
         emit-value
         map-options
-        @update:model-value="updateValue"
+        @keyup="updateValueInfodebitScoring"
       />
     </div>
     <div class="col-4 q-px-sm q-py-xs">
@@ -227,12 +226,18 @@
         @update:model-value="updateValue"
       />
     </div>
+    <div class="col-4 q-px-sm q-py-xs">
+    </div>
+    <div :class="`col-4 q-px-sm q-py-xs text-${infodebitScoringTextColor}`">
+      {{infodebitScoringText}}
+    </div>
     <div class="col-12 q-pt-lg text-grey">
       Baremul minim prestabilit pe Companie  constituie {{barem}} puncte.
     </div>
     <div
       :class="`col-12 q-pt-lg text-subtitle1 ${barem < total ? 'text-positive' : 'text-negative'}`">
-      Total puncte: {{total}}
+      Total puncte: {{total}} <strong>{{ourScoringText}}</strong>
+      <div>Suma permisă {{ourScoringTextSumMaxim}}</div>
     </div>
   </div>
 </template>
@@ -258,7 +263,7 @@ export default {
     const statusId = ref(null);
     const disableClientInputs = ref(false);
     const bidData = ref({});
-    const barem = ref(20);
+    const barem = ref(20.5);
     const studii = ref(0);
     const studiiClass = ref('bg-white');
     const virsta = ref(0);
@@ -289,6 +294,11 @@ export default {
     const datoriiClass = ref('bg-white');
     const infodebitScoring = ref(0);
     const infodebitScoringClass = ref('bg-white');
+    const infodebitScoringText = ref('Risc sporit');
+    const infodebitScoringTextColor = ref('negative');
+    const ourScoringText = ref('');
+    const ourScoringTextSumMaxim = ref('');
+    const ourScoringTextColor = ref('negative');
     const letigii = ref(0);
     const letigiiClass = ref('bg-white');
     const studiiOptions = ref([
@@ -404,91 +414,91 @@ export default {
         label: '1',
         value: 1,
         fnc: '',
-        bal: 0,
+        bal: -0.5,
       },
       {
         label: '2',
         value: 2,
         fnc: '',
-        bal: 0,
+        bal: -1,
       },
       {
         label: '3',
         value: 3,
         fnc: '',
-        bal: 0,
+        bal: -1.5,
       },
       {
         label: '4',
         value: 4,
         fnc: '',
-        bal: 0,
+        bal: -2,
       },
       {
         label: '5',
         value: 5,
         fnc: '',
-        bal: 0,
+        bal: -2.5,
       },
       {
         label: '6',
         value: 6,
         fnc: '',
-        bal: 0,
+        bal: -3,
       },
       {
         label: '7',
         value: 7,
         fnc: '',
-        bal: 0,
+        bal: -3.5,
       },
       {
         label: '8',
         value: 8,
         fnc: '',
-        bal: 0,
+        bal: -4,
       },
       {
         label: '9',
         value: 9,
         fnc: '',
-        bal: 0,
+        bal: -4.5,
       },
       {
         label: '10',
         value: 10,
         fnc: '',
-        bal: 0,
+        bal: -5,
       },
       {
         label: '11',
         value: 11,
         fnc: '',
-        bal: 0,
+        bal: -5.5,
       },
       {
         label: '12',
         value: 12,
         fnc: '',
-        bal: 0,
+        bal: -6,
       },
       {
         label: '13',
         value: 13,
         fnc: '',
-        bal: 0,
+        bal: -6.5,
       },
       {
         label: '14',
         value: 14,
         fnc: '',
-        bal: 0,
+        bal: -7,
       },
       {
-        label: '15',
+        label: '15 sau mai mult',
         value: 15,
         fnc: '',
-        bal: 0,
+        bal: -100,
       },
     ]);
     const locMuncaOptions = ref([
@@ -937,38 +947,6 @@ export default {
         bal: 0.5,
       },
     ]);
-    const infodebitScoringOptions = ref([
-      {
-        label: 'Excelent 40-44,5',
-        value: 0,
-        fnc: '',
-        bal: 0,
-      },
-      {
-        label: 'Foarte bine 30-40',
-        value: 1,
-        fnc: '',
-        bal: 0,
-      },
-      {
-        label: 'Bine 25-30',
-        value: 2,
-        fnc: '',
-        bal: 0,
-      },
-      {
-        label: 'Satisfacator 20,6-24',
-        value: 3,
-        fnc: '',
-        bal: 0,
-      },
-      {
-        label: 'Refuz pina la 20,5',
-        value: 4,
-        fnc: '',
-        bal: 0,
-      },
-    ]);
     const letigiiOptions = ref([
       {
         label: 'fara antecedente penale',
@@ -991,6 +969,106 @@ export default {
       {
         label: 'fost condamnat',
         value: 3,
+        fnc: '',
+        bal: 0,
+      },
+    ]);
+
+    const infodebitScoringOptions = ref([
+      {
+        label: 'Risc sporit',
+        value: 0,
+        minValue: 0,
+        maxValue: 599,
+        color: 'negative',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Risc Mediu',
+        value: 1,
+        minValue: 600,
+        maxValue: 649,
+        color: 'orange',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Echitabil',
+        value: 2,
+        minValue: 650,
+        maxValue: 699,
+        color: 'lime-9',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Oportun',
+        value: 3,
+        minValue: 700,
+        maxValue: 749,
+        color: 'green',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Excelent',
+        value: 4,
+        minValue: 750,
+        maxValue: 999999999,
+        color: 'positive',
+        fnc: '',
+        bal: 0,
+      },
+    ]);
+    const ourScoringOptions = ref([
+      {
+        label: 'Excelent',
+        value: 0,
+        minValue: 40.001,
+        maxValue: 999999,
+        color: 'positive',
+        ourScoringTextSumMaxim: '500 până la 50.000',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Foarte bine',
+        value: 1,
+        minValue: 30.001,
+        maxValue: 40,
+        color: 'positive',
+        ourScoringTextSumMaxim: '500 până la 25.000',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Bine',
+        value: 2,
+        minValue: 25,
+        maxValue: 30,
+        color: 'lime-9',
+        ourScoringTextSumMaxim: '500 până la 15.000',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Satisfacator',
+        value: 3,
+        minValue: 20.6,
+        maxValue: 24.999,
+        color: 'orange',
+        ourScoringTextSumMaxim: '500 până la 7.000',
+        fnc: '',
+        bal: 0,
+      },
+      {
+        label: 'Refuz',
+        value: 4,
+        minValue: 0,
+        maxValue: 20.5999,
+        color: 'negative',
+        ourScoringTextSumMaxim: '0',
         fnc: '',
         bal: 0,
       },
@@ -1021,7 +1099,6 @@ export default {
       t = inFnc(t, alteVenituriFamilieOptions, alteVenituriFamilie);
       t = inFnc(t, istorieCreditOptions, istorieCredit);
       t = inFnc(t, datoriiOptions, datorii);
-      t = inFnc(t, infodebitScoringOptions, infodebitScoring);
       t = inFnc(t, letigiiOptions, letigii);
       return parseFloat((Math.round(t * 100) / 100).toFixed(2));
     });
@@ -1049,8 +1126,43 @@ export default {
       }
     };
 
+    const getTextForInfodebit = () => {
+      if (!infodebitScoring.value) {
+        infodebitScoring.value = 0;
+      }
+      infodebitScoring.value = parseInt(String(infodebitScoring.value), 10);
+      infodebitScoringOptions.value.forEach((option) => {
+        if (option.minValue <= infodebitScoring.value
+          && option.maxValue >= infodebitScoring.value
+        ) {
+          infodebitScoringText.value = option.label;
+          infodebitScoringTextColor.value = option.color;
+        }
+      });
+    };
+    const updateValueInfodebitScoring = () => {
+      getTextForInfodebit();
+      updateValue();
+    };
+
     watchEffect(() => {
       bidData.value = $store.getters['bids/getOpenedBidData'];
+    });
+
+    watchEffect(() => {
+      if (!total.value) {
+        total.value = 0;
+      }
+      total.value = parseFloat(String(total.value));
+      ourScoringOptions.value.forEach((option) => {
+        if (option.minValue <= total.value
+          && option.maxValue >= total.value
+        ) {
+          ourScoringText.value = option.label;
+          ourScoringTextColor.value = option.color;
+          ourScoringTextSumMaxim.value = option.ourScoringTextSumMaxim;
+        }
+      });
     });
 
     watchEffect(() => {
@@ -1088,6 +1200,9 @@ export default {
           datorii.value = jsonData.datorii;
           infodebitScoring.value = jsonData.infodebitScoring;
           letigii.value = jsonData.letigii;
+          setTimeout(() => {
+            getTextForInfodebit();
+          }, 100);
         }
       }
     });
@@ -1135,7 +1250,13 @@ export default {
       datoriiOptions,
       datoriiClass,
       datorii,
-      infodebitScoringOptions,
+      ourScoringOptions,
+      ourScoringText,
+      ourScoringTextColor,
+      ourScoringTextSumMaxim,
+      infodebitScoringText,
+      infodebitScoringTextColor,
+      updateValueInfodebitScoring,
       infodebitScoringClass,
       infodebitScoring,
       letigiiOptions,

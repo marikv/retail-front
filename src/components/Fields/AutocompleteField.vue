@@ -97,6 +97,7 @@ export default {
     'blur',
     'input',
     'focus',
+    'update:modelValue',
   ],
 
   methods: {

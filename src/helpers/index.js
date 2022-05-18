@@ -151,7 +151,7 @@ export const getInitials = (str) => {
   if (expl.length > 1) {
     s = expl[1].substr(0, 1);
   }
-  return `${f}${s}`;
+  return `${f}${s}`.toUpperCase();
 };
 export const generateColorFromString = (str) => {
   if (!str) {

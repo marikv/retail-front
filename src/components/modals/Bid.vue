@@ -173,7 +173,7 @@
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
-                               :typeId="fileTypeSignContract"
+                               :typeId="`${fileTypeSignContract}`"
                                @onUploaded="onFileUploaded"
                                :id="id">
                     <template v-slot:button>
@@ -194,7 +194,7 @@
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
-                               :typeId="fileTypeAnexa"
+                               :typeId="`${fileTypeAnexa}`"
                                @onUploaded="onFileUploaded"
                                :id="id">
                     <template v-slot:button>
@@ -215,7 +215,7 @@
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
-                               :typeId="fileTypeBuletin1"
+                               :typeId="`${fileTypeBuletin1}`"
                                @onUploaded="onFileUploaded"
                                :id="id">
                     <template v-slot:button>
@@ -236,7 +236,7 @@
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
-                               :typeId="fileTypeBuletin2"
+                               :typeId="`${fileTypeBuletin2}`"
                                @onUploaded="onFileUploaded"
                                :id="id">
                     <template v-slot:button>
@@ -257,7 +257,7 @@
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
-                               :typeId="fileTypeOthers1"
+                               :typeId="`${fileTypeOthers1}`"
                                @onUploaded="onFileUploaded"
                                :id="id">
                     <template v-slot:button>
@@ -278,7 +278,7 @@
                 </div>
                 <div class="col-5">
                   <file-upload module="bid_id"
-                               :typeId="fileTypeOthers2"
+                               :typeId="`${fileTypeOthers2}`"
                                @onUploaded="onFileUploaded"
                                :id="id">
                     <template v-slot:button>
@@ -349,7 +349,7 @@
       <q-card-actions align="right">
         <q-btn label="Trimite contractul semnat / închide cererea"
                color="primary"
-               v-if="bidData.status_id === BID_STATUS_APPROVED"
+               v-if="bidData.status_id === BID_STATUS_APPROVED && isDealer"
                @click="sendBidToContract" />
         <q-btn label="Închide" @click="onCancelClick" />
       </q-card-actions>

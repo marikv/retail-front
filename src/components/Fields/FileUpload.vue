@@ -63,7 +63,7 @@ export default {
       default: 0,
     },
     typeId: {
-      type: Number,
+      type: String,
       default: null,
     },
   },

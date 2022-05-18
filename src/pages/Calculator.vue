@@ -533,6 +533,48 @@
                   v-model="clientProdus">
                 </autocomplete-field>
               </div>
+              <div class="col-5">
+                <file-upload module="bid_id"
+                             :typeId="`${fileTypeBuletin1}`"
+                             @onUploaded="onFileUploaded"
+                             :id="0">
+                  <template v-slot:button>
+                    <q-btn size="md"
+                           icon="attach_file"
+                           label="Adaugă copia actului de identitate 1"
+                           class="q-ma-md"
+                    ></q-btn>
+                  </template>
+                </file-upload>
+              </div>
+              <div class="col-7 q-pt-md">
+                {{
+                  fileUploadedResponses[String(fileTypeBuletin1)].name
+                    ? fileUploadedResponses[String(fileTypeBuletin1)].name
+                    : ''
+                }}
+              </div>
+              <div class="col-5">
+                <file-upload module="bid_id"
+                             :typeId="`${fileTypeBuletin2}`"
+                             @onUploaded="onFileUploaded"
+                             :id="0">
+                  <template v-slot:button>
+                    <q-btn size="md"
+                           icon="attach_file"
+                           label="Adaugă copia actului de identitate 2"
+                           class="q-ma-md"
+                    ></q-btn>
+                  </template>
+                </file-upload>
+              </div>
+              <div class="col-7 q-pt-md">
+                {{
+                  fileUploadedResponses[String(fileTypeBuletin2)].name
+                    ? fileUploadedResponses[String(fileTypeBuletin2)].name
+                    : ''
+                }}
+              </div>
               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 q-pa-xs text-caption">
                 <q-checkbox size="sm"
                             :disable="!calcResultsExist || disableInputs"
@@ -619,6 +661,8 @@ import {
   calendarLocaleRo,
   dateFormat,
   downloadPDF,
+  FILE_TYPE_BULETIN_1,
+  FILE_TYPE_BULETIN_2,
   hideLoading,
   showLoading,
   showNotify,
@@ -629,10 +673,11 @@ import {
 import { useStore } from 'vuex';
 import CalculatorRightPanel from 'components/CalculatorRightPanel';
 import AutocompleteField from 'components/Fields/AutocompleteField';
+import FileUpload from 'components/Fields/FileUpload';
 
 export default defineComponent({
   name: 'Calculator',
-  components: { AutocompleteField, CalculatorRightPanel },
+  components: { FileUpload, AutocompleteField, CalculatorRightPanel },
   setup() {
     const splitterModel = ref(580);
     // 470px
@@ -660,6 +705,13 @@ export default defineComponent({
     const minDate = ref(dateFormat(today, 'YYYY/MM/DD'));
     const maxDate = ref(dateFormat(new Date(today.setMonth(today.getMonth() + 1)), 'YYYY/MM/DD'));
     const calcResultsExist = ref(false);
+
+    const fileTypeBuletin1 = ref(FILE_TYPE_BULETIN_1);
+    const fileTypeBuletin2 = ref(FILE_TYPE_BULETIN_2);
+    let fileUploadedResponsesObj = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_1)] = {};
+    fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_2)] = {};
+    const fileUploadedResponses = ref({ ...fileUploadedResponsesObj });
 
     const clientId = ref(0);
     const clientFirstName = ref('');
@@ -741,6 +793,20 @@ export default defineComponent({
       clientRegion.value = '';
       clientCb.value = false;
       clientCbHasError.value = false;
+      clientWhoIsContPers1.value = '';
+      clientPhoneContPers1.value = '';
+      clientLastNameContPers1.value = '';
+      clientFirstNameContPers1.value = '';
+      clientProdus.value = '';
+      clientWhoIsContPers2.value = '';
+      clientPhoneContPers2.value = '';
+      clientLastNameContPers2.value = '';
+      clientFirstNameContPers2.value = '';
+
+      fileUploadedResponsesObj = {};
+      fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_1)] = {};
+      fileUploadedResponsesObj[String(FILE_TYPE_BULETIN_2)] = {};
+      fileUploadedResponses.value = { ...fileUploadedResponsesObj };
     };
 
     const dealerChanged = () => {
@@ -941,6 +1007,7 @@ export default defineComponent({
           total_dobinda: calcResults.value.tabelTotal.dobinda,
           total_comision: calcResults.value.tabelTotal.comision,
           total_comision_admin: calcResults.value.tabelTotal.comisionAdmin,
+          fileUploadedResponses: fileUploadedResponses.value,
         };
         disableInputs.value = true;
         api.post('/bids/add-or-edit/0', formData).then((response) => {
@@ -1075,6 +1142,13 @@ export default defineComponent({
       lastFoundedClientSN.value = clientBuletinSN.value;
     };
 
+    const onFileUploaded = (fileData) => {
+      if (fileData.response.data.data) {
+        const t = String(fileData.linkFileToData.type_id);
+        fileUploadedResponses.value[t] = fileData.response.data.data;
+      }
+    };
+
     return {
       isExecutor,
       isAdmin,
@@ -1148,6 +1222,10 @@ export default defineComponent({
       foundedClients,
       selectFoundedClient,
       uniqId,
+      fileTypeBuletin1,
+      fileTypeBuletin2,
+      fileUploadedResponses,
+      onFileUploaded,
     };
   },
 });
