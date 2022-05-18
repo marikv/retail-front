@@ -15,7 +15,13 @@
           :name="tab.name"
           v-if="!tab.hidden"
           :icon="tab.icon"
-          :label="tab.label" />
+          :label="tab.label">
+          <q-badge
+            floating
+            color="negative"
+            v-if="tab.name === 'ChatFull' && getCountNewMessages"
+            :label="getCountNewMessages"></q-badge>
+        </q-tab>
       </template>
     </q-tabs>
     <q-tab-panels v-model="tab" animated>
@@ -34,7 +40,7 @@
 
 <script>
 import BidsListForCalculator from 'components/BidsListForCalculator';
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useStore } from 'vuex';
 import ChatFull from 'components/ChatFull';
 
@@ -44,6 +50,7 @@ export default {
   setup() {
     const $store = useStore();
     const tab = ref('Bids');
+    const getCountNewMessages = ref(0);
     const tabs = ref([{
       name: 'Bids',
       label: 'Cereri',
@@ -65,11 +72,15 @@ export default {
       tab.value = tabName;
       // $store.commit('users/updateRefreshGridBidsCalculator', true);
     };
+    watchEffect(() => {
+      getCountNewMessages.value = $store.getters['auth/getCountNewMessages'];
+    });
     setModel('Bids');
     return {
       tab,
       tabs,
       setModel,
+      getCountNewMessages,
     };
   },
 };

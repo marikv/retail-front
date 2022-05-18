@@ -10,3 +10,6 @@ export function getCheckNewMessages(state) {
 export function getActiveModule(state) {
   return state.activeModule;
 }
+export function getCountNewMessages(state) {
+  return state.countNewMessages;
+}

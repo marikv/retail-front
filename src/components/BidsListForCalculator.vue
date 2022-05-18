@@ -291,6 +291,9 @@ export default defineComponent({
     });
     watchEffect(() => {
       const getCheckNewMessages = $store.getters['auth/getCheckNewMessages'];
+      $store.commit('auth/updateCountNewMessages',
+        getCheckNewMessages && getCheckNewMessages.unreadMessages
+          ? getCheckNewMessages.unreadMessages.length : 0);
       if (getCheckNewMessages && getCheckNewMessages.unreadMessages) {
         const unreadChatsLocal = [];
         getCheckNewMessages.unreadMessages.forEach((message) => {

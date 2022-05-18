@@ -149,6 +149,9 @@ export default {
           chatsList.value[i].newMessages = 0;
         });
       }
+      $store.commit('auth/updateCountNewMessages',
+        getCheckNewMessages && getCheckNewMessages.unreadMessages
+          ? getCheckNewMessages.unreadMessages.length : 0);
       if (getCheckNewMessages && getCheckNewMessages.unreadMessages) {
         getCheckNewMessages.unreadMessages.forEach((message) => {
           if (message.bid_id && chatsList.value) {

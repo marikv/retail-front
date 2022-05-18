@@ -3,4 +3,5 @@ export default () => ({
   user: {},
   checkNewMessages: {},
   activeModule: '',
+  countNewMessages: 0,
 });

@@ -10,3 +10,6 @@ export const updateCheckNewMessages = (state, val) => {
 export const updateActiveModule = (state, val) => {
   state.activeModule = val;
 };
+export const updateCountNewMessages = (state, val) => {
+  state.countNewMessages = val;
+};
