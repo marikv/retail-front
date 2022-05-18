@@ -1360,10 +1360,10 @@
     update-notifier "^5.1.0"
     validate-npm-package-name "^3.0.0"
 
-"@quasar/extras@^1.13.6":
-  version "1.13.6"
-  resolved "https://registry.yarnpkg.com/@quasar/extras/-/extras-1.13.6.tgz#7b0ebbe4d9438e599dbb6aafd2af132cf5692344"
-  integrity sha512-IpLPkB3/NXd1vrIo5UcWJR5ECSOqkpFGxZ14Tb3GwBaFPqkpIbpJHGETLLGd284lclI9m1+NNE36TpYyly5qCQ==
+"@quasar/extras@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@quasar/extras/-/extras-1.14.0.tgz#cbdb2c8ea8f9ef551adea28592bf9f9f6c1c5165"
+  integrity sha512-4qVLqiKHV8tpvj/VgyxI5FlWCwQvWQzq15xlLeCDpzLOGeJruUXs+QCAB5gFgdDHPbU2ax2YgAxyGoQSCS7ACw==
 
 "@quasar/fastclick@1.1.4":
   version "1.1.4"
@@ -6821,10 +6821,10 @@ quasar-app-extension-ide-helper@^1.0.0:
   dependencies:
     xml-escape "^1.1.0"
 
-quasar@^2.6.6:
-  version "2.6.6"
-  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.6.6.tgz#00bc2acbe5ef2492f7b959f539fd2e469e7082a6"
-  integrity sha512-rXoGZROOXVutQX14l/ys0te/NrgQ754krI0Vz52pBXdznyS+dTL6AgGpr3JMwffoxpxhQyedrL2jOAMpq+Jsgw==
+quasar@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-2.7.0.tgz#f106818bd08e18b3289ec9b92b33c8f6a5cb497c"
+  integrity sha512-UjSWhEtHku1lIP7swRxRj15jRaiH96Nsyrhs/mPcQQXskuDpl5h5eQOFGKHNjgAbVvxXqQTk4aEE78N23bpK/A==
 
 query-string@^5.0.1:
   version "5.1.1"
