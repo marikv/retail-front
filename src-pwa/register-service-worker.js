@@ -1,4 +1,6 @@
 import { register } from 'register-service-worker';
+import { Dialog, Loading, QSpinnerGears } from 'quasar';
+import config from 'src/config';
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
@@ -29,6 +31,39 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   updated(/* registration */) {
     // console.log('New content is available; please refresh.')
+    //  console.log(registration);
+    Dialog.create({
+      title: 'Atenție!',
+      message: `A fost instalată o versiune mai nouă a aplicației (${config.appVersion}). Doriți să încărcați versiunea nouă?`,
+      persistent: true,
+      ok: {
+        label: 'DA, încarcă',
+        flat: false,
+        size: 'lg',
+      },
+      cancel: {
+        label: 'Închide',
+        flat: true,
+        size: 'lg',
+      },
+    }).onOk(() => {
+      // if ('serviceWorker' in navigator) {
+      //   caches.keys().then((cacheNames) => {
+      //     cacheNames.forEach((cacheName) => {
+      //       caches.delete(cacheName);
+      //     });
+      //   });
+      // }
+      Loading.show({
+        spinner: QSpinnerGears,
+        // other props
+      });
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 4000);
+    }).onCancel(() => {
+      // console.log('>>>> Cancel')
+    });
   },
 
   offline() {
