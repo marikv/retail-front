@@ -146,8 +146,8 @@ module.exports = configure((ctx) => ({
     },
 
     manifest: {
-      name: 'retail for creditbox app',
-      short_name: 'retail for creditbox app',
+      name: 'retail creditbox',
+      short_name: 'retail creditbox',
       description: 'retailing loans',
       display: 'standalone',
       orientation: 'portrait',

@@ -203,13 +203,12 @@
       <q-input
         outlined
         dense
+        v-if="datorii"
         :disable="disableClientInputs"
-        :class="infodebitScoringClass"
-        v-model="infodebitScoring"
-        label="Infodebit Scoring"
-        emit-value
-        map-options
-        @keyup="updateValueInfodebitScoring"
+        :class="datoriiRataClass"
+        v-model="datoriiRata"
+        label="Rata lunara a datoriilor curente"
+        @keyup="updateValue"
       />
     </div>
     <div class="col-4 q-px-sm q-py-xs">
@@ -226,7 +225,17 @@
         @update:model-value="updateValue"
       />
     </div>
+
     <div class="col-4 q-px-sm q-py-xs">
+      <q-input
+        outlined
+        dense
+        :disable="disableClientInputs"
+        :class="infodebitScoringClass"
+        v-model="infodebitScoring"
+        label="Infodebit Scoring"
+        @keyup="updateValueInfodebitScoring"
+      />
     </div>
     <div :class="`col-4 q-px-sm q-py-xs text-${infodebitScoringTextColor}`">
       {{infodebitScoringText}}
@@ -291,7 +300,9 @@ export default {
     const istorieCredit = ref(0);
     const istorieCreditClass = ref('bg-white');
     const datorii = ref(0);
+    const datoriiRata = ref('');
     const datoriiClass = ref('bg-white');
+    const datoriiRataClass = ref('bg-white');
     const infodebitScoring = ref(0);
     const infodebitScoringClass = ref('bg-white');
     const infodebitScoringText = ref('Risc sporit');
@@ -1120,6 +1131,7 @@ export default {
           alteVenituriFamilie: alteVenituriFamilie.value,
           istorieCredit: istorieCredit.value,
           datorii: datorii.value,
+          datoriiRata: datoriiRata.value,
           infodebitScoring: infodebitScoring.value,
           letigii: letigii.value,
         });
@@ -1198,6 +1210,7 @@ export default {
           alteVenituriFamilie.value = jsonData.alteVenituriFamilie;
           istorieCredit.value = jsonData.istorieCredit;
           datorii.value = jsonData.datorii;
+          datoriiRata.value = jsonData.datoriiRata;
           infodebitScoring.value = jsonData.infodebitScoring;
           letigii.value = jsonData.letigii;
           setTimeout(() => {
@@ -1250,6 +1263,8 @@ export default {
       datoriiOptions,
       datoriiClass,
       datorii,
+      datoriiRataClass,
+      datoriiRata,
       ourScoringOptions,
       ourScoringText,
       ourScoringTextColor,

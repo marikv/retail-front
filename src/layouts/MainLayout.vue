@@ -59,8 +59,8 @@
           v-for="link in linksList"
           :key="link.title"
           v-bind="link"
+          :badge="link.link === 'bids' && newBids > 0 ? newBids : 0"
         />
-
       </q-list>
     </q-drawer>
 
@@ -152,6 +152,7 @@ export default defineComponent({
     const $router = useRouter();
     const leftDrawerOpen = ref(false);
     const hasPermissionToLeftMenu = ref(false);
+    const newBids = ref(0);
     const $store = useStore();
     const authenticated = computed(() => !!$store.getters['auth/getToken']);
     const user = computed(() => $store.getters['auth/getUser']);
@@ -203,7 +204,11 @@ export default defineComponent({
           activeModule: $store.getters['auth/getActiveModule'],
         }).then((response) => {
           if (response.data.success) {
-            $store.commit('auth/updateCheckNewMessages', response.data.data);
+            const getCheckNewMessages = response.data.data;
+            $store.commit('auth/updateCheckNewMessages', getCheckNewMessages);
+            if (getCheckNewMessages && getCheckNewMessages.newBids !== undefined) {
+              newBids.value = getCheckNewMessages.newBids;
+            }
           }
         });
       }
@@ -224,6 +229,7 @@ export default defineComponent({
       },
       user,
       getRole,
+      newBids,
     };
   },
 });

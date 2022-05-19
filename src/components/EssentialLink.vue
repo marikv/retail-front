@@ -21,6 +21,10 @@
       <q-item-label v-if="caption" caption>
         {{ caption }}
       </q-item-label>
+      <q-badge v-if="badge"
+               floating
+               class="q-mt-md q-mr-lg"
+               color="negative">{{badge}}</q-badge>
     </q-item-section>
   </q-item>
 </template>
@@ -43,6 +47,11 @@ export default defineComponent({
     caption: {
       type: String,
       default: '',
+    },
+
+    badge: {
+      type: Number,
+      default: 0,
     },
 
     link: {
