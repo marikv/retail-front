@@ -27,11 +27,6 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   updatefound(/* registration */) {
     // console.log('New content is downloading.')
-  },
-
-  updated(/* registration */) {
-    // console.log('New content is available; please refresh.')
-    //  console.log(registration);
     Dialog.create({
       title: 'Atenție!',
       message: `A fost instalată o versiune mai nouă a aplicației (${config.appVersion}). Doriți să încărcați versiunea nouă?`,
@@ -64,6 +59,11 @@ register(process.env.SERVICE_WORKER_FILE, {
     }).onCancel(() => {
       // console.log('>>>> Cancel')
     });
+  },
+
+  updated(/* registration */) {
+    // console.log('New content is available; please refresh.')
+    //  console.log(registration);
   },
 
   offline() {
