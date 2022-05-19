@@ -60,7 +60,7 @@ register(process.env.SERVICE_WORKER_FILE, {
       });
       setTimeout(() => {
         window.location.reload(true);
-      }, 4000);
+      }, 10000);
     }).onCancel(() => {
       // console.log('>>>> Cancel')
     });
