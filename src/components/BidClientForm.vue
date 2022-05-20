@@ -133,7 +133,75 @@
         v-model="clientBirthDate">
       </q-input>
     </div>
+    <div class="col-12 text-primary">Adresa de reședință (buletin)</div>
     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        :error="clientRegionRegHasError"
+        @blur="clientRegionRegHasError = false"
+        @focus="clientRegionRegHasError = false"
+        type="text"
+        label="Raion"
+        v-model="clientRegionReg">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        :error="clientLocalitateRegHasError"
+        @blur="clientLocalitateRegHasError = false"
+        @focus="clientLocalitateRegHasError = false"
+        type="text"
+        label="Localitate"
+        v-model="clientLocalitateReg">
+      </q-input>
+    </div>
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        type="text"
+        label="Strada"
+        v-model="clientStreetReg">
+      </q-input>
+    </div>
+    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        type="text"
+        label="Bloc"
+        v-model="clientHouseReg">
+      </q-input>
+    </div>
+    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
+      <q-input
+        dense
+        outlined
+        :disable="disableClientInputs"
+        class="client-input" bg-color="white"
+        type="text"
+        label="Apartament"
+        v-model="clientFlatReg">
+      </q-input>
+    </div>
+
+    <div class="col-12 text-primary">Adresa domiciliu
+      <q-checkbox v-model="clientSameAddresses"
+                  label="Adresa domiciliului coincide cu cea de reședință"></q-checkbox>
+    </div>
+    <div v-if="!clientSameAddresses"
+         class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         dense
         outlined
@@ -147,7 +215,8 @@
         v-model="clientRegion">
       </q-input>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+    <div v-if="!clientSameAddresses"
+         class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         dense
         outlined
@@ -161,7 +230,8 @@
         v-model="clientLocalitate">
       </q-input>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+    <div v-if="!clientSameAddresses"
+         class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         dense
         outlined
@@ -172,7 +242,8 @@
         v-model="clientStreet">
       </q-input>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+    <div v-if="!clientSameAddresses"
+         class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         dense
         outlined
@@ -183,7 +254,8 @@
         v-model="clientHouse">
       </q-input>
     </div>
-    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+    <div v-if="!clientSameAddresses"
+         class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         dense
         outlined
@@ -194,6 +266,7 @@
         v-model="clientFlat">
       </q-input>
     </div>
+
     <div class="col-12 text-primary">Persoana de contact 1</div>
     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
@@ -355,6 +428,14 @@ export default {
     const clientStreet = ref('');
     const clientHouse = ref('');
     const clientFlat = ref('');
+    const clientRegionReg = ref('');
+    const clientRegionRegHasError = ref(false);
+    const clientLocalitateReg = ref('');
+    const clientLocalitateRegHasError = ref(false);
+    const clientStreetReg = ref('');
+    const clientHouseReg = ref('');
+    const clientFlatReg = ref('');
+    const clientSameAddresses = ref(true);
     const clientWhoIsContPers1 = ref('');
     const clientPhoneContPers1 = ref('');
     const clientLastNameContPers1 = ref('');
@@ -394,6 +475,12 @@ export default {
             street: clientStreet.value,
             house: clientHouse.value,
             flat: clientFlat.value,
+            region_reg: clientRegionReg.value,
+            localitate_reg: clientLocalitateReg.value,
+            street_reg: clientStreetReg.value,
+            house_reg: clientHouseReg.value,
+            flat_reg: clientFlatReg.value,
+            same_addresses: clientSameAddresses.value,
             who_is_cont_pers1: clientWhoIsContPers1.value,
             phone_cont_pers1: clientPhoneContPers1.value,
             last_name_cont_pers1: clientLastNameContPers1.value,
@@ -445,6 +532,12 @@ export default {
         clientStreet.value = bidData.value.street;
         clientHouse.value = bidData.value.house;
         clientFlat.value = bidData.value.flat;
+        clientRegionReg.value = bidData.value.region_reg;
+        clientLocalitateReg.value = bidData.value.localitate_reg;
+        clientStreetReg.value = bidData.value.street_reg;
+        clientHouseReg.value = bidData.value.house_reg;
+        clientFlatReg.value = bidData.value.flat_reg;
+        clientSameAddresses.value = parseInt(String(bidData.value.same_addresses), 10) === 1;
         clientWhoIsContPers1.value = bidData.value.who_is_cont_pers1;
         clientPhoneContPers1.value = bidData.value.phone_cont_pers1;
         clientLastNameContPers1.value = bidData.value.last_name_cont_pers1;
@@ -483,6 +576,14 @@ export default {
       clientStreet,
       clientHouse,
       clientFlat,
+      clientRegionReg,
+      clientRegionRegHasError,
+      clientLocalitateReg,
+      clientLocalitateRegHasError,
+      clientStreetReg,
+      clientHouseReg,
+      clientFlatReg,
+      clientSameAddresses,
       clientWhoIsContPers1,
       clientPhoneContPers1,
       clientLastNameContPers1,

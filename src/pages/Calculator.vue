@@ -368,7 +368,76 @@
                   v-model="clientBirthDate">
                 </q-input>
               </div>
+
+              <div class="col-12 text-primary">Adresa de reședință (buletin)</div>
               <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientRegionRegHasError"
+                  @blur="clientRegionRegHasError = false"
+                  @focus="clientRegionRegHasError = false"
+                  type="text"
+                  label="Raion"
+                  what="region"
+                  v-model="clientRegionReg">
+                </autocomplete-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  :error="clientLocalitateRegHasError"
+                  @blur="clientLocalitateRegHasError = false"
+                  @focus="clientLocalitateRegHasError = false"
+                  type="text"
+                  label="Localitate"
+                  what="localitate"
+                  v-model="clientLocalitateReg">
+                </autocomplete-field>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+                <autocomplete-field
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Strada"
+                  what="street"
+                  v-model="clientStreetReg">
+                </autocomplete-field>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Bloc"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
+                  v-model="clientHouseReg">
+                </q-input>
+              </div>
+              <div class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
+                <q-input
+                  dense
+                  outlined
+                  :disable="!calcResultsExist || disableInputs"
+                  type="text"
+                  label="Apartament"
+                  :autocomplete="`off-autocomplete-${uniqId}`"
+                  v-model="clientFlatReg">
+                </q-input>
+              </div>
+
+              <div class="col-12 text-primary">Adresa domiciliu
+                <q-checkbox v-model="clientSameAddresses"
+                            label="Adresa domiciliului coincide cu cea de reședință"></q-checkbox>
+              </div>
+              <div v-if="!clientSameAddresses"
+                   class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <autocomplete-field
                   dense
                   outlined
@@ -382,7 +451,8 @@
                   v-model="clientRegion">
                 </autocomplete-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+              <div v-if="!clientSameAddresses"
+                   class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <autocomplete-field
                   dense
                   outlined
@@ -396,7 +466,8 @@
                   v-model="clientLocalitate">
                 </autocomplete-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+              <div v-if="!clientSameAddresses"
+                   class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
                 <autocomplete-field
                   dense
                   outlined
@@ -407,7 +478,8 @@
                   v-model="clientStreet">
                 </autocomplete-field>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+              <div v-if="!clientSameAddresses"
+                   class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
                   dense
                   outlined
@@ -418,7 +490,8 @@
                   v-model="clientHouse">
                 </q-input>
               </div>
-              <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-xs-12 q-pa-xs">
+              <div v-if="!clientSameAddresses"
+                   class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
                 <q-input
                   dense
                   outlined
@@ -739,6 +812,14 @@ export default defineComponent({
     const clientStreet = ref('');
     const clientHouse = ref('');
     const clientFlat = ref('');
+    const clientRegionReg = ref('');
+    const clientRegionRegHasError = ref(false);
+    const clientLocalitateReg = ref('');
+    const clientLocalitateRegHasError = ref(false);
+    const clientStreetReg = ref('');
+    const clientHouseReg = ref('');
+    const clientFlatReg = ref('');
+    const clientSameAddresses = ref(true);
     const dealer = ref(0);
     const dealerData = ref({});
     const clientWhoIsContPers1 = ref('');
@@ -789,8 +870,17 @@ export default defineComponent({
       clientBuletinOffice.value = '';
       clientBuletinDateTill.value = '';
       clientBirthDate.value = '';
-      clientLocalitate.value = '';
       clientRegion.value = '';
+      clientLocalitate.value = '';
+      clientStreet.value = '';
+      clientHouse.value = '';
+      clientFlat.value = '';
+      clientRegionReg.value = '';
+      clientLocalitateReg.value = '';
+      clientStreetReg.value = '';
+      clientHouseReg.value = '';
+      clientFlatReg.value = '';
+      clientSameAddresses.value = true;
       clientCb.value = false;
       clientCbHasError.value = false;
       clientWhoIsContPers1.value = '';
@@ -948,6 +1038,9 @@ export default defineComponent({
       if (!clientRegion.value && !clientLocalitate.value) {
         clientLocalitateHasError.value = true;
       }
+      if (!clientRegionReg.value && !clientLocalitateReg.value) {
+        clientLocalitateRegHasError.value = true;
+      }
       if (!clientCb.value) {
         clientCbHasError.value = true;
       }
@@ -960,6 +1053,7 @@ export default defineComponent({
         && !clientBuletinIDNPHasError.value
         && !clientBirthDateHasError.value
         && !clientLocalitateHasError.value
+        && !clientLocalitateRegHasError.value
         && !clientRegionHasError.value
         && !clientCbHasError.value
         && calcResultsExist.value
@@ -988,6 +1082,12 @@ export default defineComponent({
           street: clientStreet.value,
           house: clientHouse.value,
           flat: clientFlat.value,
+          localitate_reg: clientLocalitateReg.value,
+          region_reg: clientRegionReg.value,
+          street_reg: clientStreetReg.value,
+          house_reg: clientHouseReg.value,
+          flat_reg: clientFlatReg.value,
+          same_addresses: clientSameAddresses.value,
           dealer: dealer.value,
           who_is_cont_pers1: clientWhoIsContPers1.value,
           phone_cont_pers1: clientPhoneContPers1.value,
@@ -1194,6 +1294,14 @@ export default defineComponent({
       clientStreet,
       clientHouse,
       clientFlat,
+      clientRegionReg,
+      clientRegionRegHasError,
+      clientLocalitateReg,
+      clientLocalitateRegHasError,
+      clientStreetReg,
+      clientHouseReg,
+      clientFlatReg,
+      clientSameAddresses,
       dealer,
       clientWhoIsContPers1,
       clientPhoneContPers1,
