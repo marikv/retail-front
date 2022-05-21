@@ -658,20 +658,15 @@
                             v-model="clientCb"
                 ></q-checkbox>
                 <span :class="clientCbHasError ? 'text-red' : 'text-gray-6'">
-                  Prin bifarea acestei opțiuni, declar pe propria răspundere căci am fost adus la
-                  cunoștință că datele mele cu caracter personal colectate de către
-                  OCN „CREDIT BOX” SRL
-                  vor fi procesate și prelucrate, cu respectarea regimului de securitate
-                  și confidențialitate,
-                  în conformitate cu prevederile Legii nr. 133 din 8 iulie 2011 privind protecția
-                  datelor cu caracter personal, informația nefiind folosită în alte scopuri
-                  incompatibile sau remisă fără temei altor companii, urmând a fi păstrată
-                  doar pentru o perioadă de 3 ani, urmând ulterior a fi distrusă sau transformată
-                  în date anonime. Sunt conștient căci în conformitate cu art. 13-16 ale Legii
-                  nr. 133 din 8 iulie 2011 privind protecția datelor cu caracter personal am dreptul
-                  de acces, de intervenție, de opoziție, precum și de adresare în instanța
-                  de judecată,în contextul prelucrărilor efectuate asupra datelor cu caracter
-                  personal care mă vizează.
+                  "Accept" confirm că eu: am citit și am acceptat
+                  <span class="text-blue"
+                        @click="openTermeniConditii"
+                        style="text-decoration: underline;cursor: pointer">
+                    Termeni și condiții
+                  </span>,
+                  am dat consimțământul pentru folosirea datelor personale, am evaluat
+                  oferta CreditBox
+                  <termeni-conditii></termeni-conditii>
                 </span>
               </div>
               <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-xs-12 q-pa-xs text-right">
@@ -747,10 +742,16 @@ import { useStore } from 'vuex';
 import CalculatorRightPanel from 'components/CalculatorRightPanel';
 import AutocompleteField from 'components/Fields/AutocompleteField';
 import FileUpload from 'components/Fields/FileUpload';
+import TermeniConditii from 'components/modals/TermeniConditii';
 
 export default defineComponent({
   name: 'Calculator',
-  components: { FileUpload, AutocompleteField, CalculatorRightPanel },
+  components: {
+    TermeniConditii,
+    FileUpload,
+    AutocompleteField,
+    CalculatorRightPanel,
+  },
   setup() {
     const splitterModel = ref(580);
     // 470px
@@ -1248,6 +1249,9 @@ export default defineComponent({
         fileUploadedResponses.value[t] = fileData.response.data.data;
       }
     };
+    const openTermeniConditii = () => {
+      $store.commit('bids/updateTermeniConditii', true);
+    };
 
     return {
       isExecutor,
@@ -1318,6 +1322,7 @@ export default defineComponent({
       bidError,
       bidSuccess,
       splitterModel,
+      openTermeniConditii,
       dealerOptions,
       productOptions,
       product,

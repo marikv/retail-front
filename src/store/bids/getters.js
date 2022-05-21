@@ -10,3 +10,6 @@ export function getRefreshGrid(state) {
 export function getLastBidTab(state) {
   return state.lastBidTab;
 }
+export function getTermeniConditii(state) {
+  return state.termeniConditii;
+}

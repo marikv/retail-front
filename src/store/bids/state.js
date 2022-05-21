@@ -3,4 +3,5 @@ export default () => ({
   openedBidForm: false,
   refreshGrid: false,
   lastBidTab: false,
+  termeniConditii: false,
 });

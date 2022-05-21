@@ -1,4 +1,4 @@
-# retail for creditbox app (retail.creditbox.md.local)
+# retail creditbox (retail.creditbox.md.local)
 
 retailing loans
 

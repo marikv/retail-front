@@ -10,3 +10,6 @@ export const updateRefreshGrid = (state, val) => {
 export const updateLastBidTab = (state, val) => {
   state.lastBidTab = val;
 };
+export const updateTermeniConditii = (state, val) => {
+  state.termeniConditii = val;
+};
