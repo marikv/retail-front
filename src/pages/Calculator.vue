@@ -128,12 +128,12 @@
                     DAE: <span v-if="calcResults">{{calcResults.DAE}}%</span>
                   </div>
                   <div class="col-xl-10 col-lg-10 col-md-10 col-sm-9 col-xs-9 text-right q-py-md">
-                    <q-btn size="md"
-                           @click="printPreContract()"
-                           icon="print"
-                           label="Pre-Contract"
-                           class="q-mr-md"
-                    ></q-btn>
+<!--                    <q-btn size="md"-->
+<!--                           @click="printPreContract()"-->
+<!--                           icon="print"-->
+<!--                           label="Pre-Contract"-->
+<!--                           class="q-mr-md"-->
+<!--                    ></q-btn>-->
                     <q-btn size="md"
                            @click="clearCalcResults()"
                            icon="clear"

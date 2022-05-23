@@ -306,7 +306,7 @@ export default defineComponent({
         });
         unreadChats.value = unreadChatsLocal;
 
-        if (getCheckNewMessages.bids) {
+        if (getCheckNewMessages.bids && $store.getters['auth/getActiveModule'] === 'Bids') {
           getCheckNewMessages.bids.forEach((bid) => {
             let found = false;
             rows.value.forEach((row, i) => {
@@ -320,6 +320,19 @@ export default defineComponent({
             if (!found) {
               rows.value = [bid, ...rows.value];
               $store.commit('users/updateRefreshGridBidsCalculator', true);
+            }
+          });
+          const rowsTmp = [...rows.value];
+          rows.value = [];
+          rowsTmp.forEach((row) => {
+            let found = false;
+            getCheckNewMessages.bids.forEach((bid) => {
+              if (bid.id === row.id) {
+                found = true;
+              }
+            });
+            if (found) {
+              rows.value.push(row);
             }
           });
         }
