@@ -1,5 +1,5 @@
 export default {
-  appVersion: '0.896',
+  appVersion: '0.896.1',
   apiUrls: {
     '192.168.0.66:1313': '192.168.0.66:1212',
     'retail.creditbox.md': 'retail-php.creditbox.md',
