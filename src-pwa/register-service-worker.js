@@ -13,20 +13,24 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   // registrationOptions: { scope: './' },
 
-  ready(/* registration */) {
-    // console.log('Service worker is active.')
+  ready(registration) {
+    // eslint-disable-next-line no-console
+    console.log('Service worker is active.', registration);
   },
 
-  registered(/* registration */) {
-    // console.log('Service worker has been registered.')
+  registered(registration) {
+    // eslint-disable-next-line no-console
+    console.log('Service worker has been registered.', registration);
   },
 
-  cached(/* registration */) {
-    // console.log('Content has been cached for offline use.')
+  cached(registration) {
+    // eslint-disable-next-line no-console
+    console.log('Content has been cached for offline use.', registration);
   },
 
-  updatefound(/* registration */) {
-    // console.log('New content is downloading.')
+  updatefound(registration) {
+    // eslint-disable-next-line no-console
+    console.log('New content is downloading. updatefound', registration);
     Dialog.create({
       title: 'Atenție!',
       message: `A fost instalată o versiune mai nouă a aplicației (${config.appVersion}). Doriți să încărcați versiunea nouă?`,
@@ -42,13 +46,13 @@ register(process.env.SERVICE_WORKER_FILE, {
         size: 'lg',
       },
     }).onOk(() => {
-      // if ('serviceWorker' in navigator) {
-      //   caches.keys().then((cacheNames) => {
-      //     cacheNames.forEach((cacheName) => {
-      //       caches.delete(cacheName);
-      //     });
-      //   });
-      // }
+      if ('serviceWorker' in navigator) {
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => {
+            caches.delete(cacheName);
+          });
+        });
+      }
       Loading.show({
         spinner: QSpinnerGears,
         // other props
@@ -61,16 +65,17 @@ register(process.env.SERVICE_WORKER_FILE, {
     });
   },
 
-  updated(/* registration */) {
-    // console.log('New content is available; please refresh.')
-    //  console.log(registration);
+  updated(registration) {
+    // eslint-disable-next-line no-console
+    console.log('New content is available; please refresh. updated', registration);
   },
 
   offline() {
     // console.log('No internet connection found. App is running in offline mode.')
   },
 
-  error(/* err */) {
-    // console.error('Error during service worker registration:', err)
+  error(err) {
+    // eslint-disable-next-line no-console
+    console.error('Error during service worker registration:', err);
   },
 });
