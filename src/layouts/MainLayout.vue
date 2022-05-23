@@ -51,7 +51,7 @@
           <q-item-section avatar ></q-item-section>
           <q-item-section>
             <q-item-label>
-              &nbsp;
+              &nbsp;v. {{config.appVersion}}
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -140,6 +140,7 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { api } from 'boot/axios';
 import { getRoleName, myStorage, USER_ROLE_DEALER } from 'src/helpers';
+import config from 'src/config';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -149,6 +150,7 @@ export default defineComponent({
   },
 
   setup() {
+    // eslint-disable-next-line no-use-before-define
     const $router = useRouter();
     const leftDrawerOpen = ref(false);
     const hasPermissionToLeftMenu = ref(false);
@@ -230,6 +232,7 @@ export default defineComponent({
       user,
       getRole,
       newBids,
+      config,
     };
   },
 });
