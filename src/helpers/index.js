@@ -145,9 +145,21 @@ export const getInitials = (str) => {
   if (!str) {
     return '-';
   }
+  str = str
+    .split('"')
+    .join('')
+    .split("'")
+    .join('')
+    .split('&')
+    .join('')
+    .split('  ')
+    .join(' ');
   const f = str.substr(0, 1);
   let s = str.length > 1 ? str[1] : '';
-  const expl = str.split(' ');
+  let expl = str.split(' ');
+  if (expl[0].indexOf('-') > -1) {
+    expl = expl[0].split('-');
+  }
   if (expl.length > 1) {
     s = expl[1].substr(0, 1);
   }
