@@ -41,6 +41,11 @@
         <q-btn v-if="id"
                @click="printAcord()" icon="print" label="Acord PDF"></q-btn>
         <q-btn v-if="id"
+               :href="printAcord2"
+               target="_blank"
+               download
+               icon="description" label="Acord PDF 2"></q-btn>
+        <q-btn v-if="id"
                :href="acordWordLink"
                target="_blank"
                download
@@ -89,6 +94,7 @@ export default {
 
   setup(props, context) {
     const acordWordLink = 'https://retail-php.creditbox.md/acord_dealer.docx';
+    const printAcord2 = 'https://retail-php.creditbox.md/acord_dealer.pdf';
     const isOpenedLocal = ref(false);
     const DealerGeneralRef = ref(null);
 
@@ -197,6 +203,7 @@ export default {
       printContract,
       printConsimtamant,
       printAcord,
+      printAcord2,
       id,
       tab,
       tabs,

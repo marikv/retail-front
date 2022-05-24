@@ -1112,8 +1112,8 @@ export default {
       t = inFnc(t, datoriiOptions, datorii);
       t = inFnc(t, letigiiOptions, letigii);
       if (datoriiRata.value) {
-        // la fiecare mie de lei - minus 0.5 puncte
-        t -= parseInt(String(parseFloat(datoriiRata.value) / 1000), 10) * 0.5;
+        // la fiecare mie de lei - minus 1 puncte
+        t -= parseInt(String(parseFloat(datoriiRata.value) / 1000), 10) * 1;
       }
       return parseFloat((Math.round(t * 100) / 100).toFixed(2));
     });

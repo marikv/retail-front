@@ -17,6 +17,22 @@
       @request="onRequest"
     >
       <template v-slot:top-right>
+        <q-select outlined
+                 bg-color="white"
+                 dense debounce="0"
+                 v-model="paymentsInWaiting"
+                  :options="[
+                    { label: 'Toate', value: null },
+                    { label: 'Efectuate', value: 1 },
+                    { label: 'În așteptare', value: 2 },
+                  ]"
+                  emit-value
+                  map-options
+                  style="width: 150px;"
+                  @change="onRequest"
+                 class="q-mr-xs"
+                 label="Tip achitări">
+        </q-select>
         <q-input outlined
                  bg-color="white"
                  dense debounce="300"
@@ -154,6 +170,7 @@ export default defineComponent({
     const PaymentRef = ref(null);
     const filter = ref('');
     const contractNumber = ref(null);
+    const paymentsInWaiting = ref(null);
     const loading = ref(false);
     const $store = useStore();
     const lastOnRequestProps = ref(null);
@@ -183,6 +200,7 @@ export default defineComponent({
       api.post('/payments-list', {
         ...props,
         contractNumber: contractNumber.value,
+        paymentsInWaiting: paymentsInWaiting.value,
       })
         .then((response) => {
           loading.value = false;
@@ -252,6 +270,7 @@ export default defineComponent({
       deleteRow,
       onRequest,
       contractNumber,
+      paymentsInWaiting,
       PaymentRef,
       getAvatar,
       getColorForLogo,
