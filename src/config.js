@@ -1,5 +1,5 @@
 export default {
-  appVersion: `0.897.1.${process.env.MODE}`,
+  appVersion: `0.898.${process.env.MODE}`,
   apiUrls: {
     '192.168.0.66:1313': '192.168.0.66:1212',
     'retail.creditbox.md': 'retail-php.creditbox.md',

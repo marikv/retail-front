@@ -35,7 +35,7 @@
               {{ card.created_at2 }}
             </span>
             <q-btn dense size="sm"
-                   v-if="card.id > 0"
+                   v-if="card.id > 0 && !isDealer"
                    @click="deleteFile(card.id)"
                    icon="delete"
                    color="blue-grey-3"
@@ -55,7 +55,7 @@
 
 <script>
 import {
-  getMiniPhotoFromServer,
+  getMiniPhotoFromServer, USER_ROLE_ADMIN, USER_ROLE_DEALER,
 } from 'src/helpers';
 import { api } from 'boot/axios';
 import FileUpload from 'components/Fields/FileUpload';
@@ -85,11 +85,23 @@ export default {
     files: [],
   }),
   computed: {
+    user() {
+      return this.$store.getters['auth/getUser'];
+    },
     idExist() {
       return this.bid_id
         || this.user_id
         || this.client_id
         || this.dealer_id;
+    },
+    isExecutor() {
+      return this.user.role_id === USER_ROLE_DEALER;
+    },
+    isAdmin() {
+      return this.user.role_id === USER_ROLE_ADMIN;
+    },
+    isDealer() {
+      return this.user.role_id === USER_ROLE_DEALER;
     },
     module() {
       if (this.bid_id) {

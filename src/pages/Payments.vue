@@ -29,7 +29,7 @@
                   emit-value
                   map-options
                   style="width: 150px;"
-                  @change="onRequest"
+                  @update:model-value="onRequest"
                  class="q-mr-xs"
                  label="Tip achitări">
         </q-select>
@@ -123,48 +123,61 @@ import {
 import Payment from 'components/modals/Payment';
 import { useQuasar } from 'quasar';
 
-const columns = [
-  {
-    name: 'id', label: 'ID', field: 'id', sortable: true, style: 'width: 50px',
-  },
-  {
-    name: 'bid_id', label: 'Contract', field: 'bid_id', sortable: true, align: 'center', style: 'width: 50px',
-  },
-  {
-    name: 'dealer_name', label: 'Dealer', field: 'dealer_name', sortable: true, align: 'center', style: 'width: 50px',
-  },
-  {
-    name: 'date_time', label: 'Data așteptată', field: 'date_time', sortable: true, align: 'center', style: 'width: 80px', format: (val) => (val ? dateToDot(val) : ''),
-  },
-  {
-    name: 'date_time_fact', label: 'Data facto', field: 'date_time_fact', sortable: true, align: 'center', style: 'width: 80px', format: (val) => (val ? dateTimeToDot(val) : ''),
-  },
-  {
-    name: 'beznal', label: 'Banca/Numerar', field: 'beznal', sortable: true, align: 'left', format: (val) => (val ? 'Banca' : 'Numerar'),
-  },
-  {
-    name: 'payment_sum', label: 'Suma rata', field: 'payment_sum', sortable: true, align: 'left',
-  },
-  {
-    name: 'payment_sum_fact', label: 'Suma facto', field: 'payment_sum_fact', sortable: true, align: 'left',
-  },
-  {
-    name: 'client_last_name', label: 'Client', field: 'client_last_name', sortable: true, align: 'left', format: (val, row) => (val ? `${row.client_last_name} ${row.client_first_name}` : ''),
-  },
-  {
-    name: 'created_at2', label: 'Adăugat', field: 'created_at2', sortable: true,
-  },
-  {
-    name: 'actions', label: '', align: 'center', style: 'width: 60px',
-  },
-];
-
 export default defineComponent({
   name: 'Payments',
 
   components: { Payment },
-
-  setup() {
+  props: {
+    bid_id: {
+      type: Number,
+      default: null,
+    },
+  },
+  setup(props) {
+    let columns = [
+      {
+        name: 'id', label: 'ID', field: 'id', sortable: true, style: 'width: 50px',
+      },
+    ];
+    if (!props.bid_id) {
+      columns.push({
+        name: 'bid_id', label: 'Contract', field: 'bid_id', sortable: true, align: 'center', style: 'width: 50px',
+      });
+      columns.push({
+        name: 'dealer_name', label: 'Dealer', field: 'dealer_name', sortable: true, align: 'center', style: 'width: 50px',
+      });
+    }
+    const columns2 = [
+      {
+        name: 'date_time', label: 'Data rată', field: 'date_time', sortable: true, align: 'center', style: 'width: 80px', format: (val) => (val ? dateToDot(val) : ''),
+      },
+      {
+        name: 'date_time_fact', label: 'Data facto', field: 'date_time_fact', sortable: true, align: 'center', style: 'width: 80px', format: (val) => (val ? dateTimeToDot(val) : ''),
+      },
+      {
+        name: 'beznal', label: 'Transfer/Numerar', field: 'beznal', sortable: true, align: 'left', format: (val) => (val ? 'Transfer' : 'Numerar'),
+      },
+      {
+        name: 'payment_sum', label: 'Suma rată', field: 'payment_sum', sortable: true, align: 'left',
+      },
+      {
+        name: 'payment_sum_fact', label: 'Suma facto', field: 'payment_sum_fact', sortable: true, align: 'left',
+      },
+    ];
+    if (!props.bid_id) {
+      columns2.push({
+        name: 'client_last_name', label: 'Client', field: 'client_last_name', sortable: true, align: 'left', format: (val, row) => (val ? `${row.client_last_name} ${row.client_first_name}` : ''),
+      });
+      columns2.push({
+        name: 'created_at2', label: 'Adăugat', field: 'created_at2', sortable: true,
+      });
+    }
+    const columns3 = [
+      {
+        name: 'actions', label: '', align: 'center', style: 'width: 60px',
+      },
+    ];
+    columns = [...columns, ...columns2, ...columns3];
     const $q = useQuasar();
     const rows = ref([]);
     const PaymentRef = ref(null);
@@ -192,15 +205,16 @@ export default defineComponent({
     const getInitialsForLogo = (str) => getInitials(str);
     const getColorForLogo = (str) => generateColorFromString(str);
 
-    const onRequest = (props) => {
+    const onRequest = (props2) => {
       loading.value = true;
-      lastOnRequestProps.value = props;
+      lastOnRequestProps.value = props2;
       $store.commit('payments/updateRefreshGrid', false);
 
       api.post('/payments-list', {
-        ...props,
+        ...props2,
         contractNumber: contractNumber.value,
         paymentsInWaiting: paymentsInWaiting.value,
+        bid_id: props.bid_id,
       })
         .then((response) => {
           loading.value = false;
@@ -227,17 +241,17 @@ export default defineComponent({
       }
     };
 
-    const editRow = (props) => {
-      showPaymentModalSetValue(true, props.row.id);
+    const editRow = (props2) => {
+      showPaymentModalSetValue(true, props2.row.id);
     };
-    const deleteRow = (props) => {
+    const deleteRow = (props2) => {
       $q.dialog({
         title: 'Atenție',
         message: 'Sunteți sigur că doriți să ștergeți?',
         cancel: true,
         persistent: true,
       }).onOk(() => {
-        api.delete(`/payments/${props.row.id}`).then(() => {
+        api.delete(`/payments/${props2.row.id}`).then(() => {
           onRequest(lastOnRequestProps.value);
         });
       });

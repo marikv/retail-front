@@ -43,16 +43,20 @@
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         outlined
-        readonly
+        type="number"
         v-model="paymentSumFact"
-        label="Suma facto"/>
+        label="Suma facto">
+        <template v-slot:label>
+          <span class="text-primary">Suma facto</span>
+        </template>
+      </q-input>
     </div>
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         outlined
         readonly
         v-model="dateTime"
-        label="Data așteptată"/>
+        label="Data rată"/>
     </div>
     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
@@ -60,6 +64,24 @@
         readonly
         v-model="dateTimeFact"
         label="Data facto"/>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-xs-12 q-pa-xs">
+      <q-select
+        outlined
+        v-model="beznal"
+        :options="[
+          { label: 'Numerar', value: null },
+          { label: 'Transfer', value: 1 },
+        ]"
+        emit-value
+        map-options
+        option-value="value"
+        option-label="label"
+        label="Transfer/Numerar">
+        <template v-slot:label>
+          <span class="text-primary">Transfer/Numerar</span>
+        </template>
+      </q-select>
     </div>
   </div>
 </template>
@@ -97,6 +119,7 @@ export default defineComponent({
     const logo = ref('');
     const paymentSum = ref(0);
     const paymentSumFact = ref(null);
+    const beznal = ref(null);
     const dateTime = ref(null);
     const dateTimeFact = ref(null);
     const getAvatar = (avatar) => {
@@ -122,6 +145,7 @@ export default defineComponent({
       description.value = paymentData.value.description || '';
       paymentSum.value = paymentData.value.payment_sum || 0;
       paymentSumFact.value = paymentData.value.payment_sum_fact || null;
+      beznal.value = paymentData.value.beznal || null;
       dateTime.value = paymentData.value.date_time ? dateToDot(paymentData.value.date_time) : '';
       dateTimeFact.value = paymentData.value.date_time_fact
         ? dateTimeToDot(paymentData.value.date_time_fact) : null;
@@ -132,6 +156,8 @@ export default defineComponent({
         const data = {
           phone1: phone1.value,
           description: description.value,
+          paymentSumFact: paymentSumFact.value,
+          beznal: beznal.value,
         };
         showLoading();
         const idLocal = parseInt(String(id.value), 10);
@@ -170,6 +196,7 @@ export default defineComponent({
       getAvatar,
       getColorForLogo,
       getInitialsForLogo,
+      beznal,
     };
   },
 });

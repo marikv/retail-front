@@ -331,6 +331,9 @@
               </div>
             </div>
           </q-tab-panel>
+          <q-tab-panel name="payments" class="q-pa-none">
+            <payments :bid_id="id"></payments>
+          </q-tab-panel>
           <q-tab-panel name="chat" class="q-pa-none">
             <chat :bid_id="id"></chat>
           </q-tab-panel>
@@ -394,10 +397,12 @@ import FilesForm from 'components/FilesForm';
 import FileUpload from 'components/Fields/FileUpload';
 import BidClientScoring from 'components/BidClientScoring';
 import BidClientForm from 'components/BidClientForm';
+import Payments from 'pages/Payments';
 
 export default {
   name: 'BidDialog',
   components: {
+    Payments,
     BidClientForm,
     BidClientScoring,
     FileUpload,
@@ -455,6 +460,10 @@ export default {
       name: 'general',
       icon: 'store',
       label: 'Date generale',
+    }, {
+      name: 'payments',
+      icon: 'payments',
+      label: 'Plăți',
     }, {
       name: 'chat',
       icon: 'chat',
