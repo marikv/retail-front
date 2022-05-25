@@ -28,6 +28,9 @@
               ref="FilesForm"
               :dealer_id="id"></files-form>
           </q-tab-panel>
+          <q-tab-panel name="payments" class="q-pa-none">
+            <payments :dealer_id="id"></payments>
+          </q-tab-panel>
           <q-tab-panel name="user_tab_logs" class="q-pa-none">
             <logs-table-for-forms :entity_id="id"
                                   :entity_name="`dealers`"></logs-table-for-forms>
@@ -76,10 +79,12 @@ import {
   showLoading,
   showNotify,
 } from 'src/helpers';
+import Payments from 'pages/Payments';
 
 export default {
   name: 'Dealer',
   components: {
+    Payments,
     LogsTableForForms,
     FilesForm,
     DealerGeneral,

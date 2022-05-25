@@ -132,6 +132,10 @@ export default defineComponent({
       type: Number,
       default: null,
     },
+    dealer_id: {
+      type: Number,
+      default: null,
+    },
   },
   setup(props) {
     let columns = [
@@ -141,8 +145,15 @@ export default defineComponent({
     ];
     if (!props.bid_id) {
       columns.push({
-        name: 'bid_id', label: 'Contract', field: 'bid_id', sortable: true, align: 'center', style: 'width: 50px',
+        name: 'bid_id',
+        label: 'Contract',
+        field: 'bid_id',
+        sortable: true,
+        align: 'center',
+        style: 'width: 50px',
       });
+    }
+    if (!props.bid_id && !props.dealer_id) {
       columns.push({
         name: 'dealer_name', label: 'Dealer', field: 'dealer_name', sortable: true, align: 'center', style: 'width: 50px',
       });
@@ -215,6 +226,7 @@ export default defineComponent({
         contractNumber: contractNumber.value,
         paymentsInWaiting: paymentsInWaiting.value,
         bid_id: props.bid_id,
+        dealer_id: props.dealer_id,
       })
         .then((response) => {
           loading.value = false;
