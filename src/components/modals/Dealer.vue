@@ -41,8 +41,8 @@
       <q-card-actions align="right" v-if="tab === 'general'">
         <q-btn v-if="id"
                @click="printContract()" icon="print" label="Contract"></q-btn>
-<!--        <q-btn v-if="id"-->
-<!--               @click="printAcord()" icon="print" label="Acord PDF"></q-btn>-->
+        <q-btn v-if="id"
+               @click="printAcord()" icon="print" label="Acord PDF"></q-btn>
         <q-btn v-if="id"
                :href="printAcord2"
                target="_blank"
@@ -193,10 +193,10 @@ export default {
       downloadPDF(id.value, '/print/contractDealer', 'contract_colaborare');
     };
     const printConsimtamant = () => {
-      downloadPDF(id.value, '/print/contractDealerConsimtamant', 'contract_consimtamant');
+      downloadPDF(id.value, '/print/contractDealerConsimtamant', 'consimtamant_dealer');
     };
     const printAcord = () => {
-      downloadPDF(id.value, '/print/contractDealerAcord', 'contract_acord');
+      downloadPDF(id.value, '/print/contractDealerAcord', 'acord_dealer');
     };
 
     return {

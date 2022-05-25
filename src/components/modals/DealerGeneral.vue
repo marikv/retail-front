@@ -98,7 +98,7 @@
     <div class="col-xs-12 row text-subtitle1 text-primary q-pa-xs">
       Date bancare
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12 q-pa-xs">
+    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-xs-12 q-pa-xs">
       <q-input
         outlined
         :error="addressJurHasError"
@@ -131,11 +131,11 @@
         v-model="bankValuta"
         label="Valuta"/>
     </div>
-    <div class="col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-12 q-pa-xs">
+    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-xs-12 q-pa-xs">
       <q-input
         outlined
         v-model="bankTva"
-        label="TVA"/>
+        label="Cod TVA"/>
     </div>
     <div
       v-if="id > 0"

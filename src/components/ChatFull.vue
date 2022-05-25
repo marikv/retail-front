@@ -135,8 +135,10 @@ export default {
       api.post('/chat-get-full-list').then((response) => {
         if (response.data.success) {
           chatsList.value = response.data.data;
-          chatsList.value
-            .sort((a, b) => (a.sortDate > b.sortDate ? -1 : ((b.sortDate > a.sortDate) ? 1 : 0)));
+          if (chatsList.value && chatsList.value.sort !== undefined) {
+            chatsList.value
+              .sort((a, b) => (a.sortDate > b.sortDate ? -1 : ((b.sortDate > a.sortDate) ? 1 : 0)));
+          }
         }
       });
     };
