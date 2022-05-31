@@ -19,14 +19,15 @@
       <q-card-section
         style="min-height: calc(100vh - 165px);max-height: calc(100vh - 165px);"
         class="scroll">
-        <q-tab-panels v-model="tab" animated keep-alive>
+        <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="general" class="q-pa-none">
             <DealerGeneral ref="DealerGeneralRef"></DealerGeneral>
           </q-tab-panel>
+          <q-tab-panel name="products" class="q-pa-none">
+            <dealer-products ref="DealerProductsRef" :dealer_id="id"></dealer-products>
+          </q-tab-panel>
           <q-tab-panel name="files" class="q-pa-none">
-            <files-form
-              ref="FilesForm"
-              :dealer_id="id"></files-form>
+            <files-form ref="FilesForm" :dealer_id="id"></files-form>
           </q-tab-panel>
           <q-tab-panel name="payments" class="q-pa-none">
             <payments :dealer_id="id"></payments>
@@ -80,10 +81,12 @@ import {
   showNotify,
 } from 'src/helpers';
 import Payments from 'pages/Payments';
+import DealerProducts from 'components/modals/DealerProducts';
 
 export default {
   name: 'Dealer',
   components: {
+    DealerProducts,
     Payments,
     LogsTableForForms,
     FilesForm,
@@ -107,6 +110,10 @@ export default {
       name: 'general',
       icon: 'store',
       label: 'Date generale',
+    }, {
+      name: 'products',
+      icon: 'percent',
+      label: 'Produse',
     }, {
       name: 'bids',
       icon: 'warning_amber',

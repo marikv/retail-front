@@ -151,28 +151,6 @@
     <div
       v-if="id > 0"
       class="col-xs-12 row text-subtitle1 text-primary q-pa-xs">
-      Produse
-    </div>
-    <div
-      v-if="id > 0"
-      class="col-xs-12 q-pb-lg">
-      <q-select
-        outlined
-        v-model="dealerProducts"
-        multiple
-        :options="dealerProductsOptions"
-        use-chips
-        stack-label
-        emit-value
-        map-options
-        option-value="id"
-        option-label="name"
-        label=""
-      />
-    </div>
-    <div
-      v-if="id > 0"
-      class="col-xs-12 row text-subtitle1 text-primary q-pa-xs">
       Utilizatori / Login
 
       <q-btn color="primary"
@@ -254,7 +232,7 @@
 
 <script>
 import {
-  defineComponent, onMounted,
+  defineComponent,
   ref,
   watchEffect,
 } from 'vue';
@@ -305,24 +283,6 @@ export default defineComponent({
     const newPasswordError = ref(false);
     const addUserPressed = ref(false);
     const allUsers = ref([]);
-    const dealerProducts = ref([]);
-    const dealerProductsOptions = ref([]);
-
-    const loadProducts = () => {
-      api.get(`/dealer-products/${id.value}`).then((response) => {
-        if (response.data.success) {
-          dealerProducts.value = [];
-          response.data.data.DealerProducts.forEach((v) => {
-            dealerProducts.value.push(v.product_id);
-          });
-          dealerProductsOptions.value = response.data.data.Products;
-        }
-      });
-    };
-
-    onMounted(() => {
-      loadProducts();
-    });
 
     const loadUsers = () => {
       if (id.value > 0) {
@@ -377,7 +337,6 @@ export default defineComponent({
     watchEffect(() => {
       if (id.value) {
         loadUsers();
-        loadProducts();
       }
     });
 
@@ -419,7 +378,6 @@ export default defineComponent({
           bank_valuta: bankValuta.value,
           bank_tva: bankTva.value,
           contract_date: contractDate.value,
-          products: dealerProducts.value,
         };
         showLoading();
         const idLocal = parseInt(String(id.value), 10);
@@ -508,8 +466,6 @@ export default defineComponent({
       newPassword,
       newUser,
       addUserPressed,
-      dealerProducts,
-      dealerProductsOptions,
       addNewUser,
       newUserError,
       newPasswordError,
