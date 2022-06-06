@@ -259,7 +259,7 @@ import {
 } from 'vue';
 import { api } from 'boot/axios';
 import { useStore } from 'vuex';
-import { BID_STATUS_SIGNED_CONTRACT } from 'src/helpers';
+import { BID_STATUS_CONTRACT_SIGNED } from 'src/helpers';
 
 export default {
   name: 'BidClientScoring',
@@ -1185,7 +1185,7 @@ export default {
       if (bidData.value && bidData.value.id) {
         id.value = bidData.value.id ? bidData.value.id : 0;
         statusId.value = bidData.value.status_id ? parseInt(bidData.value.status_id, 10) : 0;
-        if (statusId.value === BID_STATUS_SIGNED_CONTRACT) {
+        if (statusId.value === BID_STATUS_CONTRACT_SIGNED) {
           disableClientInputs.value = true;
         }
       }

@@ -168,7 +168,7 @@ export default defineComponent({
               $store.commit('payments/updateOpenedPaymentData', {});
               $store.commit('payments/updateOpenedPaymentForm', false);
             } else {
-              $store.commit('payments/updateOpenedPaymentData', response.data.data);
+              $store.commit('payments/updateOpenedPaymentData', response.data.data.payment);
               $store.commit('payments/updateOpenedPaymentForm', true);
             }
             $store.commit('payments/updateRefreshGrid', true);

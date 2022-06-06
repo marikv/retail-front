@@ -9,14 +9,16 @@ export const BID_STATUS_NEW = 0;
 export const BID_STATUS_IN_WORK = 1;
 export const BID_STATUS_APPROVED = 2;
 export const BID_STATUS_REFUSED = 3;
-export const BID_STATUS_SIGNED_CONTRACT = 4;
+export const BID_STATUS_CONTRACT_SIGNED = 4;
+export const BID_STATUS_CONTRACT_PAYED = 5;
 export const getBidStatusName = (n) => {
   const BID_STATUS = {};
   BID_STATUS[BID_STATUS_NEW] = 'Cerere nouă';
   BID_STATUS[BID_STATUS_IN_WORK] = 'Cerere în lucru';
   BID_STATUS[BID_STATUS_APPROVED] = 'Cerere aprobată';
   BID_STATUS[BID_STATUS_REFUSED] = 'Cerere refuzată';
-  BID_STATUS[BID_STATUS_SIGNED_CONTRACT] = 'Contract semnat';
+  BID_STATUS[BID_STATUS_CONTRACT_SIGNED] = 'Contract semnat';
+  BID_STATUS[BID_STATUS_CONTRACT_PAYED] = 'Contract închis';
   return BID_STATUS[n];
 };
 

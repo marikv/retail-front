@@ -6,7 +6,12 @@
       <q-toolbar :class="'q-pr-xs'">
         <q-toolbar-title>
           <span class="text-subtitle1">
-            <span class="text-blue-grey" >Cerere</span>
+            <span class="text-blue-grey"
+                  v-if="statusId === BID_STATUS_CONTRACT_SIGNED"
+            >Contract</span>
+            <span class="text-blue-grey"
+                  v-else
+            >Cerere</span>
             <strong  :class="'q-ml-md'">{{ id }}</strong>
           </span>
         </q-toolbar-title>
@@ -350,6 +355,10 @@
       </q-card-section>
       <q-separator />
       <q-card-actions align="right">
+        <q-btn label="închide contractul"
+               color="primary"
+               v-if="bidData.status_id === BID_STATUS_CONTRACT_SIGNED && !isDealer"
+               @click="setContractAllPayed" />
         <q-btn label="Trimite contractul semnat / închide cererea"
                color="primary"
                v-if="bidData.status_id === BID_STATUS_APPROVED && isDealer"
@@ -368,7 +377,7 @@ import {
   BID_STATUS_APPROVED,
   BID_STATUS_IN_WORK,
   BID_STATUS_NEW,
-  BID_STATUS_REFUSED, BID_STATUS_SIGNED_CONTRACT,
+  BID_STATUS_REFUSED, BID_STATUS_CONTRACT_SIGNED,
   dateToDot,
   downloadPDF,
   FILE_TYPE_BULETIN_1,
@@ -386,7 +395,7 @@ import {
   showNotify,
   USER_ROLE_ADMIN,
   USER_ROLE_DEALER,
-  USER_ROLE_EXECUTOR,
+  USER_ROLE_EXECUTOR, BID_STATUS_CONTRACT_PAYED,
 } from 'src/helpers';
 import { api } from 'boot/axios';
 import { useQuasar } from 'quasar';
@@ -456,7 +465,7 @@ export default {
     const getInitialsForLogo = (str) => getInitials(str);
     const getColorForLogo = (str) => generateColorFromString(str);
 
-    const tabs = ref([{
+    const tabs = computed(() => ([{
       name: 'general',
       icon: 'store',
       label: 'Date generale',
@@ -464,6 +473,8 @@ export default {
       name: 'payments',
       icon: 'payments',
       label: 'Plăți',
+      hidden: statusId.value !== BID_STATUS_CONTRACT_SIGNED
+        && statusId.value !== BID_STATUS_CONTRACT_PAYED,
     }, {
       name: 'chat',
       icon: 'chat',
@@ -476,7 +487,7 @@ export default {
       name: 'logs',
       icon: 'history',
       label: 'Log',
-    }]);
+    }]));
     const tab = ref('general');
 
     watchEffect(() => {
@@ -597,9 +608,19 @@ export default {
           cancel: true,
           persistent: true,
         }).onOk(() => {
-          setBidStatus(BID_STATUS_SIGNED_CONTRACT);
+          setBidStatus(BID_STATUS_CONTRACT_SIGNED);
         });
       }
+    };
+    const setContractAllPayed = () => {
+      $q.dialog({
+        title: 'Atenție',
+        message: 'Sunteți sigur că doriți să închideți contractul?',
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        setBidStatus(BID_STATUS_CONTRACT_PAYED);
+      });
     };
     const openPopupForSumChange = () => {
       let sumMaxLocal = sumMax.value;
@@ -667,6 +688,7 @@ export default {
       statusId,
       BID_STATUS_NEW,
       BID_STATUS_IN_WORK,
+      BID_STATUS_CONTRACT_SIGNED,
       BID_STATUS_APPROVED,
       BID_STATUS_REFUSED,
       isExecutor,
@@ -695,6 +717,7 @@ export default {
       fileUploadedResponses,
       onFileUploaded,
       sendBidToContract,
+      setContractAllPayed,
     };
   },
 };

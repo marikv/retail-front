@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <bids-list-for-calculator></bids-list-for-calculator>
+    <bids-list-for-calculator active-module="Contracts"></bids-list-for-calculator>
   </q-page>
 </template>
 

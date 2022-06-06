@@ -13,7 +13,7 @@
       binary-state-sort
       no-data-label="Nu sunt înregistrări"
       rows-per-page-label="Înregistrări pe pagină"
-      :rows-per-page-options="[30, 50, 100, 200, 500, 1000, 0]"
+      :rows-per-page-options="[2, 5, 10, 30, 50, 100, 200, 500, 1000, 0]"
       @request="onRequest"
       card-class="text-primary"
       table-class="text-grey-8"
@@ -134,12 +134,17 @@ import {
   BID_STATUS_APPROVED,
   BID_STATUS_IN_WORK,
   BID_STATUS_NEW,
+  BID_STATUS_CONTRACT_PAYED,
   BID_STATUS_REFUSED,
-  BID_STATUS_SIGNED_CONTRACT,
-  generateColorFromString, getBidStatusName,
+  BID_STATUS_CONTRACT_SIGNED,
+  generateColorFromString,
+  getBidStatusName,
   getInitials,
   getMiniPhotoFromServer,
-  showNotify, USER_ROLE_ADMIN, USER_ROLE_DEALER, USER_ROLE_EXECUTOR,
+  showNotify,
+  USER_ROLE_ADMIN,
+  USER_ROLE_DEALER,
+  USER_ROLE_EXECUTOR,
 } from 'src/helpers';
 import { useQuasar } from 'quasar';
 import BidDialog from 'components/modals/Bid';
@@ -147,26 +152,37 @@ import BidDialog from 'components/modals/Bid';
 export default defineComponent({
   name: 'BidsListForCalculator',
   components: { BidDialog },
-  setup() {
+  props: {
+    activeModule: {
+      type: String,
+      default: null,
+    },
+    dealer_id: {
+      type: Number,
+      default: null,
+    },
+  },
+  setup(props) {
     const $store = useStore();
     const $q = useQuasar();
     const rows = ref([]);
     const unreadChats = ref([]);
     const loading = ref(false);
-    const bidStatusSignedContract = ref(BID_STATUS_SIGNED_CONTRACT);
+    const bidStatusSignedContract = ref(BID_STATUS_CONTRACT_SIGNED);
     const BidDialogRef = ref(null);
     const filter = ref('');
     const isExecutor = ref(false);
     const isAdmin = ref(false);
     const isDealer = ref(false);
     const user = computed(() => $store.getters['auth/getUser']);
-    const paginationInit = {
+    const getRefreshGridBidsCalculator = computed(() => $store.getters['users/getRefreshGridBidsCalculator']);
+    const pagination = ref({
       sortBy: 'id',
       descending: true,
       page: 1,
       rowsPerPage: 100,
-    };
-    const pagination = ref(paginationInit);
+      rowsNumber: 100,
+    });
 
     const getLogo = (logo) => {
       if (logo) {
@@ -184,7 +200,7 @@ export default defineComponent({
       if (row.status_id === BID_STATUS_NEW) {
         return 'bg-white';
       }
-      if (row.status_id === BID_STATUS_APPROVED) {
+      if (row.status_id === BID_STATUS_APPROVED || row.status_id === BID_STATUS_CONTRACT_PAYED) {
         return 'bg-green-2';
       }
       if (row.status_id === BID_STATUS_REFUSED) {
@@ -199,7 +215,7 @@ export default defineComponent({
       if (statusId === BID_STATUS_NEW) {
         return 'white';
       }
-      if (statusId === BID_STATUS_APPROVED) {
+      if (statusId === BID_STATUS_APPROVED || statusId === BID_STATUS_CONTRACT_PAYED) {
         return 'positive';
       }
       if (statusId === BID_STATUS_REFUSED) {
@@ -214,7 +230,7 @@ export default defineComponent({
       if (statusId === BID_STATUS_NEW) {
         return 'black';
       }
-      if (statusId === BID_STATUS_APPROVED) {
+      if (statusId === BID_STATUS_APPROVED || statusId === BID_STATUS_CONTRACT_PAYED) {
         return 'white';
       }
       if (statusId === BID_STATUS_REFUSED) {
@@ -226,15 +242,22 @@ export default defineComponent({
       return 'black';
     };
 
-    const onRequest = (props) => {
+    const onRequest = (props2) => {
       $store.commit('users/updateRefreshGridBidsCalculator', false);
       if (!loading.value) {
         loading.value = true;
+        let paginationLocal = { ...pagination.value };
+        if (props2 && props2.pagination) {
+          paginationLocal = { ...props2.pagination };
+        }
+        pagination.value.sortBy = paginationLocal.sortBy;
+        pagination.value.descending = paginationLocal.descending;
 
         api.post('/bids/get-list', {
-          ...props,
-          activeModule: $store.getters['auth/getActiveModule'],
-          pagination: pagination.value,
+          ...props2,
+          activeModule: props.activeModule ? props.activeModule : $store.getters['auth/getActiveModule'],
+          dealer_id: props.dealer_id ? props.dealer_id : null,
+          pagination: paginationLocal,
         })
           .then((response) => {
             loading.value = false;
@@ -251,7 +274,6 @@ export default defineComponent({
           });
       }
     };
-
     const editRow = (id, openChatTab = false) => {
       $store.commit('bids/updateOpenedBidData', { id });
       $store.commit('bids/updateOpenedBidForm', true);
@@ -262,14 +284,14 @@ export default defineComponent({
         }
       }
     };
-    const deleteRow = (props) => {
+    const deleteRow = (props2) => {
       $q.dialog({
         title: 'Atenție',
         message: 'Sunteți sigur că doriți să ștergeți?',
         cancel: true,
         persistent: true,
       }).onOk(() => {
-        api.delete(`/bids/${props.row.id}`).then(() => {
+        api.delete(`/bids/${props2.row.id}`).then(() => {
           onRequest();
         });
       });
@@ -279,13 +301,18 @@ export default defineComponent({
       isAdmin.value = user.value.role_id === USER_ROLE_ADMIN;
       isDealer.value = user.value.role_id === USER_ROLE_DEALER;
     });
+    let initEffect = false;
     watchEffect(() => {
-      if ($store.getters['users/getRefreshGridBidsCalculator'] === true) {
+      if (!initEffect && getRefreshGridBidsCalculator.value) {
+        initEffect = true;
+        setTimeout(() => {
+          initEffect = false;
+        }, 2000);
         $store.commit('users/updateRefreshGridBidsCalculator', false);
         if (!loading.value) {
           setTimeout(() => {
             onRequest();
-          }, 10);
+          }, 500);
         }
       }
     });

@@ -383,7 +383,8 @@
 <script>
 import { ref, watchEffect } from 'vue';
 import {
-  BID_STATUS_SIGNED_CONTRACT,
+  BID_STATUS_CONTRACT_PAYED,
+  BID_STATUS_CONTRACT_SIGNED,
   dateToDot,
   hideLoading,
   showLoading,
@@ -515,7 +516,9 @@ export default {
       if (bidData.value && bidData.value.id) {
         id.value = bidData.value.id ? bidData.value.id : 0;
         statusId.value = bidData.value.status_id ? parseInt(bidData.value.status_id, 10) : 0;
-        if (statusId.value === BID_STATUS_SIGNED_CONTRACT) {
+        if (statusId.value === BID_STATUS_CONTRACT_SIGNED
+          || statusId.value === BID_STATUS_CONTRACT_PAYED
+        ) {
           disableClientInputs.value = true;
         }
         clientFirstName.value = bidData.value.first_name;

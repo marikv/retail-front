@@ -24,7 +24,16 @@
             <DealerGeneral ref="DealerGeneralRef"></DealerGeneral>
           </q-tab-panel>
           <q-tab-panel name="products" class="q-pa-none">
-            <dealer-products ref="DealerProductsRef" :dealer_id="id"></dealer-products>
+            <dealer-products ref="DealerProductsRef"
+                             :dealer_id="id"></dealer-products>
+          </q-tab-panel>
+          <q-tab-panel name="bids" class="q-pa-none">
+            <bids-list-for-calculator active-module="Bids"
+                                      :dealer_id="id"></bids-list-for-calculator>
+          </q-tab-panel>
+          <q-tab-panel name="contracts" class="q-pa-none">
+            <bids-list-for-calculator active-module="Contracts"
+                                      :dealer_id="id"></bids-list-for-calculator>
           </q-tab-panel>
           <q-tab-panel name="files" class="q-pa-none">
             <files-form ref="FilesForm" :dealer_id="id"></files-form>
@@ -82,10 +91,12 @@ import {
 } from 'src/helpers';
 import Payments from 'pages/Payments';
 import DealerProducts from 'components/modals/DealerProducts';
+import BidsListForCalculator from 'components/BidsListForCalculator';
 
 export default {
   name: 'Dealer',
   components: {
+    BidsListForCalculator,
     DealerProducts,
     Payments,
     LogsTableForForms,
@@ -119,7 +130,7 @@ export default {
       icon: 'warning_amber',
       label: 'Cereri',
     }, {
-      name: 'contracte',
+      name: 'contracts',
       icon: 'gavel',
       label: 'Contracte',
     }, {

@@ -26,10 +26,10 @@
     </q-tabs>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="Bids" class="q-pa-none">
-        <bids-list-for-calculator></bids-list-for-calculator>
+        <bids-list-for-calculator active-module="Bids"></bids-list-for-calculator>
       </q-tab-panel>
       <q-tab-panel name="Contracts" class="q-pa-none">
-        <bids-list-for-calculator></bids-list-for-calculator>
+        <bids-list-for-calculator active-module="Contracts"></bids-list-for-calculator>
       </q-tab-panel>
       <q-tab-panel name="ChatFull" class="q-pa-none">
         <chat-full></chat-full>
